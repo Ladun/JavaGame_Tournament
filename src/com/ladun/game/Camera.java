@@ -13,19 +13,14 @@ public class Camera {
 	
 	private float cameraSensitivity = 20;
 	
-	public Camera(String tag)
+	public Camera(GameManager gm,String tag)
 	{
 		this.targetTag = tag;
+		this.target = gm.getObject(targetTag);
 	}
 	
 	public void update(GameContainer gc,GameManager gm,float dt)
 	{
-		target = gm.getObject(targetTag);
-		if(target == null)
-		{
-			target = gm.getObject(targetTag);
-		}
-		
 		if(target == null)
 			return;
 		
@@ -40,10 +35,10 @@ public class Camera {
 		
 		
 		
-		if(offX < 0)offX = 0;
-		if(offX > gm.getLevelW() * GameManager.TS - gc.getWidth())offX = gm.getLevelW()* GameManager.TS  - gc.getWidth();
-		if(offY < 0)offY = 0;
-		if(offY > gm.getLevelH() * GameManager.TS - gc.getHeight())offY = gm.getLevelH()* GameManager.TS  - gc.getHeight();
+		if(offX < 0) offX = 0;
+		if(offX >gm.getActiveScene().getLevelW()- gc.getWidth()) offX = gm.getActiveScene().getLevelW() - gc.getWidth();
+		if(offY < 0) offY = 0;
+		if(offY > gm.getActiveScene().getLevelH() - gc.getHeight()) offY = gm.getActiveScene().getLevelH()- gc.getHeight();
 
 		
 		

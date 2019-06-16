@@ -10,7 +10,7 @@ import com.ladun.game.components.Component;
 public abstract class GameObject 
 {
 	protected String tag;
-	protected float posX,posY;
+	protected float posX,posZ;
 	protected int width, height;
 	protected int padding,paddingTop;
 	protected boolean active = true;
@@ -94,10 +94,10 @@ public abstract class GameObject
 		this.posX = posX;
 	}
 	public float getPosY() {
-		return posY;
+		return posZ;
 	}
 	public void setPosY(float posY) {
-		this.posY = posY;
+		this.posZ = posY;
 	}
 	public int getWidth() {
 		return width;

@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 import com.ladun.engine.gfx.Font;
 import com.ladun.engine.gfx.Image;
+import com.ladun.engine.gfx.ImageLoader;
 import com.ladun.engine.gfx.ImageRequest;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.engine.gfx.Light;
@@ -14,10 +15,11 @@ import com.ladun.engine.gfx.LightRequest;
 
 public class Renderer {
 	
-	//private Font font = Font.STANDARD;
+	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
-	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();
+	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
 	
+	private ImageLoader il;
 	
 	private int pW,pH;
 	private int[] p;
@@ -32,7 +34,9 @@ public class Renderer {
 	
 	public Renderer(GameContainer gc){
 		
-		pW =gc.getWidth();
+		il = new ImageLoader();
+		
+		pW = gc.getWidth();
 		pH = gc.getHeight();
 		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
 		zb = new int[p.length];
@@ -79,6 +83,8 @@ public class Renderer {
 			LightRequest l = lightRequests.get(i);
 			this.drawLightRequest(l.light, l.locX, l.locY);
 		}
+		
+		
 		
 		for(int i = 0; i< p.length;i++)
 		{
@@ -157,7 +163,7 @@ public class Renderer {
 		
 		
 	}
-	/*
+	
 	public void drawText(String text,int offX,int offY, int color)
 	{
 
@@ -182,7 +188,7 @@ public class Renderer {
 			
 			offset += font.getWidths()[unicode];
 		}
-	}*/
+	}
 	
 	public void drawImage(Image image, int offX, int offY){
 

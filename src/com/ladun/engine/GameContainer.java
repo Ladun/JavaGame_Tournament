@@ -1,8 +1,5 @@
 package com.ladun.engine;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-
 public class GameContainer implements Runnable{
 	
 	private Thread thread;
@@ -56,11 +53,19 @@ public class GameContainer implements Runnable{
 		int frames = 0;
 		int fps = 0;
 		
-		game.init(this);
+
+		int ticks = 0;
+		int tps = 0;
+		
+		if(!game.init(this)) {
+			//System.out.println("AbstractGame Init Failed!");
+			dispose();
+			return;
+		}
 		
 		
 		while(running){
-			//render = false;
+			render = false;
 			
 			firstTime = System.nanoTime() / 1000000000.0;
 			passedTime = firstTime - lastTime;
@@ -77,27 +82,31 @@ public class GameContainer implements Runnable{
 				render = true;
 				
 				game.update(this, (float)UPDATE_CAP);
-				input.update();
+				input.update();				
+				ticks++;
+
 				
-				
-				if(frameTime >= 1.0){
-					
-					frameTime =0;
-					fps = frames;
-					frames = 0;
-					
-				}
 			}
+			
 			
 			if(render)
 			{
-				
+
+				if(frameTime >= 1.0){					
+					frameTime =0;
+					fps = frames;
+					frames = 0;		
+					
+					tps = ticks;
+					ticks = 0;
+				}
 				renderer.clear();
 				game.render(this, renderer);
 				renderer.process();
 				renderer.setCamX(0);
 				renderer.setCamY(0);
-				//renderer.drawText("FPS : " + fps,0,3,0xffffffff);
+				renderer.drawText("FPS : " + fps,0,3,0xffffffff);
+				renderer.drawText("TPS : " + tps,0,20,0xffffffff);
 				window.update();
 				frames++;
 			}

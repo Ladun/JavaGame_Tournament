@@ -2,7 +2,7 @@ package com.ladun.engine.gfx;
 
 public class Font {
 	
-	//public static final Font STANDARD = new Font("/fonts/comic.png");
+	public static final Font STANDARD = new Font("/fonts/Uni05_16.png");
 
 	private Image fontImage;
 	private int[] offsets;
