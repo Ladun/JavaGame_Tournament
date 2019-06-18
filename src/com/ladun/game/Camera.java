@@ -36,13 +36,11 @@ public class Camera {
 		
 		
 		if(offX < 0) offX = 0;
-		if(offX >gm.getActiveScene().getLevelW()- gc.getWidth()) offX = gm.getActiveScene().getLevelW() - gc.getWidth();
+		if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
 		if(offY < 0) offY = 0;
-		if(offY > gm.getActiveScene().getLevelH() - gc.getHeight()) offY = gm.getActiveScene().getLevelH()- gc.getHeight();
+		if(offY > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offY = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
 
-		
-		
-	
+
 		
 	}
 	

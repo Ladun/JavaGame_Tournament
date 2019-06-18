@@ -10,9 +10,9 @@ import com.ladun.game.components.Component;
 public abstract class GameObject 
 {
 	protected String tag;
-	protected float posX,posZ;
+	protected float posX, posY, posZ;
 	protected int width, height;
-	protected int padding,paddingTop;
+	protected int pL,pR,pT,pB; // padding Left, Right, Top, Bottom
 	protected boolean active = true;
 	
 	
@@ -62,19 +62,19 @@ public abstract class GameObject
 		return null;
 	}
 	
-	public int getPadding() {
-		return padding;
-	}
-	public void setPadding(int padding) {
-		this.padding = padding;
-	}
-	public int getPaddingTop() {
-		return paddingTop;
-	}
-	public void setPaddingTop(int paddingTop) {
-		this.paddingTop = paddingTop;
-	}
 	
+	public int getpL() {
+		return pL;
+	}
+	public int getpR() {
+		return pR;
+	}
+	public int getpT() {
+		return pT;
+	}
+	public int getpB() {
+		return pB;
+	}
 	public boolean isActive() {
 		return active;
 	}

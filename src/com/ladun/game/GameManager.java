@@ -1,7 +1,5 @@
 package com.ladun.game;
 
-import java.util.ArrayList;
-
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -11,13 +9,12 @@ import com.ladun.game.objects.GameObject;
 
 public class GameManager extends AbstractGame {
 
-	public static final int TS = 16;
+	public static final int TS = 64;
 	
 	
 	private AbstractScene[] scenes = new AbstractScene[1];
 	private int 			sceneInedx = 0;
 	
-	private Camera 		camera;
 
 	@Override
 	public boolean init(GameContainer gc) {
@@ -25,10 +22,9 @@ public class GameManager extends AbstractGame {
 		gc.getRenderer().setAmbientColor(-1);
 		
 
-		if(!addScene(new GameScene())) {
+		if(!addScene(new GameScene(),true)) {
 			return false;
 		}
-		
 		return true;
 	}
 
@@ -49,15 +45,21 @@ public class GameManager extends AbstractGame {
 	}
 	
 	private boolean addScene(AbstractScene scene) {
-		if(!scene.init()) {
+		return addScene(scene,false);
+	}
+	
+	private boolean addScene(AbstractScene scene,boolean active) {		
+		scenes[sceneInedx] = scene;
+		sceneInedx++;
+		
+		if(!scene.init(this,active)) {
 			//System.out.println("Scene Init Failed");
 			return false;
 		}
-		
-		scenes[sceneInedx] = scene;
-		sceneInedx++;
 		return true;
 	}
+	
+	//-----------------------------------------------------------------------------------
 	
 	public AbstractScene getActiveScene() {
 		for(int i = 0 ; i  < scenes.length;i++)	{
@@ -66,9 +68,16 @@ public class GameManager extends AbstractGame {
 		}
 		return null;
 	}
+	public AbstractScene getScene(String name) {
+		for(int i = 0 ; i  < scenes.length;i++)	{
+			if(scenes[i].getName().equals(name))
+				return scenes[i];
+		}
+		return null;
+	}
 	
 	public GameObject getObject(String tag) {
-		for(int s = 0 ; s < scenes.length;s++) {		
+		for(int s = 0 ; s < scenes.length;s++) {
 			if(!scenes[s].isActive())
 				continue;
 			

@@ -23,11 +23,11 @@ public class AABBComponent extends Component{
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		lastCenterX = centerX;
 		lastCenterY = centerY;
-		
-		centerX = (int)(parent.getPosX() + (parent.getWidth() / 2));
-		centerY = (int)(parent.getPosY() + (parent.getHeight() / 2) + (parent.getPaddingTop()/2));
-		halfWidth = (parent.getWidth()/ 2) - parent.getPadding();
-		halfHeight = (parent.getHeight() /2) - (parent.getPaddingTop()/2);
+
+		halfWidth = ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2);
+		halfHeight = ((parent.getHeight() -parent.getpB() - parent.getpT())/2);
+		centerX = (int)(parent.getPosX()) + halfWidth + parent.getpL();
+		centerY = (int)(parent.getPosY()) + halfHeight + parent.getpT();
 		
 
 		Physics.addAABBComponent(this);
