@@ -11,7 +11,8 @@ public abstract class GameObject
 {
 	protected String tag;
 	protected float posX, posY, posZ;
-	protected int width, height;
+	protected float angle;
+	protected int width, height, hY; // 밑변의 길이,밑변의 길이, y축으로의 높이
 	protected int pL,pR,pT,pB; // padding Left, Right, Top, Bottom
 	protected boolean active = true;
 	
@@ -63,6 +64,12 @@ public abstract class GameObject
 	}
 	
 	
+	public float getAngle() {
+		return angle;
+	}
+	public void setAngle(float angle) {
+		this.angle = angle;
+	}
 	public int getpL() {
 		return pL;
 	}
@@ -99,6 +106,13 @@ public abstract class GameObject
 	public void setPosY(float posY) {
 		this.posZ = posY;
 	}
+	public float getPosZ() {
+		return posZ;
+	}
+	public void setPosZ(float posZ) {
+		this.posZ = posZ;
+	}
+
 	public int getWidth() {
 		return width;
 	}

@@ -20,7 +20,7 @@ public class GameScene extends AbstractScene{
 		this.active = active;
 		
 		this.name = "GameScene";		
-		this.objects.add(new Player(1,1));
+		this.objects.add(new Player(1,1,this));
 		this.camera = new Camera(gm,"Player");
 		
 		this.maps[0] = new Map("test",true);
@@ -52,13 +52,22 @@ public class GameScene extends AbstractScene{
 	
 	//-------------------------------------------------------------------------------------
 	
-	public boolean getCollision(int x,int y) {
+	public float getHeight(int tileX, int tileY) {
+		if(currentMapIndex >= maps.length || currentMapIndex < 0)
+			return 0;
+		if(maps[currentMapIndex] == null)
+			return 0;
+		
+		return maps[currentMapIndex].getHeight(tileX, tileY);		
+	}
+	
+	public boolean getCollision(int tileX,int tileY) {
 		if(currentMapIndex >= maps.length || currentMapIndex < 0)
 			return true;
 		if(maps[currentMapIndex] == null)
 			return true;
 		
-		return maps[currentMapIndex].getCollision(x, y);
+		return maps[currentMapIndex].getCollision(tileX, tileY);
 	}
 	
 	@Override

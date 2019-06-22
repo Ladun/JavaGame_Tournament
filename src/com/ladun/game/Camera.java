@@ -25,7 +25,7 @@ public class Camera {
 			return;
 		
 		float targetX = (target.getPosX() + target.getWidth() / 2) - gc.getWidth() / 2;
-		float targetY = (target.getPosY() + target.getHeight() / 2) - gc.getHeight() /2;
+		float targetY = (target.getPosY() + target.getHeight() / 2 ) - gc.getHeight() /2;
 		
 		offX = targetX;
 		offY = targetY;

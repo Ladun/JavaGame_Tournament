@@ -42,6 +42,10 @@ public class GameManager extends AbstractGame {
 		for(int i = 0 ; i < scenes.length;i++) {
 			scenes[i].render(gc, r);
 		}
+		
+		r.setCamX(0);
+		r.setCamY(0);
+		r.drawFillElipse(gc.getInput().getMouseX() , gc.getInput().getMouseY(), 64	,32, 0x55000000);
 	}
 	
 	private boolean addScene(AbstractScene scene) {
@@ -89,9 +93,9 @@ public class GameManager extends AbstractGame {
 	
 	public static void main(String[] args) {
 		GameContainer gc = new GameContainer(new GameManager());
-		gc.setWidth(960);
-		gc.setHeight(720);
-		gc.setScale(1f);
+		gc.setWidth(960 );
+		gc.setHeight(720 );
+		gc.setScale(1f );
 		gc.start();
 	}
 }

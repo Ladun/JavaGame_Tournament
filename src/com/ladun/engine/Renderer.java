@@ -163,7 +163,7 @@ public class Renderer {
 		
 		
 	}
-	
+	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawText(String text,int offX,int offY, int color)
 	{
 
@@ -190,6 +190,7 @@ public class Renderer {
 		}
 	}
 	
+	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawImage(Image image, int offX, int offY){
 
 		offX -= camX;
@@ -267,7 +268,7 @@ public class Renderer {
 				}
 	}
 
-
+	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawRect(int offX,int offY,int width, int height,int color)
 	{
 		offX -= camX;
@@ -283,6 +284,7 @@ public class Renderer {
 			setPixel(x + offX,offY + height	,color);
 		}
 	}
+	
 	public void drawFillRect(int offX,int offY,int width, int height,int color)
 	{
 		offX -= camX;
@@ -303,6 +305,250 @@ public class Renderer {
 		}
 		
 	}
+
+	public void drawCircle(int cx,int cy,int r, int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -r) return;
+		if(cy < -r) return;
+		if(cx >= pW + r) return;
+		if(cy >= pH + r) return;
+
+		int x = 0;
+		int y = r;
+		int p = 1- r;
+		
+		setPixel(cx		 , r+cy		, color);
+		setPixel(cx		 , -r+ cy	, color);
+		setPixel(r + cx	 , cy		, color);
+		setPixel(-r + cx , cy		, color);
+		
+		while(x < y) {
+			x++;
+			if(p < 0) {
+				p += x + x + 1;
+			}
+			else {
+				p += x + x + 1 - y - y;
+				y--;
+			}
+			setPixel(x + cx		, y+cy		, color);
+			setPixel(x + cx		, -y+ cy	, color);
+			setPixel(-x + cx	, y+cy		, color);
+			setPixel(-x + cx	, -y+ cy	, color);
+			setPixel(y + cx		, x+cy		, color);
+			setPixel(y + cx		, -x+ cy	, color);
+			setPixel(-y + cx	, x+cy		, color);
+			setPixel(-y + cx	, -x+ cy	, color);
+		}
+		
+	}
+	
+	public void drawFillCircle(int cx,int cy,int r, int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -r) return;
+		if(cy < -r) return;
+		if(cx >= pW + r) return;
+		if(cy >= pH + r) return;
+
+		int x = 0;
+		int y = r;
+		int p = 1- r;
+		
+		setPixel(cx			, r+cy		, color);
+		setPixel(cx			, -r+ cy	, color);
+		setPixel(r + cx		, cy		, color);
+		setPixel(-r + cx	, cy		, color);
+		
+		while(x < y) {
+			x++;
+			if(p < 0) {
+				p += x + x + 1;
+			}
+			else {
+				p += x + x + 1 - y - y;
+				y--;
+
+				setPixel(cx			, y+cy		, color);
+				setPixel(cx			, -y+ cy	, color);
+				setPixel(y + cx		, cy		, color);
+				setPixel(-y + cx	, cy		, color);
+				for(int xx =1; xx < x;xx++) {
+					setPixel(xx + cx	, y+cy		, color);
+					setPixel(xx + cx	, -y+ cy	, color);
+					setPixel(-xx + cx	, y+cy		, color);
+					setPixel(-xx + cx	, -y+ cy	, color);
+					setPixel(y + cx		, xx+cy		, color);
+					setPixel(y + cx		, -xx+ cy	, color);
+					setPixel(-y + cx	, xx+cy		, color);
+					setPixel(-y + cx	, -xx+ cy	, color);
+				}
+			}
+			setPixel(x + cx		, y+cy		, color);
+			setPixel(x + cx		, -y+ cy	, color);
+			setPixel(-x + cx	, y+cy		, color);
+			setPixel(-x + cx	, -y+ cy	, color);
+			setPixel(y + cx		, x+cy		, color);
+			setPixel(y + cx		, -x+ cy	, color);
+			setPixel(-y + cx	, x+cy		, color);
+			setPixel(-y + cx	, -x+ cy	, color);
+		}
+		
+		for(int i = -y+1; i < y;i++) {
+			for(int j = -y+1; j < y;j++) {
+				setPixel(i + cx	, j+ cy	, color);
+			}
+		}
+		
+	}
+	
+	public void drawElipse(int cx, int cy,int w,int h,int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -w) return;
+		if(cy < -h) return;
+		if(cx >= pW + w) return;
+		if(cy >= pH + h) return;
+		
+		int x = 0;
+		int y = h;
+		int w2 = w * w;
+		int h2 = h * h;
+		int p = (4 * h2 + w2 *(1 - 4 * h))/ 4;
+
+		setPixel(cx, h + cy, color);
+		setPixel(cx, -h + cy, color);
+		setPixel(w + cx, cy, color);
+		setPixel(-w + cx, cy, color);
+		
+				
+		// x 독립변수 구간
+		while(h2* x < w2 * (y-1)) {
+			++x;
+			if( p < 0) {
+				p+= h2 * (2 * x + 1);
+			}
+			else {
+				--y;			
+				p+= h2 * (2 * x + 1) - 2 * w2* y;	
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		x = w;
+		y = 0;
+		p = (4 * w2 + h2 * (1- 4*w))/4;		
+		
+		// y 독립변수 구간
+		while(h2* x > w2 * y ) {
+			++y;
+			if( p < 0) {
+				p+= w2 * (2 * y + 1);
+			}
+			else {		
+				--x;		
+				p+= w2 * (2 *y + 1) - 2 * h2 * x;
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+	}
+	
+	public void drawFillElipse(int cx, int cy,int w,int h,int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -w) return;
+		if(cy < -h) return;
+		if(cx >= pW + w) return;
+		if(cy >= pH + h) return;
+		
+		int x = 0;
+		int y = h;
+		int w2 = w * w;
+		int h2 = h * h;
+		int p = (4 * h2 + w2 *(1 - 4 * h))/ 4;
+
+		setPixel(cx, h + cy, color);
+		setPixel(cx, -h + cy, color);
+		setPixel(w + cx, cy, color);
+		setPixel(-w + cx, cy, color);
+		
+				
+		// x 독립변수 구간
+		while(h2* x < w2 * (y-1)) {
+			++x;
+			if( p < 0) {
+				p+= h2 * (2 * x + 1);
+			}
+			else {
+				--y;
+				p+= h2 * (2 * x + 1) - 2 * w2* y;	
+				
+				setPixel(cx, y + cy, color);
+				setPixel(cx, -y + cy, color);
+				for(int xx= 1; xx < x; xx++) {
+					setPixel(xx + cx, y + cy, color);
+					setPixel(-xx + cx, y + cy, color);
+					setPixel(xx + cx, -y + cy, color);
+					setPixel(-xx + cx, -y + cy, color);
+				}
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		x = w;
+		y = 0;
+		p = (4 * w2 + h2 * (1- 4*w))/4;		
+		
+		// y 독립변수 구간
+		while(h2* x > w2 * (y+1)) {
+			++y;
+			if( p < 0) {
+				p+= w2 * (2 * y + 1);
+			}
+			else {
+				--x;
+				p+= w2 * (2 *y + 1) - 2 * h2 * x;	
+				
+				setPixel(x + cx, cy, color);
+				setPixel(-x + cx, cy, color);
+				for(int yy= 1; yy < y; yy++) {
+					setPixel(x + cx, yy + cy, color);
+					setPixel(-x + cx, yy + cy, color);
+					setPixel(x + cx, -yy + cy, color);
+					setPixel(-x + cx, -yy + cy, color);
+				}			
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		
+		for(int i = -x +1 ; i < x ; i++)
+			for(int j = -y ; j <= y; j++)
+				setPixel(i + cx, j + cy, color);
+	}
+	
+	//------------------------------------------------------------------------------------------------------------------------------
 	
 	public void drawLight(Light l, int offX,int offY)
 	{
@@ -370,7 +616,8 @@ public class Renderer {
 			}
 		}
 	}
-
+	
+	//------------------------------------------------------------------------------------------------------------------------------
 	public int getAmbientColor() {
 		return ambientColor;
 	}

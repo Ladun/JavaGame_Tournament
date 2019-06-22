@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import com.ladun.game.components.AABBComponent;
 
 public class Physics {
-	
+
+	public final static float GRAVITY = 9.8f; 
 	private static ArrayList<AABBComponent> aabbList = new ArrayList<AABBComponent>();
 	
 	public static void addAABBComponent(AABBComponent aabb)

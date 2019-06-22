@@ -15,6 +15,7 @@ public class Map {
 	private boolean active;
 	
 	private boolean load;
+	private float[] heights;
 	private boolean[] collisions;
 	private int levelW,levelH;
 	private ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
@@ -37,13 +38,13 @@ public class Map {
 	
 	private void RenderCollision(Renderer r) {
 		int ts = GameManager.TS;
-		/*
+		
 		for(int y = 0; y < levelH; y++) {
 			for(int x = 0; x < levelW;x++) {
 				if(!collisions[x + y * levelW])
-					r.drawFillRect(x * ts, y*ts, ts, ts, 0xffbd91ed);
+					r.drawFillRect(x * ts, y*ts, ts, ts, 0xffdebeed); // 0xffbd91ed
 			}
-		}*/
+		}
 		for(int y = 0; y < levelH; y++) {
 			for(int x = 0; x < levelW;x++) {
 				if(collisions[x + y * levelW])
@@ -53,10 +54,11 @@ public class Map {
 	}
 	
 	private void loadLevel(Image collisionImage) {
-		load  = true;
-		levelW 				= collisionImage.getW();
-		levelH 				= collisionImage.getH();
-		collisions 			= new boolean[levelW * levelH];
+		load  		= true;
+		levelW 		= collisionImage.getW();
+		levelH 		= collisionImage.getH();
+		collisions 	= new boolean[levelW * levelH];
+		heights 	= new float[levelW * levelH];
 		
 		boolean[] flag		= new boolean[levelW * levelH];
 
@@ -84,6 +86,12 @@ public class Map {
 			return true;
 		return collisions[y * levelW + x];
 	}
+	public float getHeight(int x,int y) {
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+			return 0;
+		return heights[y * levelW + x];
+	}
+
 	public int getLevelW() {
 		return levelW;
 	}
