@@ -5,6 +5,7 @@ import com.ladun.engine.Renderer;
 import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
+import com.ladun.game.Physics;
 import com.ladun.game.objects.Player;
 
 public class GameScene extends AbstractScene{
@@ -54,9 +55,9 @@ public class GameScene extends AbstractScene{
 	
 	public float getHeight(int tileX, int tileY) {
 		if(currentMapIndex >= maps.length || currentMapIndex < 0)
-			return 0;
+			return Physics.MAX_HEIGHT;
 		if(maps[currentMapIndex] == null)
-			return 0;
+			return Physics.MAX_HEIGHT;
 		
 		return maps[currentMapIndex].getHeight(tileX, tileY);		
 	}

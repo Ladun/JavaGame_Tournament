@@ -43,9 +43,6 @@ public class GameManager extends AbstractGame {
 			scenes[i].render(gc, r);
 		}
 		
-		r.setCamX(0);
-		r.setCamY(0);
-		r.drawFillElipse(gc.getInput().getMouseX() , gc.getInput().getMouseY(), 64	,32, 0x55000000);
 	}
 	
 	private boolean addScene(AbstractScene scene) {

@@ -24,6 +24,7 @@ public class Player extends Entity{
 		this.posZ 	= tileZ * GameManager.TS;
 		this.width 	= 64;
 		this.height	= 64;
+		
 		this.hY = 50;
 		this.pR = pL = 17;
 		this.pB = 4;
@@ -38,17 +39,22 @@ public class Player extends Entity{
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
+		System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 		nextHitTime += dt;
 		
 		int h= gc.getInput().isKey(KeyEvent.VK_RIGHT)? 1:gc.getInput().isKey(KeyEvent.VK_LEFT)?-1:0;
 		int v = gc.getInput().isKey(KeyEvent.VK_DOWN)? 1:gc.getInput().isKey(KeyEvent.VK_UP)?-1:0;
 		
+		if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
+			speed = 50;
+		else
+			speed = 500;
+		
 		// Moving -------------
-		if(h != 0)
-		{
+		if(h != 0)	{
 			offX += dt * speed* h;
-			if(gs.getCollision(tileX + h, tileZ)||
-			   gs.getCollision(tileX + h, tileZ + (int)Math.signum(((offZ > pB) | (offZ < -pT)?offZ:0)))){	
+			if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
+			   (gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
 				
 				if(h == 1) {
 					if(offX > pR)
@@ -61,11 +67,10 @@ public class Player extends Entity{
 			}
 			moving = true;
 		}
-		if(v != 0)
-		{				
+		if(v != 0)	{				
 			offZ += dt * speed * v;
-			if(gs.getCollision(tileX														, tileZ + v) ||
-			   gs.getCollision(tileX + (int)Math.signum(((offX > pR) | (offX < -pL)?offX:0)), tileZ + v)){	
+			if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
+			   (gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
 
 				if(v == 1) {
 					if(offZ > pB)
@@ -89,16 +94,26 @@ public class Player extends Entity{
 		// Jump And Gravity -------------------
 		fallDistance += Physics.GRAVITY * dt;
 		
-		if(fallDistance > 0) {
-			if(posY > gs.getHeight(tileX, tileZ))
-			{
-				fallDistance = 0;
-				posY = gs.getHeight(tileX, tileZ);
-				ground = true;
+		if(fallDistance > 0) { 
+			
+			int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
+			for(int _y = 0; _y < 2; _y++) {
+				for(int _x = 0; _x< 2; _x++) {
+					float _h = gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
+					if(_h == Physics.MAX_HEIGHT)
+						continue;
+					
+					if(Math.round(posY) >= _h)
+					{
+						posY = _h;
+						fallDistance = 0;
+						ground = true;
+					}					
+				}				
 			}
 		}
 		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE))
+		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) 
 		{
 			if(ground)
 				fallDistance = jump;
@@ -119,7 +134,6 @@ public class Player extends Entity{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)posZ + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
 		
@@ -128,7 +142,7 @@ public class Player extends Entity{
 		r.drawFillRect((int)posX + pL,   (int)(posZ + posY) + pT,    width - (pL + pR),    height - (pT + pB),0xffffffff);
 		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY, 0xff30b2c9);
 	
-		//RenderRect(r,2);
+		RenderRect(r,2);
 		this.renderComponents(gc,r);
 	}
 

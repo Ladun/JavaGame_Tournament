@@ -41,13 +41,19 @@ public class Map {
 		
 		for(int y = 0; y < levelH; y++) {
 			for(int x = 0; x < levelW;x++) {
-				if(!collisions[x + y * levelW])
-					r.drawFillRect(x * ts, y*ts, ts, ts, 0xffdebeed); // 0xffbd91ed
+				//if(!collisions[x + y * levelW])
+				
+				
+				int color = heights[x + y * levelW] ==0?0xffdebeed : 0xffdafadd;
+				r.drawFillRect(x * ts, y*ts + (int)heights[x + y * levelW], ts, ts, color); // 0xffbd91ed
+				//r.drawText(heights[x + y * levelW] + "", x * ts, y*ts + (int)heights[x + y * levelW], 0xff000000);
+				r.drawText(x+ ", " + y, x * ts, y*ts+16 + (int)heights[x + y * levelW], 0xff000000);
 			}
 		}
 		for(int y = 0; y < levelH; y++) {
 			for(int x = 0; x < levelW;x++) {
-				if(collisions[x + y * levelW])
+				//if(collisions[x + y * levelW])
+				if(heights[x + y * levelW] != 0)
 					r.drawRect(x * ts, y*ts, ts, ts, 0xffa6ec90);
 			}
 		}
@@ -70,8 +76,10 @@ public class Map {
 						spawnPoints.add(new SpawnPoint(x,y));
 					}
 					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
+						heights[x + y * levelW] = -20;
 						collisions[x + y * levelW] = true;
 					} else {
+						heights[x + y * levelW] = 0;						
 						collisions[x + y * levelW] = false;
 					}
 				}
@@ -88,7 +96,7 @@ public class Map {
 	}
 	public float getHeight(int x,int y) {
 		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
-			return 0;
+			return Physics.MAX_HEIGHT;
 		return heights[y * levelW + x];
 	}
 

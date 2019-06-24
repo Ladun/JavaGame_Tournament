@@ -7,6 +7,7 @@ import com.ladun.game.components.AABBComponent;
 public class Physics {
 
 	public final static float GRAVITY = 9.8f; 
+	public final static float MAX_HEIGHT = -1000;
 	private static ArrayList<AABBComponent> aabbList = new ArrayList<AABBComponent>();
 	
 	public static void addAABBComponent(AABBComponent aabb)
