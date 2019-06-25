@@ -33,13 +33,13 @@ public class Player extends Entity{
 		this.maxHealth 	= 100;
 		this.health 	= maxHealth;
 		this.speed 		= 500;
-		this.jump		= -3.5f;
+		this.jump		= -7f;
 		
 		this.gs = gs;
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
-		System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+		//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 		nextHitTime += dt;
 		
 		int h= gc.getInput().isKey(KeyEvent.VK_RIGHT)? 1:gc.getInput().isKey(KeyEvent.VK_LEFT)?-1:0;
@@ -99,13 +99,15 @@ public class Player extends Entity{
 			int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
 			for(int _y = 0; _y < 2; _y++) {
 				for(int _x = 0; _x< 2; _x++) {
-					float _h = gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
-					if(_h == Physics.MAX_HEIGHT)
+					groundHeight = gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
+					if(groundHeight == Physics.MAX_HEIGHT) {
+						groundHeight = 0;
 						continue;
+					}
 					
-					if(Math.round(posY) >= _h)
+					if(Math.round(posY) >= groundHeight)
 					{
-						posY = _h;
+						posY = groundHeight;
 						fallDistance = 0;
 						ground = true;
 					}					
@@ -129,18 +131,30 @@ public class Player extends Entity{
 		groundLast = ground;		
 		this.AdjustPosition();
 		this.updateComponents(gc,gm,dt);
+		
+		if(gc.getInput().isKey(KeyEvent.VK_T))
+			angle += dt * 60;
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
+		
+
+		r.setzDepth((int)(Math.abs(groundHeight) ));		
 		// Shadow Draw
-		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)posZ + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
+		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
+
+		r.setzDepth((int)(Math.abs(posY) ));
+		// PosX PosZ Position Draw
+		r.drawFillRect((int)posX + pL,   (int)(posZ) + pT,    width - (pL + pR),    height - (pT + pB),angle,0x55000000);
 		
 		
-		// Basic Physics Draw
-		r.drawFillRect((int)posX + pL,   (int)(posZ + posY) + pT,    width - (pL + pR),    height - (pT + pB),0xffffffff);
-		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY, 0xff30b2c9);
+		
+		r.setzDepth((int)(Math.abs(posY) ));			
+		// Basic Physics Bound Draw
+		r.drawFillRect((int)posX + pL,   (int)(posZ + posY) + pT,    width - (pL + pR),    height - (pT + pB),angle,0xffffffff);
+		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY,angle, 0xff30b2c9);
 	
 		RenderRect(r,2);
 		this.renderComponents(gc,r);
@@ -156,11 +170,11 @@ public class Player extends Entity{
 	private void RenderRect(Renderer r,int type) {
 		switch(type){
 		case 1:
-			r.drawFillRect((int)posX, (int)(posZ + posY),1,1, 0xffffffff);
-			r.drawFillRect((int)posX + width, (int)(posZ + posY) + height,1,1, 0xffffffff);
+			r.drawFillRect((int)posX, (int)(posZ + posY),1,1,0, 0xffffffff);
+			r.drawFillRect((int)posX + width, (int)(posZ + posY) + height,1,1,0, 0xffffffff);
 			break;
 		case 2:
-			r.drawRect((int)posX, (int)(posZ + posY), width, height, 0xffffffff);
+			r.drawRect((int)posX, (int)(posZ + posY), width, height,angle, 0xffffffff);
 		}
 			
 	}

@@ -10,8 +10,9 @@ public abstract class Entity extends GameObject{
 	protected float health;
 	protected float speed;
 	protected float jump;
-	
 	protected float fallDistance;
+	
+	protected float groundHeight; // 오브젝트가 서있는 땅의 높이
 	
 	protected int tileX,tileZ;
 	protected float offX,offZ;

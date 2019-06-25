@@ -43,9 +43,10 @@ public class Map {
 			for(int x = 0; x < levelW;x++) {
 				//if(!collisions[x + y * levelW])
 				
+				r.setzDepth((int)(Math.abs(heights[x + y * levelW])));
 				
 				int color = heights[x + y * levelW] ==0?0xffdebeed : 0xffdafadd;
-				r.drawFillRect(x * ts, y*ts + (int)heights[x + y * levelW], ts, ts, color); // 0xffbd91ed
+				r.drawFillRect(x * ts, y*ts + (int)heights[x + y * levelW], ts, ts,0, color); // 0xffbd91ed
 				//r.drawText(heights[x + y * levelW] + "", x * ts, y*ts + (int)heights[x + y * levelW], 0xff000000);
 				r.drawText(x+ ", " + y, x * ts, y*ts+16 + (int)heights[x + y * levelW], 0xff000000);
 			}
@@ -54,7 +55,7 @@ public class Map {
 			for(int x = 0; x < levelW;x++) {
 				//if(collisions[x + y * levelW])
 				if(heights[x + y * levelW] != 0)
-					r.drawRect(x * ts, y*ts, ts, ts, 0xffa6ec90);
+					r.drawRect(x * ts, y*ts, ts, ts,0, 0xffa6ec90);
 			}
 		}
 	}
@@ -76,7 +77,7 @@ public class Map {
 						spawnPoints.add(new SpawnPoint(x,y));
 					}
 					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
-						heights[x + y * levelW] = -20;
+						heights[x + y * levelW] = -50;
 						collisions[x + y * levelW] = true;
 					} else {
 						heights[x + y * levelW] = 0;						

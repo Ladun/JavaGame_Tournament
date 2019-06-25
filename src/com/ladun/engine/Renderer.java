@@ -7,7 +7,6 @@ import java.util.Comparator;
 
 import com.ladun.engine.gfx.Font;
 import com.ladun.engine.gfx.Image;
-import com.ladun.engine.gfx.ImageLoader;
 import com.ladun.engine.gfx.ImageRequest;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.engine.gfx.Light;
@@ -74,7 +73,7 @@ public class Renderer {
 		{
 			ImageRequest ir = imageRequests.get(i);
 			setzDepth(ir.zDepth);
-			drawImage(ir.image,ir.offX,ir.offY);
+			drawImage(ir.image,ir.offX,ir.offY,ir.angle);
 		}
 		
 		//Draw lighting
@@ -191,13 +190,13 @@ public class Renderer {
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------------------
-	public void drawImage(Image image, int offX, int offY){
+	public void drawImage(Image image, int offX, int offY, float angle){
 
 		offX -= camX;
 		offY -= camY;
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image,zDepth,offX,offY));
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,angle));
 			return;
 		}
 		
@@ -229,63 +228,79 @@ public class Renderer {
 		}
 	}
 	
-	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY)
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float angle)
 	{
 		offX -= camX;
 		offY -= camY;
 
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY));
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,angle));
 			return;
 		}
 		
 		//Don't Render code
-				if(offX < -image.getTileW()) return;
-				if(offY < -image.getTileH()) return;
-				if(offX >= pW) return;
-				if(offY >= pH) return;
+		if(offX < -image.getTileW()) return;
+		if(offY < -image.getTileH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
 				
-				int newX = 0;
-				int newY = 0;
-				int newWidth = image.getTileW();
-				int newHeight = image.getTileH();
+		int newX = 0;
+		int newY = 0;
+		int newWidth = image.getTileW();
+		int newHeight = image.getTileH();
 				
 				
-				//Clipping code
-				if(offX < 0){newX -= offX;}
-				if(offY < 0){newY -= offY;}
-				if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
-				if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
 				
-				for(int y = newY; y < newHeight;y++)
-				{
-					for(int x = newX; x < newWidth;x++)
-					{
-						setPixel(x + offX,y + offY, image.getP()[(x +tileX * image.getTileW())+ (y + tileY * image.getTileH()) *image.getW()]);
-						setLightBlock(x + offX, y + offY, image.getLightBlock());
-					}
-				}
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(x + offX,y + offY, image.getP()[(x +tileX * image.getTileW())+ (y + tileY * image.getTileH()) *image.getW()]);
+				setLightBlock(x + offX, y + offY, image.getLightBlock());
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------
-	public void drawRect(int offX,int offY,int width, int height,int color)
+	public void drawRect(int offX,int offY,int width, int height, float angle,int color)
 	{
 		offX -= camX;
 		offY -= camY;
-		for(int y = 0; y <= height;y++)
-		{
-			setPixel(offX			,y + offY,color);
-			setPixel(offX + width	,y + offY,color);
+		
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0
+
+		int hw = width /2;
+		int hh = height /2;
+		int cx = offX + hw;
+		int cy = offY + hh;
+		for(int y = -hh; y <= hh;y++)
+		{					
+			setPixel((int)(cx + (-hw *c - y * s))	,
+					 (int)(cy + (-hw *s + y * c)),
+					 color);
+			setPixel((int)(cx + (hw *c - y * s))	,
+					 (int)(cy + (hw *s + y * c)),
+					 color);
 		}
-		for(int x = 0; x <= width;x++)
+		for(int x = -hw; x <= hw;x++)
 		{
-			setPixel(x + offX,offY			,color);
-			setPixel(x + offX,offY + height	,color);
+			setPixel((int)(cx + (x *c - -hh * s))	,
+					 (int)(cy + (x *s + -hh * c)),
+					 color);
+			setPixel((int)(cx + (x *c - hh * s))	,
+					 (int)(cy + (x *s + hh * c)),
+					 color);
 		}
 	}
 	
-	public void drawFillRect(int offX,int offY,int width, int height,int color)
+	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)
 	{
 		offX -= camX;
 		offY -= camY;
@@ -306,7 +321,8 @@ public class Renderer {
 		
 	}
 
-	public void drawCircle(int cx,int cy,int r, int color) {
+	public void drawCircle(int cx,int cy,int r, int color)
+ {
 		cx -= camX;
 		cy -= camY;
 

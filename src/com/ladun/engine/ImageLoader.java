@@ -1,6 +1,8 @@
-package com.ladun.engine.gfx;
+package com.ladun.engine;
 
 import java.util.HashMap;
+
+import com.ladun.engine.gfx.Image;
 
 public class ImageLoader {
 	
