@@ -21,8 +21,10 @@ public class Camera {
 	
 	public void update(GameContainer gc,GameManager gm,float dt)
 	{
-		if(target == null)
+		if(target == null) {
+			this.target = gm.getObject(targetTag);
 			return;
+		}
 		
 		float targetX = (target.getPosX() + target.getWidth() / 2) - gc.getWidth() / 2;
 		float targetY = (target.getPosY() + target.getHeight() / 2 ) - gc.getHeight() /2;

@@ -1,0 +1,5 @@
+package com.ladun.game.objects.UI;
+
+public class Button {
+
+}

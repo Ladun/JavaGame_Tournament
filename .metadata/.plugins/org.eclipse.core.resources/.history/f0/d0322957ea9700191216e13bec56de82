@@ -1,0 +1,38 @@
+package com.ladun.tournamentserver;
+
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+public class Server {
+
+	private int port;
+	private Thread listenThread;
+	private boolean listening = false;
+	private DatagramSocket socket;
+	
+	public Server(int port) {
+		this.port = port;
+	}
+	
+	public void start() {
+		listening = true;
+		
+		listenThread = new Thread(() -> listen());		
+		listenThread.start();
+	}
+
+	private void listen() {
+		while(listening) {
+
+		}
+	}
+	
+	private void process(DatagramPacket packet) {
+		
+	}
+	
+	public void send(byte[] data) {
+		
+	}	
+	
+}

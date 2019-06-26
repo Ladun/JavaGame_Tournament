@@ -5,6 +5,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.Scene.MainMenuScene;
 import com.ladun.game.objects.GameObject;
 
 public class GameManager extends AbstractGame {
@@ -12,7 +13,7 @@ public class GameManager extends AbstractGame {
 	public static final int TS = 64;
 	
 	
-	private AbstractScene[] scenes = new AbstractScene[1];
+	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
 	
 
@@ -21,8 +22,11 @@ public class GameManager extends AbstractGame {
 		// TODO Auto-generated method stub
 		gc.getRenderer().setAmbientColor(-1);
 		
-
-		if(!addScene(new GameScene(),true)) {
+		
+		if(!addScene(new MainMenuScene(),true)) {
+			return false;
+		}
+		if(!addScene(new GameScene())) {
 			return false;
 		}
 		return true;
@@ -32,7 +36,8 @@ public class GameManager extends AbstractGame {
 	public void update(GameContainer gc, float dt) {
 		// TODO Auto-generated method stub
 		for(int i = 0 ; i < scenes.length;i++) {
-			scenes[i].update(gc,this,dt);
+			if(scenes[i].isActive())
+				scenes[i].update(gc,this,dt);
 		}
 	}
 	@Override
@@ -40,7 +45,8 @@ public class GameManager extends AbstractGame {
 		// TODO Auto-generated method stub
 
 		for(int i = 0 ; i < scenes.length;i++) {
-			scenes[i].render(gc, r);
+			if(scenes[i].isActive())
+				scenes[i].render(gc, r);
 		}
 		
 	}
@@ -49,7 +55,7 @@ public class GameManager extends AbstractGame {
 		return addScene(scene,false);
 	}
 	
-	private boolean addScene(AbstractScene scene,boolean active) {		
+	private boolean addScene(AbstractScene scene,boolean active) {
 		scenes[sceneInedx] = scene;
 		sceneInedx++;
 		
@@ -58,6 +64,17 @@ public class GameManager extends AbstractGame {
 			return false;
 		}
 		return true;
+	}
+	
+	public void changeScene(String name) {
+		for(int i = 0 ; i < scenes.length;i++) {
+			if(scenes[i].isActive())
+				scenes[i].setActive(false);
+		}
+		for(int i = 0 ; i < scenes.length;i++) {
+			if(scenes[i].getName().equals(name))
+				scenes[i].setActive(true);
+		}
 	}
 	
 	//-----------------------------------------------------------------------------------

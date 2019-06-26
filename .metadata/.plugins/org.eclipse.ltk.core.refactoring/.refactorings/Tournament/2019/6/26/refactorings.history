@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;i&apos; in &apos;com.ladun.game.objects.UI.Button.update(...)&apos; to &apos;mouseEvent&apos;&#x0D;&#x0A;- Original project: &apos;Tournament&apos;&#x0D;&#x0A;- Original element: &apos;com.ladun.game.objects.UI.Button.update(GameContainer, GameManager, float).i&apos;&#x0D;&#x0A;- Renamed element: &apos;i&apos;&#x0D;&#x0A;- Update references to refactored element" description="Rename local variable &apos;i&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;com.ladun.game.objects.UI{Button.java[Button~update~QGameContainer;~QGameManager;~F@i!821!829!825!825!I!0!false" name="mouseEvent" references="true" stamp="1561541285272" version="1.0"/>
+</session>

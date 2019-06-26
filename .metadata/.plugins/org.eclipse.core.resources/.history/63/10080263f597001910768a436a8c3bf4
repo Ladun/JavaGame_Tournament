@@ -1,0 +1,84 @@
+package com.ladun.game.objects.UI;
+
+import java.awt.event.MouseEvent;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.GameManager;
+import com.ladun.game.objects.GameObject;
+
+public class Button extends GameObject{
+	
+	private final int MOUSE_EVENT_COUNT = 4;
+	private boolean[] over = new boolean[MOUSE_EVENT_COUNT];
+	private boolean[] pressed = new boolean[MOUSE_EVENT_COUNT];
+	private boolean[] released = new boolean[MOUSE_EVENT_COUNT];
+	
+	private ImageTile image;
+	
+	public Button(float x, float y,int width, int height, int color)
+	{
+		this.tag 		= "button";
+		this.width 		= buttonImage.getTileW();
+		this.height 	= buttonImage.getTileH();
+		this.posX		= x;
+		this.posY		= y;
+		this.image 		= null;
+	}
+	
+	public Button(float x, float y
+			, ImageTile buttonImage)
+	{
+		this.tag 		= "button";
+		this.width 		= buttonImage.getTileW();
+		this.height 	= buttonImage.getTileH();
+		this.posX		= x;
+		this.posY		= y;
+		this.image 		= buttonImage;
+	}
+	
+	@Override
+	public void update(GameContainer gc, GameManager gm, float dt) {
+		for(int mouseEvent = 1; mouseEvent < MOUSE_EVENT_COUNT; mouseEvent++) {
+			over[mouseEvent] 		= isOver(gc.getInput().getMouseX(),gc.getInput().getMouseY());
+			released[mouseEvent] 	= false;
+			if(over[mouseEvent])
+			{
+				if(gc.getInput().isButtonDown(mouseEvent))
+					pressed[mouseEvent]	= true;
+				else if(pressed[mouseEvent ] && gc.getInput().isButtonUp(mouseEvent)){
+					pressed[mouseEvent] = false;
+					released[mouseEvent] = true;
+				}
+			}
+			if(pressed[mouseEvent] && gc.getInput().isButtonUp(mouseEvent)){
+				pressed[mouseEvent] = false;
+			}
+		}
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+
+	}
+
+	@Override
+	public void collision(GameObject other) {
+
+		
+	}
+	
+	boolean isOver(float x, float y)
+	{
+		return x >= posX && x <= posX + width && y >= posY && y <= posY + height;
+	}
+
+	public boolean isPressed(int mouseEvent) {
+		return pressed[mouseEvent];
+	}
+
+	public boolean isReleased(int mouseEvent) {
+		return released[mouseEvent];
+	}
+}

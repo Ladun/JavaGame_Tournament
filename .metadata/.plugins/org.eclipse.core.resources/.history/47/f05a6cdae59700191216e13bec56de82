@@ -1,0 +1,8 @@
+package com.ladun.tournamentserver;
+
+public class Server {
+
+	public Server() {
+		
+	}
+}

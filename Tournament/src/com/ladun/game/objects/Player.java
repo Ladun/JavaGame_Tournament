@@ -4,12 +4,12 @@ import java.awt.event.KeyEvent;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.Image;
 import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
 import com.ladun.game.Scene.GameScene;
 
 public class Player extends Entity{
-	
 	
 
 	public Player(int tileX,int tileZ,GameScene gs) {
@@ -39,7 +39,7 @@ public class Player extends Entity{
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
-		System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+		//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 		nextHitTime += dt;
 		
 		int h= gc.getInput().isKey(KeyEvent.VK_RIGHT)? 1:gc.getInput().isKey(KeyEvent.VK_LEFT)?-1:0;
@@ -133,14 +133,13 @@ public class Player extends Entity{
 		this.updateComponents(gc,gm,dt);
 		
 		if(gc.getInput().isKey(KeyEvent.VK_T))
-			angle += dt * 60;
+			angle -= dt * 360;
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
-		
 
+		/*
 		r.setzDepth((int)(Math.abs(groundHeight) ));		
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
@@ -148,15 +147,19 @@ public class Player extends Entity{
 		r.setzDepth((int)(Math.abs(posY) ));
 		// PosX PosZ Position Draw
 		r.drawFillRect((int)posX + pL,   (int)(posZ) + pT,    width - (pL + pR),    height - (pT + pB),angle,0x55000000);
+		*/
 		
-		
-		
-		r.setzDepth((int)(Math.abs(posY) ));			
+		/*
 		// Basic Physics Bound Draw
 		r.drawFillRect((int)posX + pL,   (int)(posZ + posY) + pT,    width - (pL + pR),    height - (pT + pB),angle,0xffffffff);
 		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY,angle, 0xff30b2c9);
-	
-		RenderRect(r,2);
+		 */
+
+		r.setzDepth((int)(Math.abs(posY) ));
+		r.drawImage(gc.getImageLoader().getImage("HOS"), (int)posX, (int)(posZ + posY), angle);
+		
+		
+		//RenderRect(r,2);
 		this.renderComponents(gc,r);
 	}
 

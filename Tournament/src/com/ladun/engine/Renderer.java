@@ -14,11 +14,12 @@ import com.ladun.engine.gfx.LightRequest;
 
 public class Renderer {
 	
+	public final static int LAYER_UI = Integer.MAX_VALUE;
+	
 	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
 	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
 	
-	private ImageLoader il;
 	
 	private int pW,pH;
 	private int[] p;
@@ -33,7 +34,6 @@ public class Renderer {
 	
 	public Renderer(GameContainer gc){
 		
-		il = new ImageLoader();
 		
 		pW = gc.getWidth();
 		pH = gc.getHeight();
@@ -210,7 +210,14 @@ public class Renderer {
 		int newY = 0;
 		int newWidth = image.getW();
 		int newHeight = image.getH();
-		
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int hw = newWidth /2;
+		int hh = newHeight /2;
+		int cx = offX + hw;
+		int cy = offY + hh;
 		
 		//Clipping code
 		if(offX < 0){newX -= offX;}
@@ -222,8 +229,13 @@ public class Renderer {
 		{
 			for(int x = newX; x < newWidth;x++)
 			{
-				setPixel(x + offX,y + offY, image.getP()[x + y *image.getW()]);
-				setLightBlock(x + offX, y + offY, image.getLightBlock());
+				setPixel(cx + (int)((x-hw) * c - (y-hh) * s),
+						 cy + (int)((x-hw) *s + (y-hh) * c),
+						 image.getP()[x + y *image.getW()]);
+				
+				setLightBlock(cx + (int)((x-hw) * c - (y-hh) * s),
+						 	  cy + (int)((x-hw) *s + (y-hh) * c),
+							  image.getLightBlock());
 			}
 		}
 	}
@@ -249,6 +261,14 @@ public class Renderer {
 		int newY = 0;
 		int newWidth = image.getTileW();
 		int newHeight = image.getTileH();
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int hw = newWidth /2;
+		int hh = newHeight /2;
+		int cx = offX + hw;
+		int cy = offY + hh;
 				
 				
 		//Clipping code
@@ -261,8 +281,13 @@ public class Renderer {
 		{
 			for(int x = newX; x < newWidth;x++)
 			{
-				setPixel(x + offX,y + offY, image.getP()[(x +tileX * image.getTileW())+ (y + tileY * image.getTileH()) *image.getW()]);
-				setLightBlock(x + offX, y + offY, image.getLightBlock());
+				setPixel(cx + (int)((x - hw) * c - (y - hh) * s),
+						 cy + (int)((x - hw) * c + (y - hh) * s),
+						 image.getP()[(x +tileX * image.getTileW())+ (y + tileY * image.getTileH()) *image.getW()]);
+				
+				setLightBlock(cx + (int)((x - hw) * c - (y - hh) * s),
+						 	  cy + (int)((x - hw) * c + (y - hh) * s),
+							  image.getLightBlock());
 			}
 		}
 	}
@@ -272,9 +297,14 @@ public class Renderer {
 	{
 		offX -= camX;
 		offY -= camY;
+
+		if(offX < -width) return;
+		if(offY < -height) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
 		
-		double c = Math.cos(Math.toRadians(angle)); // 1
-		double s = Math.sin(Math.toRadians(angle)); // 0
+		double c = Math.cos(Math.toRadians(angle));
+		double s = Math.sin(Math.toRadians(angle));
 
 		int hw = width /2;
 		int hh = height /2;
@@ -309,16 +339,25 @@ public class Renderer {
 		if(offX < -width) return;
 		if(offY < -height) return;
 		if(offX >= pW) return;
-		if(offY >= pH) return;
+		if(offY >= pH) return;		
 		
-		for(int y = 0; y < height;y++)
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int hw = width /2;
+		int hh = height /2;
+		int cx = offX + hw;
+		int cy = offY + hh;
+		
+		for(int y = -hh; y <= hh;y++)
 		{
-			for(int x = 0; x < width;x++)
+			for(int x = -hw; x <= hw;x++)
 			{
-				setPixel(x + offX,y +offY,color);
+				setPixel(cx + (int)(x * c - y * s),
+						cy + (int)(x * s + y * c),
+						color);
 			}
 		}
-		
 	}
 
 	public void drawCircle(int cx,int cy,int r, int color)

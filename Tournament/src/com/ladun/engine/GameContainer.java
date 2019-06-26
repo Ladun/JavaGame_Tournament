@@ -6,6 +6,7 @@ public class GameContainer implements Runnable{
 	private Window window;
 	private Renderer renderer;
 	private Input input;
+	private ImageLoader imageLoader;
 	private AbstractGame game;
 	
 	private boolean running = false;
@@ -23,6 +24,7 @@ public class GameContainer implements Runnable{
 		
 		window = new Window(this);
 		renderer = new Renderer(this);
+		imageLoader = new ImageLoader() ;
 		input = new Input(this);
 		
 		thread = new Thread(this);
@@ -58,7 +60,7 @@ public class GameContainer implements Runnable{
 		int tps = 0;
 		
 		if(!game.init(this)) {
-			//System.out.println("AbstractGame Init Failed!");
+			System.out.println("AbstractGame Init Failed!");
 			dispose();
 			return;
 		}
@@ -91,7 +93,6 @@ public class GameContainer implements Runnable{
 			
 			if(render)
 			{
-
 				if(frameTime >= 1.0){					
 					frameTime =0;
 					fps = frames;
@@ -99,7 +100,7 @@ public class GameContainer implements Runnable{
 					
 					tps = ticks;
 					ticks = 0;
-				}
+				}				
 				renderer.clear();
 				game.render(this, renderer);
 				renderer.process();
@@ -129,6 +130,9 @@ public class GameContainer implements Runnable{
 		
 	}
 	
+	public ImageLoader getImageLoader() {
+		return imageLoader;
+	}
 	public Renderer getRenderer() {
 		return renderer;
 	}
