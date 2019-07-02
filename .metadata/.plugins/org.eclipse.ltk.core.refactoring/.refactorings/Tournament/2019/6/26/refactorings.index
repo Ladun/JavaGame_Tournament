@@ -1,1 +1,13 @@
 1561541285272	Rename local variable 'i'
+1561616037630	Rename package 'com.ladun.game.net'
+1561616284115	Rename package 'com.ladun.game.network'
+1561624579954	Rename field 'PACkET_TYPE_CONNET'
+1561624593758	Rename field 'PACKET_TYPE_CONNET'
+1561625479308	Copy package
+1561625487529	Delete element
+1561625509611	Move compilation unit
+1561625512662	Delete element
+1561625546670	Move compilation unit
+1561625549126	Delete element
+1561637155027	Rename package 'com.ladun.game.utill'
+1561715589744	Rename field 'PACKET_HEADER'

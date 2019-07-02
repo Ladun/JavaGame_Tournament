@@ -1,6 +1,7 @@
 package com.ladun.game;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -75,6 +76,8 @@ public class Map {
 					flag[x + y * levelW] = true;
 					if (collisionImage.getP()[x + y * levelW] == SPAWN_COLOR){
 						spawnPoints.add(new SpawnPoint(x,y));
+						heights[x + y * levelW] = 0;						
+						collisions[x + y * levelW] = false;
 					}
 					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
 						heights[x + y * levelW] = -50;
@@ -87,6 +90,14 @@ public class Map {
 			}
 		}
 	}	
+	
+	public int[] RandomSpawnPoint() {
+		if(spawnPoints.size() == 0)
+			return new int[] {0,0};
+		int randIndex =new Random().nextInt(spawnPoints.size());
+		
+		return new int[] {spawnPoints.get(randIndex).x,spawnPoints.get(randIndex).y};
+	}
 
 	//------------------------------------------------------------------------------------------------------------------------
 	

@@ -6,12 +6,14 @@ import com.ladun.engine.Renderer;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.MainMenuScene;
+import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
 
 public class GameManager extends AbstractGame {
 
 	public static final int TS = 64;
 	
+	private Client client;
 	
 	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
@@ -29,6 +31,10 @@ public class GameManager extends AbstractGame {
 		if(!addScene(new GameScene())) {
 			return false;
 		}
+		
+		client = new Client("localhost",8192,this);
+		client.connect();
+		
 		return true;
 	}
 
@@ -50,6 +56,12 @@ public class GameManager extends AbstractGame {
 		}
 		
 	}
+
+	@Override
+	public void dispose() {
+		client.disconnect();		
+	}
+	
 	
 	private boolean addScene(AbstractScene scene) {
 		return addScene(scene,false);
@@ -105,6 +117,10 @@ public class GameManager extends AbstractGame {
 	}
 	
 	
+	public Client getClient() {
+		return client;
+	}
+
 	public static void main(String[] args) {
 		GameContainer gc = new GameContainer(new GameManager());
 		gc.setWidth(960 );

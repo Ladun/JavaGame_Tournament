@@ -1,0 +1,32 @@
+package com.ladun.tournamentserver;
+
+import java.util.Scanner;
+
+public class TournamentServer {
+
+	public static void main(String[] args) {
+		Server server = new Server(8192);		
+		server.start();
+		
+		boolean running = true;
+		Scanner sc = new Scanner(System.in);
+		
+		String s;
+		while(running) {
+			s = sc.nextLine();
+			switch(s) {
+			case "stop":
+			case "exit":
+			case "shutdown":
+				running = false;
+				server.stopServer();
+				break;
+			case "list":
+				
+				break;
+			default:
+				System.out.println("-----------No----------------");
+			}
+		}
+	}
+}

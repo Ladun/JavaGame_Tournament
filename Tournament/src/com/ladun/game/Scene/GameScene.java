@@ -6,6 +6,7 @@ import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
 import com.ladun.game.Physics;
+import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Player;
 
 public class GameScene extends AbstractScene{
@@ -21,7 +22,7 @@ public class GameScene extends AbstractScene{
 		this.active = active;
 		
 		this.name = "InGame";		
-		this.objects.add(new Player(1,1,this));
+		//this.objects.add(new Player(1,1,this));
 		this.camera = new Camera(gm,"Player");
 		
 		this.maps[0] = new Map("test",true);
@@ -52,6 +53,26 @@ public class GameScene extends AbstractScene{
 		}
 	}
 	
+	
+	public Player addPlayer(String name,int tileX, int tileY,boolean isLocalPlayer) {
+		Player p = new Player(name,tileX, tileY, this,isLocalPlayer);
+		this.objects.add(p);
+		return p;
+	}
+	public Player addPlayer(String name,boolean isLocalPlayer) {
+		int[] pos = maps[currentMapIndex].RandomSpawnPoint();
+		Player p = new Player(name,pos[0], pos[1], this,isLocalPlayer);
+		this.objects.add(p);
+		return p;
+	}
+	public void removePlayer(String name) {
+		for(int i = 0; i < objects.size();i++) {
+			if(objects.get(i).getTag().equals(name)) {
+				objects.remove(i);
+				break;
+			}
+		}
+	}
 	
 	//-------------------------------------------------------------------------------------
 	
@@ -92,5 +113,9 @@ public class GameScene extends AbstractScene{
 		}
 		return 0;
 		
+	}
+
+	public Camera getCamera() {
+		return camera;
 	}
 }

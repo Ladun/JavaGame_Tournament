@@ -2,15 +2,15 @@ package com.ladun.game;
 
 import java.util.ArrayList;
 
-import com.ladun.game.components.AABBComponent;
+import com.ladun.game.components.Collider;
 
 public class Physics {
 
 	public final static float GRAVITY = 9.8f; 
 	public final static float MAX_HEIGHT = -1000;
-	private static ArrayList<AABBComponent> aabbList = new ArrayList<AABBComponent>();
+	private static ArrayList<Collider> aabbList = new ArrayList<Collider>();
 	
-	public static void addAABBComponent(AABBComponent aabb)
+	public static void addAABBComponent(Collider aabb)
 	{
 		aabbList.add(aabb);
 	}
@@ -21,8 +21,8 @@ public class Physics {
 		{
 			for(int j = i + 1; j < aabbList.size();j++)
 			{
-				AABBComponent c0 = aabbList.get(i);
-				AABBComponent c1 = aabbList.get(j);
+				Collider c0 = aabbList.get(i);
+				Collider c1 = aabbList.get(j);
 				
 				if(Math.abs(c0.getCenterX() - c1.getCenterX()) < c0.getHalfWidth() + c1.getHalfWidth())
 				{

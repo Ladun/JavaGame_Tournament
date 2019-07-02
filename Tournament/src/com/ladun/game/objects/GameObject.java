@@ -101,10 +101,10 @@ public abstract class GameObject
 		this.posX = posX;
 	}
 	public float getPosY() {
-		return posZ;
+		return posY;
 	}
 	public void setPosY(float posY) {
-		this.posZ = posY;
+		this.posY = posY;
 	}
 	public float getPosZ() {
 		return posZ;

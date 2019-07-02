@@ -6,7 +6,7 @@ import com.ladun.game.objects.GameObject;
 
 public class Camera {
 	
-	private float offX,offY;
+	private float offX,offZ;
 	
 	private String targetTag;
 	private GameObject target = null;
@@ -25,12 +25,12 @@ public class Camera {
 			this.target = gm.getObject(targetTag);
 			return;
 		}
-		
+
 		float targetX = (target.getPosX() + target.getWidth() / 2) - gc.getWidth() / 2;
-		float targetY = (target.getPosY() + target.getHeight() / 2 ) - gc.getHeight() /2;
+		float targetZ = (target.getPosZ() + target.getHeight() / 2 ) - gc.getHeight() /2;
 		
 		offX = targetX;
-		offY = targetY;
+		offZ = targetZ;
 		
 		//offX -= dt * (int)(offX - targetX) * cameraSensitivity;
 		//offY -= dt * (int)(offY - targetY) * cameraSensitivity;
@@ -39,8 +39,8 @@ public class Camera {
 		
 		if(offX < 0) offX = 0;
 		if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
-		if(offY < 0) offY = 0;
-		if(offY > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offY = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
+		if(offZ < 0) offZ = 0;
+		if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
 
 
 		
@@ -49,7 +49,7 @@ public class Camera {
 	public void render(Renderer r)
 	{
 		r.setCamX((int)offX);
-		r.setCamY((int)offY);
+		r.setCamY((int)offZ);
 	}
 
 	public float getOffX() {
@@ -61,11 +61,11 @@ public class Camera {
 	}
 
 	public float getOffY() {
-		return offY;
+		return offZ;
 	}
 
 	public void setOffY(float offY) {
-		this.offY = offY;
+		this.offZ = offY;
 	}
 
 	public String getTargetTag() {

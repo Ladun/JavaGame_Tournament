@@ -27,7 +27,7 @@ public class GameContainer implements Runnable{
 		imageLoader = new ImageLoader() ;
 		input = new Input(this);
 		
-		thread = new Thread(this);
+		thread = new Thread(this,"Main Loop");
 		thread.start();
 	}
 	
@@ -124,10 +124,12 @@ public class GameContainer implements Runnable{
 		
 		dispose();
 	}
-	
+
+	public void GameExit() {
+		this.running = false;
+	}
 	private void dispose(){
-		
-		
+		game.dispose();
 	}
 	
 	public ImageLoader getImageLoader() {

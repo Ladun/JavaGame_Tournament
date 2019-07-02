@@ -1,0 +1,6 @@
+package com.ladun.game.util;
+
+public class BinaryWritter {
+
+	private ArrayList<btye[]> bytelist
+}

@@ -1,2 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
+<fullyQualifiedTypeName name="com.ladun.game.Scene.MainMenuScene"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
+<fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
+<fullyQualifiedTypeName name="java.net.SocketTimeoutException"/>
+<fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.GameObject"/>
+</qualifiedTypeNameHistroy>

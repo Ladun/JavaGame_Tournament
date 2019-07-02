@@ -4,9 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-
 
 import javax.swing.JFrame;
 
@@ -36,6 +37,12 @@ public class Window {
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setVisible(true);
+		
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				gc.GameExit();
+			}
+		});
 		
 		canvas.createBufferStrategy(2);
 		bs= canvas.getBufferStrategy();
