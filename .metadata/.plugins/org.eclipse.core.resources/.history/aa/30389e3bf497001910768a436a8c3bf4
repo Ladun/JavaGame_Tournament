@@ -1,7 +1,0 @@
-package com.ladun.game.objects.UI;
-
-import com.ladun.game.objects.GameObject;
-
-public class Button extends GameObject{
-
-}

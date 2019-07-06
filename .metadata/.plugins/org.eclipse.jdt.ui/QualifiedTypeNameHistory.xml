@@ -6,6 +6,9 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
 <fullyQualifiedTypeName name="java.net.SocketTimeoutException"/>
-<fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.GameObject"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.projectile.Bullet"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="com.ladun.game.net.Client"/>
+<fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
 </qualifiedTypeNameHistroy>

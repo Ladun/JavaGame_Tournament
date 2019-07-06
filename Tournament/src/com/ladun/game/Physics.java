@@ -2,27 +2,27 @@ package com.ladun.game;
 
 import java.util.ArrayList;
 
-import com.ladun.game.components.Collider;
+import com.ladun.game.components.RectCollider;
 
 public class Physics {
 
 	public final static float GRAVITY = 9.8f; 
 	public final static float MAX_HEIGHT = -1000;
-	private static ArrayList<Collider> aabbList = new ArrayList<Collider>();
+	private static ArrayList<RectCollider> colliders = new ArrayList<RectCollider>();
 	
-	public static void addAABBComponent(Collider aabb)
+	public static void addAABBComponent(RectCollider aabb)
 	{
-		aabbList.add(aabb);
+		colliders.add(aabb);
 	}
 	
 	public static void update()
 	{
-		for(int i = 0; i < aabbList.size();i++)
+		for(int i = 0; i < colliders.size();i++)
 		{
-			for(int j = i + 1; j < aabbList.size();j++)
+			for(int j = i + 1; j < colliders.size();j++)
 			{
-				Collider c0 = aabbList.get(i);
-				Collider c1 = aabbList.get(j);
+				RectCollider c0 = colliders.get(i);
+				RectCollider c1 = colliders.get(j);
 				
 				if(Math.abs(c0.getCenterX() - c1.getCenterX()) < c0.getHalfWidth() + c1.getHalfWidth())
 				{
@@ -34,7 +34,7 @@ public class Physics {
 				}
 			}
 		}
-		aabbList.clear();
+		colliders.clear();
 	}
 	
 }

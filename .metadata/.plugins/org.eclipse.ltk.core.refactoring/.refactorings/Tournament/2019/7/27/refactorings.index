@@ -2,3 +2,7 @@
 1561980658947	Rename field 'PACKET_VALUETYPE_PLAYERTRANSFORMINFO'
 1562064550121	Rename field 'offY'
 1562069180882	Rename type 'AABBComponent'
+1562070717485	Rename type 'Collider'
+1562150548327	Rename field 'aabbList'
+1562151277346	Rename field 'rectColliders'
+1562255615647	Rename method 'inactiveObjectExist'

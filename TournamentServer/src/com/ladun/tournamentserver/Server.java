@@ -30,10 +30,10 @@ public class Server {
 	private BinaryWritter bw = new BinaryWritter();
 	private StringBuilder sb = new StringBuilder();
 	
-	
+	private long stTime;
 	
 	private boolean packingCatching = false;
-	
+	private byte packetCatchType = 0x00;
 	
 	public Server(int port) {
 		this.port = port;
@@ -53,6 +53,9 @@ public class Server {
 		
 		listenThread = new Thread(() -> listen(), "Server-ListenThread");		
 		listenThread.start();
+		
+		
+		stTime = System.currentTimeMillis();
 	}
 
 	private void listen() {
@@ -150,37 +153,56 @@ public class Server {
 					
 				}
 				break;
-			// Player Spawn--------------------------------------------------------
-			// Client -> Server Packet : [header type: clientID]
+			// Object Spawn--------------------------------------------------------
+			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
 			case 0x04:
-				
-				
-				_clientID = Integer.parseInt(messages[1].trim());
-
-				if(_clientID < 1000)
-					break;
-				
-				sb.setLength(0);
-				bw.clear();
-				bw.write((byte)0x01);
-				sb.append(":");
-				sb.append(_clientID);
-				bw.write((sb.toString()).getBytes());
-				// 현재 새로운 플레이어가 스폰 되었다고 접속중인 client에게 정보를 보냄
-				sendToAllClients(bw.getBytes(), _clientID); 
-				
-				//현재 새로 접속한 플레이어에게 기존의 플레이어들의 정보를 뿌림
-				for(Client _c : clients) {
-					if(_c.getClientdID() != _clientID)
-					{
-						sb.setLength(0);
-						bw.clear();
-						bw.write((byte)0x01);
-						sb.append(":");
-						sb.append(_c.getClientdID());
-						bw.write((sb.toString()).getBytes());
-						send(bw.getBytes(),address,port);
+				if(messages.length == 2) {		// Player Spawn		
+					_clientID = Integer.parseInt(messages[1].trim());
+	
+					if(_clientID < 1000)
+						break;
+					
+					sb.setLength(0);
+					bw.clear();
+					bw.write((byte)0x01);
+					sb.append(":");
+					sb.append(_clientID);
+					bw.write((sb.toString()).getBytes());
+					// 현재 새로운 플레이어가 스폰 되었다고 접속중인 client에게 정보를 보냄
+					sendToAllClients(bw.getBytes(), _clientID); 
+					
+					//현재 새로 접속한 플레이어에게 기존의 플레이어들의 정보를 뿌림
+					for(Client _c : clients) {
+						if(_c.getClientdID() != _clientID)
+						{
+							sb.setLength(0);
+							bw.clear();
+							bw.write((byte)0x01);
+							sb.append(":");
+							sb.append(_c.getClientdID());
+							bw.write((sb.toString()).getBytes());
+							send(bw.getBytes(),address,port);
+						}
 					}
+				}
+				else {
+					System.out.println(messages[2]);
+					_clientID = Integer.parseInt(messages[1].trim());
+				
+					if(_clientID < 1000)
+						break;
+
+					sb.setLength(0);
+					bw.clear();
+					bw.write((byte)0x04);
+					sb.append(":");
+					sb.append(messages[1]);
+					sb.append(":");
+					sb.append(messages[2]);
+					bw.write((sb.toString()).getBytes());
+					
+					
+					sendToAllClients(bw.getBytes(),_clientID);
 				}
 				
 				break;
@@ -246,8 +268,12 @@ public class Server {
 		InetAddress address = packet.getAddress();
 		int port= packet.getPort();
 
+		if(packetCatchType != 0x00) 
+			if(packetCatchType != data[2])
+				return;
+		
 		System.out.println("-----------------------------------------------");
-		System.out.println("PACKET:");
+		System.out.printf("PACKET: %d\n",(System.currentTimeMillis() -stTime)/1000);
 		System.out.printf("\t%s:%d\n" , address.getHostAddress(), port);
 		System.out.println("\tConetents:");
 		System.out.print("\t\t");
@@ -286,6 +312,10 @@ public class Server {
 
 	public void setPackingCatching(boolean packingCatching) {
 		this.packingCatching = packingCatching;
+	}
+
+	public void setPacketCatchType(byte packetCatchType) {
+		this.packetCatchType = packetCatchType;
 	}
 	
 	

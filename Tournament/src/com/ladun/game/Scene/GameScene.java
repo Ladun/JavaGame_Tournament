@@ -16,6 +16,9 @@ public class GameScene extends AbstractScene{
 	
 	
 	private Camera 		camera;
+	
+	private float time = 0;
+	
 	@Override
 	public boolean init(GameManager gm,boolean active) {
 		// TODO Auto-generated method stub
@@ -33,7 +36,18 @@ public class GameScene extends AbstractScene{
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		// TODO Auto-generated method stub
 		maps[currentMapIndex].update(gc, gm, dt);
-		
+		/*
+		// Object List Print--------------------------------
+		time+= dt;
+		if(time > 1) {
+			time -= 1;
+			System.out.println("---------------------------");
+			for(GameObject go : objects)
+				System.out.printf("%s|%4.1f|%4.1f|%4.1f|%4.1f|%c\n",go.getTag(),go.getPosX(),go.getPosY(),go.getPosZ(),go.getAngle(),go.isActive()?'T':'F');
+			System.out.println("---------------------------");
+		}
+		//------------------------------------------------------
+		*/
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
 				objects.get(i).update(gc, gm, dt);

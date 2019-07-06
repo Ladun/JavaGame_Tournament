@@ -1,5 +1,0 @@
-package com.ladun.game.Scene;
-
-public class MainMenuScene extends AbstractScene{
-
-}

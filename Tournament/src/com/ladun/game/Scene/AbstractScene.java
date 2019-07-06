@@ -28,6 +28,20 @@ public abstract class AbstractScene {
 		this.active = active;
 	}
 	
+	public GameObject getInactiveObject(String tag) {
+		for (GameObject go : objects) {
+			if(!go.isActive())
+				if(go.getTag().equals(tag))
+					return go;
+		}
+		return null;
+	}
+	
+	public void addObject(GameObject obj) {
+		
+		objects.add(obj);
+	}
+	
 	public GameObject getObject(String tag) {
 		for(int i = 0; i < objects.size();i++) {
 			

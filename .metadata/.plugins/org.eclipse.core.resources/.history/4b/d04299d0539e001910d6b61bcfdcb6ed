@@ -1,0 +1,5 @@
+package com.ladun.game.objects.projectile;
+
+public class Bullet {
+
+}

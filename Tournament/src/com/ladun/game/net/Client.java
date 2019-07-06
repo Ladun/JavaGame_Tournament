@@ -14,12 +14,11 @@ import com.ladun.game.objects.Player;
 import com.ladun.game.util.BinaryWritter;
 
 public class Client {
-	
 	private final static byte[] PACKET_CLIENT_HEADER = new byte[] { 0x40,0x40};
 	private final static byte PACKET_TYPE_CONNECT = 0x01;
 	private final static byte PACKET_TYPE_DISCONNECT = 0x02;
-	private final static byte PACKET_TYPE_VALUECHANGE = 0x03; 
-	private final static byte PACKET_TYPE_PLAYERSPAWN = 0x04; 
+	public final static byte PACKET_TYPE_VALUECHANGE = 0x03; 
+	public final static byte PACKET_TYPE_OBJECTSPAWN = 0x04; 
 	
 	public enum Error{
 		NONE, INVALID_HOST,SOCKET_EXCEPTION
@@ -129,8 +128,9 @@ public class Client {
 		byte[] data = packet.getData();
 		if(!packet.getAddress().equals(serverAddress) || packet.getPort() != port)
 			return;		
-		
-		//dumpPacket(packet);
+
+		if(data[2] == 0x04)
+			dumpPacket(packet);
 		
 		if(data[0] == 0x41 && data[1] == 0x41) {
 			String[] messages = new String(data,0,packet.getLength()).split(":");	
@@ -176,7 +176,7 @@ public class Client {
 					
 					sb.setLength(0);
 					bw.clear();
-					bw.write(PACKET_TYPE_PLAYERSPAWN);
+					bw.write(PACKET_TYPE_OBJECTSPAWN);
 					sb.append(":");
 					sb.append(this.clientID);
 					bw.write((sb.toString()).getBytes());
@@ -204,6 +204,25 @@ public class Client {
 				}
 
 				break;
+			// Object Spawn--------------------------------------------------------
+			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
+			case 0x04:
+				if(messages.length >= 3) {
+					netArgs = messages[2].split(",");
+					if(netArgs[0].equals("bullet")) {
+	
+						sb.setLength(0);
+						sb.append("Player");
+						sb.append(messages[1].trim());
+						Player _p = (Player)gm.getObject(sb.toString());
+						if(_p == null)
+							return;
+						
+						_p.Shoot(null);
+					}				
+				}
+				break;
+				
 			}
 		}
 	}
@@ -251,6 +270,22 @@ public class Client {
 		sb.append(":");
 		bw.write((sb.toString()).getBytes());
 		bw.write(_data);
+		send(bw.getBytes());
+	}
+	
+	public void send(byte type, Object[] _data) {
+		bw.clear();
+		sb.setLength(0);
+		bw.write(type);
+		sb.append(":");
+		sb.append(clientID);
+		sb.append(":");
+		for(int i = 0 ;i < _data.length;i++) {
+			sb.append(_data[i]);
+			if(i != _data.length -1)
+				sb.append(',');
+		}
+		bw.write((sb.toString()).getBytes());
 		send(bw.getBytes());
 	}
 	

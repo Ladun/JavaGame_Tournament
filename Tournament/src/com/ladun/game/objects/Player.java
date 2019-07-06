@@ -8,6 +8,8 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
+import com.ladun.game.net.Client;
+import com.ladun.game.objects.projectile.Bullet;
 
 public class Player extends Entity{
 	
@@ -98,7 +100,7 @@ public class Player extends Entity{
 			}
 			// Moving End --------------
 			
-			// Jump And Gravity -------------------
+			// Jump And Gravity ----------------------------------------
 			fallDistance += Physics.GRAVITY * dt;
 			
 			if(fallDistance > 0) { 
@@ -129,7 +131,16 @@ public class Player extends Entity{
 			}
 			
 			posY += fallDistance;
-			// Jump And Gravity End ---------------
+			// Jump And Gravity End ------------------------------------
+			
+
+			
+			if(gc.getInput().isKey(KeyEvent.VK_T))
+				angle -= dt * 360;
+			
+			if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+				Shoot(gm);
+			}
 			
 			
 			if((int)fallDistance != 0) {
@@ -137,9 +148,6 @@ public class Player extends Entity{
 			}
 			groundLast = ground;		
 			this.AdjustPosition();
-			
-			if(gc.getInput().isKey(KeyEvent.VK_T))
-				angle -= dt * 360;
 		}
 
 		this.updateComponents(gc,gm,dt);
@@ -176,6 +184,23 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	//---------------------------------------------------------------------------------------
+	public void Shoot(GameManager gm) {
+		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
+		if(bullet == null) {
+			gs.addObject(new Bullet(posX,posY,posZ,angle,100,1));
+		}
+		else {
+			bullet.setting(posX, posY, posZ, angle, 100, 1);
+		}
+		
+		if(gm != null) {
+			if(localPlayer) {
+				gm.getClient().send(Client.PACKET_TYPE_OBJECTSPAWN,new Object[] {"bullet"});
+			}
+		}
 	}
 	
 	//---------------------------------------------------------------------------------------
