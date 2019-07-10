@@ -24,7 +24,7 @@ public class TournamentServer {
 				server.stopServer();
 				break;
 			case "list":
-				System.out.println("------------Clinet List-------------");
+				System.out.println("------------Client List-------------");
 				for(Client c : server.getClients()) {
 					System.out.println("[" + c.getAddress().getHostAddress()+":"+c.getPort()+"] ID: "+c.getClientdID());
 				}

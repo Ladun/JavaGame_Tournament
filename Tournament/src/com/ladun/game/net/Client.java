@@ -29,7 +29,11 @@ public class Client {
 	private Error errorCode = Error.NONE;
 	private int clientID;
 	
+	private boolean serverRespond = false;
+	private int timeSinceCheck = 0;
+	
 	private Thread listenThread;
+	private Thread timeoutThread;
 	private boolean listening = false;	
 	private InetAddress serverAddress;	
 	private DatagramSocket socket;	
@@ -40,7 +44,7 @@ public class Client {
 	private GameManager gm;
 	
 	private BinaryWritter bw = new BinaryWritter();	
-	private StringBuilder sb = new StringBuilder();
+	private StringBuffer sb = new StringBuffer();
 	
 	//-------------------------------------------------------------------	
 	/**
@@ -103,6 +107,9 @@ public class Client {
 		bw.write(PACKET_TYPE_CONNECT);
 		send(bw.getBytes());
 
+		// Server Timeout
+		RenspondCheck();
+		
 		// Listening Thread Start
 		listening = true;		
 		listenThread = new Thread(() -> listen(), "Server-ListenThread");		
@@ -135,6 +142,8 @@ public class Client {
 		if(data[0] == 0x41 && data[1] == 0x41) {
 			String[] messages = new String(data,0,packet.getLength()).split(":");	
 			String[] netArgs;
+
+			serverRespond = true;
 			
 			switch(data[2]) {
 			// Connection -> Receive Other Player Connection
@@ -149,6 +158,7 @@ public class Client {
 				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),0,0,	false);
 				
 				break;
+				
 			// Disconnection
 			// Server -> Client Packet : [header type: clientID]	
 			case 0x02 :  //type			
@@ -159,6 +169,7 @@ public class Client {
 				
 				((GameScene)gm.getScene("InGame")).removePlayer(sb.toString());
 				break;
+				
 			// Value Change
 			// Server -> Client Packet : [header type: clientID : ValueType, value,....]
 			case 0x03: //type			
@@ -204,6 +215,7 @@ public class Client {
 				}
 
 				break;
+				
 			// Object Spawn--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
 			case 0x04:
@@ -221,6 +233,20 @@ public class Client {
 						_p.Shoot(null);
 					}				
 				}
+				break;
+
+			// Timeout Packet--------------------------------------------------------
+			// Server -> Client Packet : [header type]
+			case 0x05:
+				
+				bw.clear();
+				sb.setLength(0);
+				bw.write(data[2]);
+				sb.append(":");
+				sb.append(clientID);
+				bw.write(sb.toString().getBytes());
+				
+				send(bw.getBytes());
 				break;
 				
 			}
@@ -261,18 +287,6 @@ public class Client {
 		send(new byte[] {b});
 	}
 	
-	public void sendValue(byte[] _data) {
-		bw.clear();
-		sb.setLength(0);
-		bw.write(PACKET_TYPE_VALUECHANGE);
-		sb.append(":");
-		sb.append(clientID);
-		sb.append(":");
-		bw.write((sb.toString()).getBytes());
-		bw.write(_data);
-		send(bw.getBytes());
-	}
-	
 	public void send(byte type, Object[] _data) {
 		bw.clear();
 		sb.setLength(0);
@@ -307,6 +321,36 @@ public class Client {
 	}
 
 	//-------------------------------------------------------------------
+	private void RenspondCheck() {
+		timeoutThread = new Thread(new Runnable() {
+			double startTime = System.currentTimeMillis();
+			int next = 1;
+			@Override
+			public void run() {
+				
+				while(listening) {
+
+					double nowTime = (System.currentTimeMillis() - startTime) / 1000;
+					if(nowTime >= next) {
+						next++;
+						timeSinceCheck++;
+						if(timeSinceCheck >= 5) {
+							timeSinceCheck = 0;
+							if(serverRespond)
+								serverRespond = false;
+							else {
+								System.out.println("Server is down");
+								//TODO ¼­¹ö¶û Á¢¼Ó ²÷±â
+							}
+						}
+					}
+					
+				}
+			}
+		
+		});timeoutThread.start();
+	}
+	
 	private void dumpPacket(DatagramPacket packet) {
 		byte[] data = packet.getData();
 		InetAddress address = packet.getAddress();
@@ -328,6 +372,7 @@ public class Client {
 		System.out.println("-----------------------------------------------");
 		
 	}
+	//------------------------------------------------------------------
 	public void setHost(String host) {
 		String[] parts = host.split(":");
 		if(parts.length != 2) {
@@ -348,6 +393,9 @@ public class Client {
 		this.port = port;
 	}
 	
+	public boolean isServerRespond() {
+		return serverRespond;
+	}
 	public Error getErrorCode() {
 		return errorCode;
 	}

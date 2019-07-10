@@ -1,0 +1,37 @@
+package com.ladun.tournamentserver;
+
+import com.ladun.tournamentserver.util.BinaryWritter;
+
+public class Timeout implements Runnable{
+
+	private float time;	
+	
+	private Server server;
+	public Timeout(Server server) {
+		this.server = server;
+	}
+	
+	@Override
+	public void run() {
+		while(server.isListening()) {
+			try {						
+				Thread.sleep(5000);
+				
+				for(Client c : server.getClients()) {
+					if(!c.isResponed()) {
+						server.getClients().remove(c);
+						server.clientDisconnect(c.getClientdID());
+					}else {
+						c.setResponed(false);
+					}
+				}		
+				
+				server.sendToAllClients(new byte[] {(byte)0x05});
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+}

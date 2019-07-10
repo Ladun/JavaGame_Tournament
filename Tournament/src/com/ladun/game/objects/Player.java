@@ -213,7 +213,7 @@ public class Player extends Entity{
 		case 2:
 			r.drawRect((int)posX, (int)(posZ + posY), width, height,angle, 0xffffffff);
 		}
-			
+			 
 	}
 
 	//---------------------------------------------------------------------------------------

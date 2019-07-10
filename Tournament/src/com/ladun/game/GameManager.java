@@ -33,7 +33,7 @@ public class GameManager extends AbstractGame {
 		}
 		
 		client = new Client("localhost",8192,this);
-		client.connect();
+		//client.connect();
 		
 		return true;
 	}
