@@ -6,52 +6,50 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
 import com.ladun.game.objects.GameObject;
 
-public class RectCollider extends Component{
+public class RectCollider extends Collider{
+
+	private int centerX,centerZ;
+	private int halfWidth, halfHeight; // xy
+	private int lastCenterX, lastCenterZ;
 	
-	private int centerX,centerY;
-	private int halfWidth, halfHeight;
-	private int lastCenterX, lastCenterY;
-	
-	public RectCollider(GameObject parent)
-	{
-		this.parent = parent;
-		this.tag = "aabb";
-		
+	public RectCollider(GameObject parent) {
+		super(parent);
+		this.tag = "RectCollider";
+		this.type = Type.RECT;
 	}
+
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		lastCenterX = centerX;
-		lastCenterY = centerY;
+		lastCenterZ = centerZ;
 
 		halfWidth = ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2);
 		halfHeight = ((parent.getHeight() -parent.getpB() - parent.getpT())/2);
 		centerX = (int)(parent.getPosX()) + halfWidth + parent.getpL();
-		centerY = (int)(parent.getPosY()) + halfHeight + parent.getpT();
+		centerZ = (int)(parent.getPosZ()) + halfHeight + parent.getpT();
 		
 
-		Physics.addAABBComponent(this);
+		Physics.colliderComponent(this);
 	}
 	@Override
 	public void render(GameContainer gc,  Renderer r) {
 		// TODO Auto-generated method stub
-		//r.drawRect(centerX - halfWidth, centerY - halfHeight, halfWidth * 2, halfHeight * 2, 0xff000000);
+		r.drawRect(centerX - halfWidth, centerZ - halfHeight, halfWidth * 2, halfHeight * 2,0, 0xffa6ec90);
 		
 	}
-	
-	public float getAngle() {
-		return parent.getAngle();
-	}
+	//-----------------------------------------------
+
 	public int getLastCenterX() {
 		return lastCenterX;
 	}
 	public void setLastCenterX(int lastCenterX) {
 		this.lastCenterX = lastCenterX;
 	}
-	public int getLastCenterY() {
-		return lastCenterY;
+	public int getLastCenterZ() {
+		return lastCenterZ;
 	}
-	public void setLastCenterY(int lastCenterY) {
-		this.lastCenterY = lastCenterY;
+	public void setLastCenterZ(int lastCenterZ) {
+		this.lastCenterZ = lastCenterZ;
 	}
 	public int getCenterX() {
 		return centerX;
@@ -59,11 +57,11 @@ public class RectCollider extends Component{
 	public void setCenterX(int centerX) {
 		this.centerX = centerX;
 	}
-	public int getCenterY() {
-		return centerY;
+	public int getCenterZ() {
+		return centerZ;
 	}
-	public void setCenterY(int centerY) {
-		this.centerY = centerY;
+	public void setCenterZ(int centerZ) {
+		this.centerZ = centerZ;
 	}
 	public int getHalfWidth() {
 		return halfWidth;

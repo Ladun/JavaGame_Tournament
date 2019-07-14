@@ -240,7 +240,7 @@ public class Renderer {
 		}
 	}
 	
-	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float angle)
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,float angle)
 	{
 		offX -= camX;
 		offY -= camY;
@@ -265,10 +265,10 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int hw = newWidth /2;
-		int hh = newHeight /2;
-		int cx = offX + hw;
-		int cy = offY + hh;
+		int dw = (int)(newWidth  * xPivot); // delX
+		int dh = (int)(newHeight * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
 				
 				
 		//Clipping code
@@ -281,12 +281,12 @@ public class Renderer {
 		{
 			for(int x = newX; x < newWidth;x++)
 			{
-				setPixel(cx + (int)((x - hw) * c - (y - hh) * s),
-						 cy + (int)((x - hw) * c + (y - hh) * s),
-						 image.getP()[(x +tileX * image.getTileW())+ (y + tileY * image.getTileH()) *image.getW()]);
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 image.getP()[ (x +tileX * image.getTileW()) + (y + tileY * image.getTileH()) *image.getW()]);
 				
-				setLightBlock(cx + (int)((x - hw) * c - (y - hh) * s),
-						 	  cy + (int)((x - hw) * c + (y - hh) * s),
+				setLightBlock(px + (int)((x - dw) * c - (y - dh) * s),
+						 	  py + (int)((x - dw) * s + (y - dh) * c),
 							  image.getLightBlock());
 			}
 		}

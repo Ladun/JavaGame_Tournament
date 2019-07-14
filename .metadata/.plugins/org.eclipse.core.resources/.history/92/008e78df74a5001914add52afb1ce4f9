@@ -1,0 +1,12 @@
+package com.ladun.game.components;
+
+import com.ladun.game.objects.GameObject;
+
+public class RectCollider extends Collider{
+
+	public RectCollider(GameObject parent) {
+		super(parent);
+		// TODO Auto-generated constructor stub
+	}
+
+}

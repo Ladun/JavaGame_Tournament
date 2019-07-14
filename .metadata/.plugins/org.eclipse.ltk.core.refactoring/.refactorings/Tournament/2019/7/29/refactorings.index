@@ -1,0 +1,6 @@
+1563077656102	Rename field 'lastCenterY'
+1563077663131	Rename method 'getLastCenterY'
+1563077670286	Rename local variable 'lastCenterY'
+1563077676263	Rename method 'setCenterY'
+1563077697656	Rename method 'setLastCenterY'
+1563077706740	Rename method 'getCenterY'

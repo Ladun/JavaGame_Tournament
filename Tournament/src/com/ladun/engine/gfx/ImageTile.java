@@ -13,7 +13,7 @@ public class ImageTile extends Image{
 	
 	public Image getTileImage(int tileX,int tileY)
 	{
-		int[] p = new int[tileW * tileY];
+		int[] p = new int[tileW * tileH];
 		
 		for(int y = 0;y < tileH;y++)
 		{

@@ -2,6 +2,7 @@ package com.ladun.game.objects.projectile;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.objects.GameObject;
 
@@ -12,7 +13,7 @@ public class Bullet extends Projectile {
 		this.tag = "bullet";
 		
 		this.width = 40;
-		this.height = 10;
+		this.height = 64;
 	}
 
 	@Override
@@ -31,7 +32,10 @@ public class Bullet extends Projectile {
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xff385610);
+		
+		r.setzDepth((int)(posZ + Math.abs(posY) + height));
+		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xff385610);
+		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"),(int)posX, (int)posZ, 1, 0,0,0, angle);
 	}
 
 	@Override

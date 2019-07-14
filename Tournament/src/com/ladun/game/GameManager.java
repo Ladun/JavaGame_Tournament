@@ -11,7 +11,7 @@ import com.ladun.game.objects.GameObject;
 
 public class GameManager extends AbstractGame {
 
-	public static final int TS = 64;
+	public static final int TS = 96;
 	
 	private Client client;
 	
@@ -34,7 +34,6 @@ public class GameManager extends AbstractGame {
 		
 		client = new Client("localhost",8192,this);
 		//client.connect();
-		
 		return true;
 	}
 
@@ -123,9 +122,9 @@ public class GameManager extends AbstractGame {
 
 	public static void main(String[] args) {
 		GameContainer gc = new GameContainer(new GameManager());
-		gc.setWidth(960 );
-		gc.setHeight(720 );
-		gc.setScale(1f );
+		gc.setWidth(960/3 );
+		gc.setHeight(720/3 );
+		gc.setScale(1f *3);
 		gc.start();
 	}
 }

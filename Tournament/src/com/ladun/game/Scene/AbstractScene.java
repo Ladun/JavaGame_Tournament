@@ -45,7 +45,7 @@ public abstract class AbstractScene {
 	public GameObject getObject(String tag) {
 		for(int i = 0; i < objects.size();i++) {
 			
-			if(objects.get(i).getTag().equals( tag)) {
+			if(objects.get(i).getTag().equals(tag)) {
 				return objects.get(i);
 			}
 		}

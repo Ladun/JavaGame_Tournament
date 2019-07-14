@@ -11,6 +11,7 @@ public class MainMenuScene extends AbstractScene{
 	
 	
 	private boolean loading;
+	private float loadingAngle;
 	
 	@Override
 	public boolean init(GameManager gm, boolean active) {
@@ -18,7 +19,7 @@ public class MainMenuScene extends AbstractScene{
 		this.active = active;
 		this.name = "MainMenu";
 		
-		testButton = new Button(300, 300, 100,100,0xffad3867);
+		testButton = new Button(50, 50, 100,100,0xffad3867);
 		objects.add(testButton);
 		
 		return true;
@@ -34,35 +35,11 @@ public class MainMenuScene extends AbstractScene{
 		
 		if(testButton.isReleased())
 		{
-			loading = true;
-			new Thread(new Runnable() {
-				double stTime = System.currentTimeMillis();
-				
-
-				@Override
-				public void run() {
-					
-					gm.getClient().connect();
-					
-					double nowTime = 0;
-				
-					while(!gm.getClient().isServerRespond()) {
-						nowTime = (System.currentTimeMillis() - stTime) / 1000; 
-						if(nowTime >= 5) {
-							break;
-						}
-					}
-					if(nowTime>= 5) {
-						//TODO 서버가 닫혀있음
-						System.out.println("Server is Closed");
-					}
-					else {
-						gm.changeScene("InGame");
-					}
-					loading = false;
-				}
-				
-			},"Connecting-Thread").start();;
+			ConnectToServer(gm);
+		}
+		
+		if(loading) {
+			loadingAngle = (loadingAngle + dt * 360) % 360;
 		}
 	}
 
@@ -77,9 +54,44 @@ public class MainMenuScene extends AbstractScene{
 		
 		if(loading) {
 			//TODO 로딩 이미지 띄우기
+			r.drawFillRect(gc.getWidth() - 30, gc.getHeight() - 30, 20, 20, loadingAngle, 0xffd8a7c3);
 		}
 	}
 
+	//-------------------------------------------------------------------------------
+	private void ConnectToServer(GameManager gm) {
+		loading = true;
+		new Thread(new Runnable() {
+			double stTime = System.currentTimeMillis();
+			
+
+			@Override
+			public void run() {
+				
+				gm.getClient().connect();
+				
+				double nowTime = 0;
+			
+				while(!gm.getClient().isServerRespond()) {
+					nowTime = (System.currentTimeMillis() - stTime) / 1000; 
+					if(nowTime >= 5|| !gm.getClient().isServerRespond()) {
+						break;
+					}
+				}
+				if(nowTime>= 5) {
+					//TODO 서버가 닫혀있음
+					System.out.println("Server is Closed");
+				}
+				else {
+					gm.changeScene("InGame");
+				}
+				loading = false;
+			}
+			
+		},"Connecting-Thread").start();;
+	}
+	
+	//-------------------------------------------------------------------------------
 	@Override
 	public int getLevelW() {
 		// TODO Auto-generated method stub

@@ -1,0 +1,100 @@
+package com.ladun.game;
+
+import java.util.ArrayList;
+
+import com.ladun.game.components.CircleCollider;
+import com.ladun.game.components.Collider;
+import com.ladun.game.components.Collider.Type;
+import com.ladun.game.components.RectCollider;
+
+public class Physics {
+
+	public final static float GRAVITY = 9.8f; 
+	public final static float MAX_HEIGHT = -1000;
+	private static ArrayList<Collider> colliders = new ArrayList<Collider>();
+	
+	public static void colliderComponent(Collider aabb)
+	{
+		colliders.add(aabb);
+	}
+	
+	public static void update()
+	{
+		for(int i = 0; i < colliders.size();i++)
+		{
+			Collider c0 = colliders.get(i);
+			for(int j = i + 1; j < colliders.size();j++)
+			{
+				Collider c1 = colliders.get(j);
+				
+				switch(c0.getType()) {
+				case RECT:
+					if(c1.getType() == Type.CIRCLE) {
+						if(Math.abs((RectCollider)c0.getCenterX() - c1.getCenterX()) < (RectCollider)c0.getHalfWidth() + c1.getHalfWidth())
+						{
+							if(Math.abs((RectCollider)c0.getCenterY() - c1.getCenterY()) < (RectCollider)c0.getHalfHeight() + c1.getHalfHeight())
+							{
+								c0.getParent().collision(c1.getParent());
+								c1.getParent().collision(c0.getParent());
+							}
+						}
+					}
+					else if(c1.getType() == Type.RECT) {
+						if(AABBCollision((RectCollider)c0, (RectCollider)c1) )
+						{
+								c0.getParent().collision(c1.getParent());
+								c1.getParent().collision(c0.getParent());
+							
+						}
+					}
+					break;
+					
+				case CIRCLE:
+					
+					
+					break;
+					
+				}
+			}
+		}
+		colliders.clear();
+	}
+	
+	private static boolean RectCircleCollision(RectCollider c0, CircleCollider c1) {
+		
+		if(Math.abs(c0.getCenterX() - c1.getCenterX()) < c0.getHalfWidth() + c1.getRadius())
+		{
+			if(Math.abs(c0.getCenterY() - c1.getCenterY()) < c0.getHalfHeight() + c1.getRadius())
+			{
+				return true;
+			}
+		}
+		
+		if(InCircle(c1.getCenterX(),c1.getCenterY(),c1.getRadius(),c0.getCenterX() - c0.getHalfWidth(),c0.getCenterY() - c0.getHalfHeight()))
+			return true;
+		
+		
+		return false;
+		
+	}
+	
+	private static boolean AABBCollision(RectCollider c0, RectCollider c1) {
+		if(Math.abs(c0.getCenterX() -c1.getCenterX()) < c0.getHalfWidth() + c1.getHalfWidth())
+		{
+			if(Math.abs(c0.getCenterY() - c1.getCenterY()) < c0.getHalfHeight() + c1.getHalfHeight())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static boolean InCircle(int cx, int cy, int cr,int x,int y) {
+		int dx = cx - x;
+		int dy = cy - y;
+		
+		if( dx * dx + dy * dy <= cr * cr)
+			return true;
+		return false;
+	}
+}

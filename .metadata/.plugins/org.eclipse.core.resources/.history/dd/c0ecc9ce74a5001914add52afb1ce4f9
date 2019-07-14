@@ -1,0 +1,5 @@
+package com.ladun.game.components;
+
+public class RectCollider {
+
+}

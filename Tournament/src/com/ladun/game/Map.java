@@ -44,7 +44,7 @@ public class Map {
 			for(int x = 0; x < levelW;x++) {
 				//if(!collisions[x + y * levelW])
 				
-				r.setzDepth((int)(Math.abs(heights[x + y * levelW])));
+				r.setzDepth((int)(y  * ts +Math.abs(heights[x + y * levelW])) );
 				
 				int color = heights[x + y * levelW] ==0?0xffdebeed : 0xffdafadd;
 				r.drawFillRect(x * ts, y*ts + (int)heights[x + y * levelW], ts, ts,0, color); // 0xffbd91ed
