@@ -4,6 +4,9 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
+import com.ladun.game.Scene.GameScene;
+import com.ladun.game.net.Client;
+import com.ladun.game.objects.projectile.Bullet;
 
 public class Weapon extends GameObject{
 	public enum Type{
@@ -17,6 +20,7 @@ public class Weapon extends GameObject{
 	private int animType;
 	private boolean attacking = false;
 	
+	private String imageName;
 	private float xPivot;
 	private float yPivot;
 	
@@ -52,9 +56,9 @@ public class Weapon extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		if(attacking)
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("weapon_attack"),(int)posX - parent.width / 2,(int)(posZ ),(int)anim,0,.5f, .45f,angle);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("weapon_attack"),(int)posX - parent.width / 2,(int)(posZ ),(int)anim,0,.5f, .45f,0);
 		else
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("weapon"),(int)posX,(int)(posZ ),0,0,xPivot, yPivot,angle);
+			r.drawImage(gc.getImageLoader().getImage(imageName),(int)posX,(int)(posZ ),xPivot, yPivot,0);
 		
 	}
 
@@ -64,9 +68,34 @@ public class Weapon extends GameObject{
 		
 	}
 	
-	public void Attack() {
-		attacking = true;
-		anim = 0;
+	public void Attack(GameManager gm, GameScene gs) {
+		switch(type) {
+		case SWORD:
+			attacking = true;
+			anim = 0;
+			break;
+		case BOW:
+			Shoot(gm,gs);
+			break;
+		}
+		
+	}
+	
+	public void Shoot(GameManager gm,GameScene gs) {
+		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
+		if(bullet == null) {
+			gs.addObject(new Bullet(posX,posY,posZ,angle,1000,1));
+		}
+		else {
+			bullet.setting(posX, posY, posZ, angle, 1000, 1);
+		}
+		
+		if(gm != null) {
+			if(parent instanceof Player)
+				if(((Player)parent).isLocalPlayer()) {
+					gm.getClient().send(Client.PACKET_TYPE_OBJECTSPAWN,new Object[] {"bullet"});
+				}
+		}
 	}
 	//---------------------------------------------------------
 	public Type getType() {
@@ -77,6 +106,12 @@ public class Weapon extends GameObject{
 		this.type = type;
 		switch(type) {
 		case SWORD:
+			imageName = "sword";
+			xPivot = .5f;
+			yPivot = .84f;
+			break;
+		case BOW:
+			imageName = "bow";
 			xPivot = .5f;
 			yPivot = .84f;
 			break;

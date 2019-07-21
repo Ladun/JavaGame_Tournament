@@ -27,9 +27,9 @@ public class GameScene extends AbstractScene{
 		this.name = "InGame";		
 		//this.objects.add(new Player(1,1,this));
 		this.camera = new Camera(gm,"Player");
-		this.addObject(new TempObject(this));
+		//this.addObject(new TempObject(this));
 		
-		this.maps[0] = new Map("test",true);
+		this.maps[0] = new Map("map1",true);
 		return true;
 	}
 

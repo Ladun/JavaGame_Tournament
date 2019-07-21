@@ -11,9 +11,12 @@ import com.ladun.game.objects.GameObject;
 
 public class GameManager extends AbstractGame {
 
-	public static final int TS = 96;
+	public static final int TS = 64;
 	
 	private Client client;
+	
+	private boolean loading;
+	private float loadingAngle;
 	
 	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
@@ -23,7 +26,7 @@ public class GameManager extends AbstractGame {
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
 		gc.getRenderer().setAmbientColor(-1);
-		
+		gc.getImageLoader().ImageLoad();
 		
 		if(!addScene(new MainMenuScene(),true)) {
 			return false;
@@ -44,6 +47,11 @@ public class GameManager extends AbstractGame {
 			if(scenes[i].isActive())
 				scenes[i].update(gc,this,dt);
 		}
+		
+
+		if(loading) {
+			loadingAngle = (loadingAngle + dt * 360) % 360;
+		}
 	}
 	@Override
 	public void render(GameContainer gc, Renderer r) {
@@ -52,6 +60,12 @@ public class GameManager extends AbstractGame {
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
 				scenes[i].render(gc, r);
+		}
+		
+
+		if(loading) {
+			//TODO 로딩 이미지 띄우기
+			r.drawFillRect(gc.getWidth() - 30, gc.getHeight() - 30, 20, 20, loadingAngle, 0xffd8a7c3);
 		}
 		
 	}
@@ -120,11 +134,19 @@ public class GameManager extends AbstractGame {
 		return client;
 	}
 
+	public boolean isLoading() {
+		return loading;
+	}
+
+	public void setLoading(boolean loading) {
+		this.loading = loading;
+	}
+
 	public static void main(String[] args) {
 		GameContainer gc = new GameContainer(new GameManager());
-		gc.setWidth(960/3 );
-		gc.setHeight(720/3 );
-		gc.setScale(1f *3);
+		gc.setWidth((int)(1280));
+		gc.setHeight((int)(720));
+		gc.setScale(1f );
 		gc.start();
 	}
 }

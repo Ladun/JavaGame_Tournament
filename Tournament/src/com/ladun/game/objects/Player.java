@@ -16,9 +16,10 @@ import com.ladun.game.objects.projectile.Bullet;
 
 public class Player extends Entity{
 	
-	private int anim = 0;
+	private float anim = 0;
+	private float animSpeed = 12;
 	private int animType = 0;
-	private int[] animMaxIndex = {1,1,1};
+	private int[] animMaxIndex = {6,1,1};
 	
 	
 	private Weapon weapon;
@@ -39,9 +40,9 @@ public class Player extends Entity{
 		this.height	= GameManager.TS;
 		
 		this.hY = 50;
-		this.pR = pL = 17;
-		this.pB = 4;
-		this.pT = 32;
+		this.pR = pL = 20;
+		this.pB = 0;
+		this.pT = 48;
 		
 		this.maxHealth 	= 100;
 		this.health 	= maxHealth;
@@ -119,11 +120,11 @@ public class Player extends Entity{
 			if(fallDistance > 0) { 
 				
 				int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
+				float _h;
 				for(int _y = 0; _y < 2; _y++) {
 					for(int _x = 0; _x< 2; _x++) {
-						groundHeight = gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
-						if(groundHeight == Physics.MAX_HEIGHT) {
-							groundHeight = 0;
+						groundHeight= gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
+						if(groundHeight== Physics.MAX_HEIGHT) {
 							continue;
 						}
 						
@@ -136,6 +137,7 @@ public class Player extends Entity{
 					}				
 				}
 			}
+			
 			
 			if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) 
 			{
@@ -153,10 +155,12 @@ public class Player extends Entity{
 			
 			
 			if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-				//Shoot(gm);
-				weapon.Attack();
-			}if(gc.getInput().isButtonDown(MouseEvent.BUTTON2)) {
-				Shoot(gm);
+				weapon.Attack(gm,gs);
+			}
+			
+			anim += dt * animSpeed;
+			if(anim >= animMaxIndex[animType]) {
+				anim -=animMaxIndex[animType];
 			}
 			
 			
@@ -177,11 +181,11 @@ public class Player extends Entity{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 
-		/*
-		r.setzDepth((int)(Math.abs(groundHeight) ));		
+		
+		r.setzDepth((int)(posZ + Math.abs(groundHeight)) + pT + (height - (pT + pB)) );		
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
-
+		/*
 		r.setzDepth((int)(Math.abs(posY) ));
 		// PosX PosZ Position Draw
 		r.drawFillRect((int)posX + pL,   (int)(posZ) + pT,    width - (pL + pR),    height - (pT + pB),angle,0x55000000);
@@ -196,8 +200,9 @@ public class Player extends Entity{
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		//r.drawImage(gc.getImageLoader().getImage("player"), (int)posX, (int)(posZ + posY), angle);
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY),0,0,.5f,.5f,0);
-		r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
+		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,0);
+		//r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
+		r.drawFillRect((int)posX , (int)(posZ + posY) - 15 , (int)(64 * (health/maxHealth)), 15, 0, 0xff63c564);
 		
 		
 		
@@ -214,22 +219,9 @@ public class Player extends Entity{
 	}
 
 	//---------------------------------------------------------------------------------------
-	public void Shoot(GameManager gm) {
-		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
-		if(bullet == null) {
-			gs.addObject(new Bullet(posX,posY,posZ,angle,1000,1));
-		}
-		else {
-			bullet.setting(posX, posY, posZ, angle, 1000, 1);
-		}
-		
-		if(gm != null) {
-			if(localPlayer) {
-				gm.getClient().send(Client.PACKET_TYPE_OBJECTSPAWN,new Object[] {"bullet"});
-			}
-		}
+	public void Attack(GameManager gm) {
+		weapon.Attack(gm,gs);
 	}
-	
 	//---------------------------------------------------------------------------------------
 	private void RenderRect(Renderer r,int type) {
 		switch(type){
@@ -242,6 +234,10 @@ public class Player extends Entity{
 		}
 			 
 	}
+	public boolean isLocalPlayer() {
+		return localPlayer;
+	}
 
 	//---------------------------------------------------------------------------------------
+	
 }

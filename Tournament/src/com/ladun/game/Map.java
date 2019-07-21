@@ -12,6 +12,7 @@ public class Map {
 	private static final int SPAWN_COLOR = 0xff68f38a;
 
 	private String name;
+	private Image mapImage;
 	
 	private boolean active;
 	
@@ -27,14 +28,19 @@ public class Map {
 	
 	public Map(String name,boolean active) {
 		this.active = active;
-		loadLevel(new Image("/" + name + "_collision.png"));
+		this.name = name;
+		mapImage = new Image("/Map/" + name + ".png");
+		loadLevel(new Image("/Map/" + name + "_collision.png"));
 	}
 	
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		
 	}
 	public void render(GameContainer gc, Renderer r) {
-		RenderCollision(r);
+		
+		r.setzDepth(0);
+		r.drawImage(mapImage, 0, 0, 0);
+		//RenderCollision(r);
 	}
 	
 	private void RenderCollision(Renderer r) {

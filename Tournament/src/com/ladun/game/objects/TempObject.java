@@ -5,7 +5,6 @@ import com.ladun.engine.Renderer;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.CircleCollider;
-import com.ladun.game.components.RectCollider;
 
 public class TempObject extends GameObject{
 

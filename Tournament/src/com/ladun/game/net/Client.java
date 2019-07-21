@@ -230,7 +230,7 @@ public class Client {
 						if(_p == null)
 							return;
 						
-						_p.Shoot(null);
+						_p.Attack(gm);
 					}				
 				}
 				break;

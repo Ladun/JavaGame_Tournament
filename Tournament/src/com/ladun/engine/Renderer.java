@@ -73,7 +73,7 @@ public class Renderer {
 		{
 			ImageRequest ir = imageRequests.get(i);
 			setzDepth(ir.zDepth);
-			drawImage(ir.image,ir.offX,ir.offY,ir.angle);
+			drawImage(ir.image,ir.offX,ir.offY,ir.xPivot,ir.yPivot,ir.angle);
 		}
 		
 		//Draw lighting
@@ -191,12 +191,15 @@ public class Renderer {
 	
 	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawImage(Image image, int offX, int offY, float angle){
+		drawImage(image,offX,offY,0,0,angle);
+	}
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot, float angle){
 
 		offX -= camX;
 		offY -= camY;
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,angle));
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,xPivot,yPivot,angle));
 			return;
 		}
 		
@@ -214,10 +217,10 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int hw = newWidth /2;
-		int hh = newHeight /2;
-		int cx = offX + hw;
-		int cy = offY + hh;
+		int dw = (int)(newWidth  * xPivot); // delX
+		int dh = (int)(newHeight * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
 		
 		//Clipping code
 		if(offX < 0){newX -= offX;}
@@ -229,17 +232,20 @@ public class Renderer {
 		{
 			for(int x = newX; x < newWidth;x++)
 			{
-				setPixel(cx + (int)((x-hw) * c - (y-hh) * s),
-						 cy + (int)((x-hw) *s + (y-hh) * c),
+				setPixel(px + (int)((x-dw) * c - (y-dh) * s),
+						 py + (int)((x-dw) *s + (y-dh) * c),
 						 image.getP()[x + y *image.getW()]);
 				
-				setLightBlock(cx + (int)((x-hw) * c - (y-hh) * s),
-						 	  cy + (int)((x-hw) *s + (y-hh) * c),
+				setLightBlock(px + (int)((x-dw) * c - (y-dh) * s),
+						 	  py + (int)((x-dw) *s + (y-dh) * c),
 							  image.getLightBlock());
 			}
 		}
 	}
 	
+	public void drawImageTile(ImageTile image, int offX, int offY,int tileX,int tileY, float angle){
+		drawImageTile(image,offX,offY,tileX,tileY,0,0,angle);
+	}
 	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,float angle)
 	{
 		offX -= camX;
@@ -247,7 +253,7 @@ public class Renderer {
 
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,angle));
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,xPivot,yPivot,0));
 			return;
 		}
 		
@@ -599,7 +605,7 @@ public class Renderer {
 		
 		
 		for(int i = -x +1 ; i < x ; i++)
-			for(int j = -y ; j <= y; j++)
+			for(int j = -y +1; j < y; j++)
 				setPixel(i + cx, j + cy, color);
 	}
 	

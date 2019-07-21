@@ -23,6 +23,13 @@ public abstract class Entity extends GameObject{
 	
 	protected float nextHitTime = 0;
 	
+	public void Hit(float damage) {
+		health -= damage;
+		if(health <= 0) {
+			active =false;
+		}
+	}
+	
 	protected void AdjustPosition()
 	{
 		//Final position

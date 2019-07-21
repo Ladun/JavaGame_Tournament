@@ -10,9 +10,6 @@ public class MainMenuScene extends AbstractScene{
 	private Button testButton;
 	
 	
-	private boolean loading;
-	private float loadingAngle;
-	
 	@Override
 	public boolean init(GameManager gm, boolean active) {
 		// TODO Auto-generated method stub
@@ -38,9 +35,6 @@ public class MainMenuScene extends AbstractScene{
 			ConnectToServer(gm);
 		}
 		
-		if(loading) {
-			loadingAngle = (loadingAngle + dt * 360) % 360;
-		}
 	}
 
 	@Override
@@ -52,15 +46,14 @@ public class MainMenuScene extends AbstractScene{
 				objects.get(i).render(gc, r);
 		}
 		
-		if(loading) {
-			//TODO 로딩 이미지 띄우기
-			r.drawFillRect(gc.getWidth() - 30, gc.getHeight() - 30, 20, 20, loadingAngle, 0xffd8a7c3);
-		}
 	}
 
 	//-------------------------------------------------------------------------------
 	private void ConnectToServer(GameManager gm) {
-		loading = true;
+		if(gm.isLoading())
+			return;
+		
+		gm.setLoading(true);
 		new Thread(new Runnable() {
 			double stTime = System.currentTimeMillis();
 			
@@ -73,9 +66,13 @@ public class MainMenuScene extends AbstractScene{
 				double nowTime = 0;
 			
 				while(!gm.getClient().isServerRespond()) {
-					nowTime = (System.currentTimeMillis() - stTime) / 1000; 
-					if(nowTime >= 5|| !gm.getClient().isServerRespond()) {
-						break;
+					//System.out.println(gm.getClient().isServerRespond());
+					synchronized (gm) {					
+						
+						nowTime = (System.currentTimeMillis() - stTime) / 1000; 
+						if(nowTime >= 5|| gm.getClient().isServerRespond()) {
+							break;
+						}
 					}
 				}
 				if(nowTime>= 5) {
@@ -85,7 +82,7 @@ public class MainMenuScene extends AbstractScene{
 				else {
 					gm.changeScene("InGame");
 				}
-				loading = false;
+				gm.setLoading(false);
 			}
 			
 		},"Connecting-Thread").start();;
