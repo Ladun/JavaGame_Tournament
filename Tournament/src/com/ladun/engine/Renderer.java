@@ -73,7 +73,7 @@ public class Renderer {
 		{
 			ImageRequest ir = imageRequests.get(i);
 			setzDepth(ir.zDepth);
-			drawImage(ir.image,ir.offX,ir.offY,ir.xPivot,ir.yPivot,ir.angle);
+			drawImage(ir.image,ir.offX,ir.offY,ir.xPivot,ir.yPivot,ir.xMirror,ir.yMirror,ir.angle);
 		}
 		
 		//Draw lighting
@@ -193,13 +193,59 @@ public class Renderer {
 	public void drawImage(Image image, int offX, int offY, float angle){
 		drawImage(image,offX,offY,0,0,angle);
 	}
-	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot, float angle){
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot, float angle) {
+		drawImage(image,offX,offY,xPivot,yPivot,false,false,angle);
+	}
+	public void drawImage(Image image, int offX,int offY, int stX,int stY,int width, int height) {
+		offX -= camX;
+		offY -= camY;
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,0,0,false	,false,0));
+			return;
+		}
+		
+		//Don't Render code
+		if(offX < -image.getW()) return;
+		if(offY < -image.getH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		if(stX >= image.getW()) return;
+		if(stY >= image.getH()) return;
+		if(width > image.getW()) return;
+		if(height > image.getH()) return;
+		
+		int newX = stX;
+		int newY = stY;
+		int newWidth = width;
+		int newHeight = height;
+		
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+		
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(offX + x,offY + y,
+						 image.getP()[x + y *image.getW()]);
+				
+				setLightBlock(offX + x,offY + y,
+							  image.getLightBlock());
+			}
+		}
+	}
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot,boolean xMirror, boolean yMirror, float angle){
 
 		offX -= camX;
 		offY -= camY;
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,xPivot,yPivot,angle));
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,angle));
 			return;
 		}
 		
@@ -217,8 +263,8 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int dw = (int)(newWidth  * xPivot); // delX
-		int dh = (int)(newHeight * yPivot); // delY
+		int dw = (int)( image.getW()  * xPivot); // delX
+		int dh = (int)(image.getH() * yPivot); // delY
 		int px = offX + dw; // pivot X
 		int py = offY + dh; // pivot Y
 		
@@ -234,7 +280,7 @@ public class Renderer {
 			{
 				setPixel(px + (int)((x-dw) * c - (y-dh) * s),
 						 py + (int)((x-dw) *s + (y-dh) * c),
-						 image.getP()[x + y *image.getW()]);
+						 image.getP()[(xMirror?image.getW() - 1 -x : x) + (yMirror?image.getH() - 1 -y:y) *image.getW()]);
 				
 				setLightBlock(px + (int)((x-dw) * c - (y-dh) * s),
 						 	  py + (int)((x-dw) *s + (y-dh) * c),
@@ -248,12 +294,16 @@ public class Renderer {
 	}
 	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,float angle)
 	{
+		drawImageTile(image,offX,offY,tileX,tileY,xPivot,yPivot, false,false,angle);
+	}
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,boolean xMirror, boolean yMirror,float angle)
+	{
 		offX -= camX;
 		offY -= camY;
 
 		if(image.isAlpha() && !processing)
 		{
-			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,xPivot,yPivot,0));
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,0));
 			return;
 		}
 		
@@ -271,8 +321,8 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int dw = (int)(newWidth  * xPivot); // delX
-		int dh = (int)(newHeight * yPivot); // delY
+		int dw = (int)(image.getTileW()  * xPivot); // delX
+		int dh = (int)(image.getTileH() * yPivot); // delY
 		int px = offX + dw; // pivot X
 		int py = offY + dh; // pivot Y
 				
@@ -289,7 +339,8 @@ public class Renderer {
 			{
 				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
 						 py + (int)((x - dw) * s + (y - dh) * c),
-						 image.getP()[ (x +tileX * image.getTileW()) + (y + tileY * image.getTileH()) *image.getW()]);
+						 image.getP()[ ((xMirror?image.getW() - 1 -x : x)  +tileX * image.getTileW()) + 
+						               ((yMirror?image.getH() - 1 -y:y) + tileY * image.getTileH()) *image.getW()]);
 				
 				setLightBlock(px + (int)((x - dw) * c - (y - dh) * s),
 						 	  py + (int)((x - dw) * s + (y - dh) * c),

@@ -16,32 +16,41 @@ public class ImageLoader {
 	public void ImageLoad() {
 		if(load)
 			return ;
-		addImage("HOS", "/HOS.png");
+		
+		addImage("point", "/Point.png");
 		addImage("player", "/entity/Character.png",GameManager.TS,GameManager.TS);
 		
+		//Weapon Load
 		addImage("sword", "/weapon/Sword.png");
-		addImage("weapon_attack", "/weapon/Weapon_attack.png",GameManager.TS * 2,GameManager.TS *2);
-		addImage("projectile", "/weapon/Projectile.png",64,64);
+		addImage("bow", "/weapon/Bow.png");
+		addImage("spear", "/weapon/Spear.png");
+		addImage("projectile", "/weapon/Projectile.png",64,64);	
 		
+		//UI Image Load
 		addImage("bar", "/UI/Bar.png",334,13);
 		addImage("slot", "/UI/Slot.png");
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
+		
 		load = true;
 	}
 	
 	private void addImage(String name, String path) {
 		try {
+			System.out.print("Image Load..." + path + "...");
 			images.put(name, new Image(path));
-			System.out.println("Image Load..." + path + "....Success");
+			System.out.println("Success");
 		} catch (Exception e) {
+			System.out.println("Fail");
 			e.printStackTrace();
 		}
 	}
 	private void addImage(String name, String path,int tileW,int tileH) {
 		try {
+			System.out.print("ImageTile Load..." + path + "...");
 			images.put(name, new ImageTile(path,tileW,tileH));
-			System.out.println("ImageTile Load..." + path + "....Success");
+			System.out.println("Success");
 		} catch (Exception e) {
+			System.out.println("Fail");
 			e.printStackTrace();
 		}
 	}

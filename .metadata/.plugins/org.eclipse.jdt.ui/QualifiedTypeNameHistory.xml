@@ -18,8 +18,8 @@
 <fullyQualifiedTypeName name="com.ladun.game.components.Collider.Type"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.GameScene"/>
 <fullyQualifiedTypeName name="com.ladun.game.Physics"/>
-<fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.TempObject"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.CircleCollider"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
+<fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
 </qualifiedTypeNameHistroy>

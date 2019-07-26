@@ -49,10 +49,10 @@ public class Bullet extends Projectile {
 		// TODO Auto-generated method stub
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
-		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xff385610);
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)posX, (int)posZ, anim, 0, xPivot, yPivot, angle);
+		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xaff385610);
+		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)(posX ), (int)(posZ ), anim, 0, xPivot, yPivot, angle);
 		
-		r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 1, 1, 0, 0xffff0000);
+		//r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 3, 3, 0, 0xffff0000);
 		
 		this.renderComponents(gc, r);
 	}
@@ -60,11 +60,12 @@ public class Bullet extends Projectile {
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
+		/*
 		if(other instanceof Entity)
 		{
 			((Entity)other).Hit(damage);
 			this.active = false;
-		}
+		}*/
 	}
 	
 	

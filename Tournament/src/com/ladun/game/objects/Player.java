@@ -2,25 +2,31 @@ package com.ladun.game.objects;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
+import com.ladun.game.Point;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
-import com.ladun.game.net.Client;
-import com.ladun.game.objects.projectile.Bullet;
 
 public class Player extends Entity{
+	
+	private static float HIT_TIME = .5f;
+	
+	private ArrayList<Point>	clickPoints = new ArrayList<Point>(); // 차후에 큐로 바꾸기
 	
 	private float anim = 0;
 	private float animSpeed = 12;
 	private int animType = 0;
 	private int[] animMaxIndex = {6,1,1};
 	
+	private float fcos,fsin;
+	private boolean readyToShoot = false;
 	
 	private Weapon weapon;
 	
@@ -42,7 +48,7 @@ public class Player extends Entity{
 		this.hY = 50;
 		this.pR = pL = 20;
 		this.pB = 0;
-		this.pT = 48;
+		this.pT = 30;
 		
 		this.maxHealth 	= 100;
 		this.health 	= maxHealth;
@@ -65,55 +71,54 @@ public class Player extends Entity{
 			//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 			nextHitTime += dt;
 			
-			int h= gc.getInput().isKey(KeyEvent.VK_D)? 1:gc.getInput().isKey(KeyEvent.VK_A)?-1:0;
-			int v = gc.getInput().isKey(KeyEvent.VK_S)? 1:gc.getInput().isKey(KeyEvent.VK_W)?-1:0;
+
 			
-			if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
-				speed = 50;
-			else
-				speed = 200;
 			
-			// Moving -------------
-			if(h != 0)	{
-				offX += dt * speed* h;
-				if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
-				   (gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
-					
-					if(h == 1) {
-						if(offX > pR)
-							offX = pR;
+			// Moving ------------------------------------------------------
+			if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
+				int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+				int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+				
+				
+				if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
+				{
+					clickPoints.add(new Point(_x,_y));					
+				}
+				else {
+					angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+					fcos = (float)Math.cos(Math.toRadians(angle));
+					fsin = (float)Math.sin(Math.toRadians(angle));
+					if(clickPoints.size() == 0) {
+						clickPoints.add(new Point(_x,_y));
+					}
+					else if(clickPoints.size() == 1) {
+						clickPoints.get(0).setX((int)(gc.getInput().getMouseX() + gs.getCamera().getOffX()));
+						clickPoints.get(0).setY((int)(gc.getInput().getMouseY() + gs.getCamera().getOffY()));
 					}
 					else {
-						if(offX < -pL)
-							offX = -pL;
+						clickPoints.clear();
+						clickPoints.add(new Point(_x,_y));
 					}
 				}
-				moving = true;
-			}
-			if(v != 0)	{				
-				offZ += dt * speed * v;
-				if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
-				   (gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
-	
-					if(v == 1) {
-						if(offZ > pB)
-							offZ = pB;
-					}
-					else {
-						if(offZ < -pT)
-							offZ = -pT;
-					}
-			
+				
+				for(int i = 0; i < clickPoints.size();i++) {
+					System.out.println(i + " " + clickPoints.get(i).getX() + ", " + clickPoints.get(i).getY());
 				}
-				moving = true;
 			}
 			
-			if(h == 0 && v == 0)
-			{
-				moving = false;
+			if(clickPoints.size() > 0) {
+				float distanceX2 = distanceSq(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
+				if(distanceX2 >= speed * speed * dt) {
+					moving(gc,dt,speed * fcos,speed * fsin);
+				}
+				else {
+					moving(gc,dt,distanceX2 * fcos, distanceX2 *fsin);
+					clickPoints.remove(0);
+				}
 			}
-			// Moving End --------------
+			// Moving End --------------------------------------------------
 			
+						
 			// Jump And Gravity ----------------------------------------
 			fallDistance += Physics.GRAVITY * dt;
 			
@@ -148,15 +153,32 @@ public class Player extends Entity{
 			posY += fallDistance;
 			// Jump And Gravity End ------------------------------------
 			
-			angle =(float) Math.toDegrees(Math.atan2(
-							gc.getInput().getMouseY() - (posZ + height/ 2 - gs.getCamera().getOffY()), 
-							gc.getInput().getMouseX() - (posX + width / 2- gs.getCamera().getOffX())
-							));
 			
-			
-			if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-				weapon.Attack(gm,gs);
+			// Attack----------------------------------------------------
+			if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+				if(!weapon.isAttacking()) {
+					if(weapon.getType() == Weapon.Type.BOW)	{
+						readyToShoot = true;
+					}
+					else {
+						weapon.attack(gm,gs);
+					}
+				}
 			}
+			if(gc.getInput().isButtonDown(MouseEvent.BUTTON1))
+			{
+				if(readyToShoot) {
+
+					int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+					
+					angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+					weapon.positionSetting();
+					weapon.attack(gm,gs);					
+				}
+			}
+			
+			// Attack End -------------------------------------------------
 			
 			anim += dt * animSpeed;
 			if(anim >= animMaxIndex[animType]) {
@@ -204,7 +226,10 @@ public class Player extends Entity{
 		//r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
 		r.drawFillRect((int)posX , (int)(posZ + posY) - 15 , (int)(64 * (health/maxHealth)), 15, 0, 0xff63c564);
 		
-		
+		for(int i = 0; i < clickPoints.size();i++) {
+			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
+			r.drawImage(gc.getImageLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
+		}
 		
 		weapon.render(gc, r);
 		
@@ -220,7 +245,50 @@ public class Player extends Entity{
 
 	//---------------------------------------------------------------------------------------
 	public void Attack(GameManager gm) {
-		weapon.Attack(gm,gs);
+		weapon.attack(gm,gs);
+	}
+	
+	private void moving(GameContainer gc, float dt, float dX,float dY) {
+		int h = (int)Math.signum(dX);
+		int v = (int)Math.signum(dY);
+					
+		// Moving -------------
+		offX += dX * dt;
+		if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
+		   (gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
+				
+			if(h == 1) {
+				if(offX > pR)
+					offX = pR;
+			}
+			else {
+				if(offX < -pL)
+					offX = -pL;
+			}
+		}	
+		offZ += dY * dt;
+		if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
+		   (gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
+			
+			if(v == 1) {
+				if(offZ > pB)
+					offZ = pB;
+			}
+			else {
+				if(offZ < -pT)
+					offZ = -pT;
+			}
+		}
+
+
+		// Moving End --------------
+
+	}
+	
+	private float distanceSq(float stX, float stY, float edX, float edY) {
+		float dx = edX - stX;
+		float dy = edY - stY;
+		return dx * dx  + dy * dy;
 	}
 	//---------------------------------------------------------------------------------------
 	private void RenderRect(Renderer r,int type) {
@@ -236,6 +304,13 @@ public class Player extends Entity{
 	}
 	public boolean isLocalPlayer() {
 		return localPlayer;
+	}
+	
+	public float getCenterX() {
+		return posX + pL + (width - pL - pR) / 2;
+	}
+	public float getCenterZ() {
+		return posZ + pT + (height - pT - pB) / 2;		
 	}
 
 	//---------------------------------------------------------------------------------------

@@ -6,10 +6,11 @@ public class ImageRequest {
 	public int zDepth;
 	public int offX ,offY;
 	public float xPivot, yPivot;
+	public boolean xMirror, yMirror;
 	public float angle;
 
 	
-	public ImageRequest(Image image,int zDepth, int offX,int offY,float xPivot, float yPivot,float angle)
+	public ImageRequest(Image image,int zDepth, int offX,int offY,float xPivot, float yPivot,boolean xMirror, boolean yMirror,float angle)
 	{
 		this.image = image;
 		this.zDepth = zDepth;

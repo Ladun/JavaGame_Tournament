@@ -1,0 +1,40 @@
+package com.ladun.game.objects;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+
+public class HitRange extends GameObject{
+
+	public enum Type{ RECT,CIRCLE}
+	
+	
+	
+	public HitRange(Type t) {
+		switch(t) {
+		case RECT:
+			break;
+		case CIRCLE:
+			break;
+		}
+	}
+	
+	@Override
+	public void update(GameContainer gc, GameManager gm, float dt) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

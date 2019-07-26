@@ -21,7 +21,7 @@ public abstract class Projectile extends GameObject{
 		this.damage = damage;
 
 		this.tileX = (int) (posX / GameManager.TS);
-		this.tileZ = (int) (posX / GameManager.TS);
+		this.tileZ = (int) (posZ / GameManager.TS);
 		this.offX = posX - tileX * GameManager.TS;
 		this.offZ = posZ - tileZ * GameManager.TS;
 		
@@ -35,7 +35,7 @@ public abstract class Projectile extends GameObject{
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage) {
 		
 		this.tileX = (int) (posX / GameManager.TS);
-		this.tileZ = (int) (posX / GameManager.TS);
+		this.tileZ = (int) (posZ / GameManager.TS);
 		this.offX = posX - tileX * GameManager.TS;
 		this.offZ = posZ - tileZ * GameManager.TS;
 		this.posY = posY;

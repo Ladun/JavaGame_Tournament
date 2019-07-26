@@ -10,56 +10,64 @@ import com.ladun.game.objects.projectile.Bullet;
 
 public class Weapon extends GameObject{
 	public enum Type{
-		SWORD,BOW
+		SWORD,BOW,SPEAR
 	}
 	
 	private Type type;
 	private GameObject parent;
 	
-	private float anim;
-	private int animType;
+	private float deltaAngle;
+	private float deltaX;
+	private float deltaZ;
+	private float attackTime;
 	private boolean attacking = false;
 	
 	private String imageName;
 	private float xPivot;
 	private float yPivot;
+	private float distanceToParent = 24;
+
+	private boolean mirror;
+
+	private HitRange hitRange;
+	
+	
 	
 	public Weapon(GameObject parent) {
 		this.parent = parent;
-		setType(Type.SWORD);
+		width = 64;
+		height = 64;
+		setType(Type.BOW);
+		
+		hitRange = new HitRange(this,HitRange.Type.CIRCLE);
 	}
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		// TODO Auto-generated method stub
-		posX = parent.posX;
-		posZ = parent.posZ + parent.posY - parent.height * .3f;
-		angle = parent.angle;
+		setType(Type.BOW);
 		
-		if(Math.abs(angle) > 90) {
-			angle = (angle + 180) % 360;
-			posX -= parent.width / 4;
-		}
-		else {
-			posX += parent.width / 4;
-			
-		}
+		positionSetting();
 		
 		if(attacking) {
-			anim+= dt * 28;
-			if(anim > 6)
-				attacking= false;
+			attackFunction(dt);
 		}
+		
+		if(hitRange.isActive())
+			hitRange.update(gc, gm, dt);
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		if(attacking)
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("weapon_attack"),(int)posX - parent.width / 2,(int)(posZ ),(int)anim,0,.5f, .45f,0);
-		else
-			r.drawImage(gc.getImageLoader().getImage(imageName),(int)posX,(int)(posZ ),xPivot, yPivot,0);
 		
+		r.drawImage(gc.getImageLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0));
+		
+		r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
+		
+		
+		if(hitRange.isActive())
+			hitRange.render(gc, r);;
 	}
 
 	@Override
@@ -68,14 +76,61 @@ public class Weapon extends GameObject{
 		
 	}
 	
-	public void Attack(GameManager gm, GameScene gs) {
+	// -------------------------------------------------------------------------
+	public void positionSetting() {
+		angle = parent.angle;		
+		posX = parent.posX + parent.width / 2 - width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle)));
+		posZ = parent.posZ + parent.posY + parent.height / 2 - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle)));
+		
+		if(Math.abs(angle) > 90) {
+			mirror = true;
+		}
+		else {
+			mirror = false;
+		}
+	}
+	public void attack(GameManager gm, GameScene gs) {
 		switch(type) {
+		case SPEAR:
 		case SWORD:
 			attacking = true;
-			anim = 0;
 			break;
 		case BOW:
 			Shoot(gm,gs);
+			break;
+		}
+		attackTime = 0;
+		
+	}
+	
+	private void attackFunction(float dt) {
+		attackTime += dt;
+		switch(type) {
+		case SWORD:
+			if(attackTime >= .15f) {
+				deltaAngle = 0;
+				attacking = false;
+			}
+			else {
+				if(mirror) {
+					deltaAngle -= dt * 1300;				
+				}
+				else {
+					deltaAngle += dt * 1300;
+				}
+			}
+			break;
+		case SPEAR:
+			if(attackTime >= .1f) {
+				deltaX = 0;
+				deltaZ = 0;
+				attacking = false;
+			}
+			else {
+				deltaX += dt * 1000 * Math.cos(Math.toRadians(angle));
+				deltaZ += dt * 1000 * Math.sin(Math.toRadians(angle));
+			}
+			
 			break;
 		}
 		
@@ -83,11 +138,14 @@ public class Weapon extends GameObject{
 	
 	public void Shoot(GameManager gm,GameScene gs) {
 		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
+		float dX = (parent.getWidth()  *.75f)* (float)Math.cos(Math.toRadians(angle))  - 16;
+		float dZ =  (parent.getHeight()*.75f )* (float)Math.sin(Math.toRadians(angle)) ;
+		
 		if(bullet == null) {
-			gs.addObject(new Bullet(posX,posY,posZ,angle,1000,1));
+			gs.addObject(new Bullet(posX + dX,posY,posZ + dZ,angle,1000,1));
 		}
 		else {
-			bullet.setting(posX, posY, posZ, angle, 1000, 1);
+			bullet.setting(posX + dX, posY, posZ + dZ, angle, 1000, 1);
 		}
 		
 		if(gm != null) {
@@ -97,7 +155,7 @@ public class Weapon extends GameObject{
 				}
 		}
 	}
-	//---------------------------------------------------------
+	// -------------------------------------------------------------------------
 	public Type getType() {
 		return type;
 	}
@@ -107,16 +165,36 @@ public class Weapon extends GameObject{
 		switch(type) {
 		case SWORD:
 			imageName = "sword";
+			width = 64;
+			height = 64;
 			xPivot = .5f;
 			yPivot = .84f;
+			distanceToParent = 18;
 			break;
 		case BOW:
 			imageName = "bow";
+			width = 64;
+			height = 64;
 			xPivot = .5f;
-			yPivot = .84f;
+			yPivot = .5f;
+			distanceToParent = 24;
+			break;
+
+		case SPEAR:
+			imageName = "spear";
+			width = 128;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .5f;
+			distanceToParent = 24;
 			break;
 		}
 		
+		
+	}
+
+	public boolean isAttacking() {
+		return attacking;
 	}
 
 }
