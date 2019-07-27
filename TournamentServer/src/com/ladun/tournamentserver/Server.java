@@ -47,7 +47,7 @@ public class Server {
 			e.printStackTrace();
 			return;
 		}
-		System.out.println("--Start--------");
+		//System.out.println("--Start--------");
 		
 		
 		listening = true;

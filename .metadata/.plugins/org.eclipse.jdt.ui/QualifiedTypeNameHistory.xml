@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.lang.Integer"/>
-<fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.MainMenuScene"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
@@ -22,4 +21,8 @@
 <fullyQualifiedTypeName name="com.ladun.game.components.CircleCollider"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
+<fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
+<fullyQualifiedTypeName name="com.ladun.game.Point"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
 </qualifiedTypeNameHistroy>

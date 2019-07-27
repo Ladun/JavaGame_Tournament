@@ -1,5 +1,9 @@
 package com.ladun.tournamentserver;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.Scanner;
 
 public class TournamentServer {
@@ -10,6 +14,14 @@ public class TournamentServer {
 		
 		boolean running = true;
 		Scanner sc = new Scanner(System.in);
+
+		System.out.println("========================================================================");
+		System.out.println("============================[ Server Start ]============================");
+		System.out.println("========================================================================");
+		ShowIpAddress();
+		System.out.println("[Server Port] " + 8192);
+		System.out.println("========================================================================");
+		
 		
 		String s;
 		String[] commands;
@@ -50,10 +62,30 @@ public class TournamentServer {
 				NoneCommand(s);
 			}
 		}
+		System.out.println("Server Stopped");
+		
 	}
 	
 	private static void NoneCommand(String s) {
 		System.out.printf("-------\"%s\" is not a command----------\n",s);
 		
+	}
+	private static void ShowIpAddress() {
+		try
+		{
+		    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();)
+		    {
+		        NetworkInterface intf = en.nextElement();
+		        for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();)
+		        {
+		            InetAddress inetAddress = enumIpAddr.nextElement();
+		            if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress())
+		            {
+		            	System.out.println("[Server IP  ] " + inetAddress.getHostAddress().toString());
+		            }
+		        }
+		    }
+		}
+		catch (SocketException ex) {}
 	}
 }

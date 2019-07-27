@@ -85,7 +85,7 @@ public class Player extends Entity{
 					clickPoints.add(new Point(_x,_y));					
 				}
 				else {
-					angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+					angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
 					fcos = (float)Math.cos(Math.toRadians(angle));
 					fsin = (float)Math.sin(Math.toRadians(angle));
 					if(clickPoints.size() == 0) {
@@ -107,12 +107,12 @@ public class Player extends Entity{
 			}
 			
 			if(clickPoints.size() > 0) {
-				float distanceX2 = distanceSq(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
-				if(distanceX2 >= speed * speed * dt) {
+				float distance = distanceSq(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
+				if(distance >= speed  * dt) {
 					moving(gc,dt,speed * fcos,speed * fsin);
 				}
 				else {
-					moving(gc,dt,distanceX2 * fcos, distanceX2 *fsin);
+					moving(gc,dt,distance * fcos, distance *fsin);
 					clickPoints.remove(0);
 				}
 			}
@@ -169,6 +169,7 @@ public class Player extends Entity{
 			{
 				if(readyToShoot) {
 
+					readyToShoot = false;
 					int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
 					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
 					
@@ -288,7 +289,7 @@ public class Player extends Entity{
 	private float distanceSq(float stX, float stY, float edX, float edY) {
 		float dx = edX - stX;
 		float dy = edY - stY;
-		return dx * dx  + dy * dy;
+		return (float)Math.sqrt(dx * dx  + dy * dy);
 	}
 	//---------------------------------------------------------------------------------------
 	private void RenderRect(Renderer r,int type) {
