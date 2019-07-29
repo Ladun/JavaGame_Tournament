@@ -2,6 +2,7 @@ package com.ladun.game.objects;
 
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.objects.projectile.Bullet;
 
 public abstract class Entity extends GameObject{
 	
@@ -17,6 +18,11 @@ public abstract class Entity extends GameObject{
 	protected int tileX,tileZ;
 	protected float offX,offZ;
 	
+
+	protected float anim = 0;
+	protected float animSpeed;
+	protected int animType = 0;
+	
 	protected boolean ground = false;
 	protected boolean groundLast = false;
 	protected boolean moving = false;
@@ -25,6 +31,17 @@ public abstract class Entity extends GameObject{
 	
 	public void Hit(float damage) {
 		health -= damage;
+		
+		//----------------------------------------------------------------------------------------
+		DisplayDamage displayDamage = (DisplayDamage)gs.getInactiveObject("displayDamage");		
+		if(displayDamage == null) {
+			gs.addObject(new DisplayDamage((int)damage, getCenterX(), posZ + posY));
+		}
+		else {
+			displayDamage.setting((int)damage,getCenterX(), posZ + posY);
+		}
+		//----------------------------------------------------------------------------------------
+		
 		if(health <= 0) {
 			active =false;
 		}
@@ -58,5 +75,28 @@ public abstract class Entity extends GameObject{
 
 		posX = tileX * GameManager.TS + offX;
 		posZ = tileZ * GameManager.TS + offZ;
+	}
+
+	public float getCenterX() {
+		return posX + pL + (width - pL - pR) / 2;
+	}
+	public float getCenterZ() {
+		return posZ + pT + (height - pT - pB) / 2;		
+	}
+
+	public float getAnim() {
+		return anim;
+	}
+
+	public void setAnim(float anim) {
+		this.anim = anim;
+	}
+
+	public int getAnimType() {
+		return animType;
+	}
+
+	public void setAnimType(int animType) {
+		this.animType = animType;
 	}
 }

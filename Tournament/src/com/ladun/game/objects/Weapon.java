@@ -2,25 +2,31 @@ package com.ladun.game.objects;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
-import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
-import com.ladun.game.net.Client;
+import com.ladun.game.objects.UI.Util;
 import com.ladun.game.objects.projectile.Bullet;
 
 public class Weapon extends GameObject{
 	public enum Type{
 		SWORD,BOW,SPEAR
 	}
+	private final static float LIMIT_TIME = 1/10f; 
 	
 	private Type type;
 	private GameObject parent;
+	
+	private float damage;
 	
 	private float deltaAngle;
 	private float deltaX;
 	private float deltaZ;
 	private float attackTime;
 	private boolean attacking = false;
+	
+	private float srcAngle = 0;
+	private float dstAngle = 0;
+	private float time = 0;
 	
 	private String imageName;
 	private float xPivot;
@@ -40,13 +46,14 @@ public class Weapon extends GameObject{
 		setType(Type.BOW);
 		
 		hitRange = new HitRange(this,HitRange.Type.CIRCLE);
+		srcAngle = parent.angle;
+		dstAngle = parent.angle;
 	}
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		// TODO Auto-generated method stub
-		setType(Type.BOW);
-		
+		time += dt;
 		positionSetting();
 		
 		if(attacking) {
@@ -73,12 +80,29 @@ public class Weapon extends GameObject{
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
-		
+		if(other instanceof Entity)		{
+			if(!other.tag.equals(parent.tag)) {
+				((Entity)other).Hit(damage);
+				
+			}
+		}
 	}
 	
 	// -------------------------------------------------------------------------
 	public void positionSetting() {
-		angle = parent.angle;		
+		
+		dstAngle = parent.angle;
+		
+		if(time >= LIMIT_TIME) {
+			time -= LIMIT_TIME;
+			srcAngle = dstAngle;
+		}
+		
+		angle = Util.lerp(srcAngle,dstAngle,time / LIMIT_TIME);
+		
+		
+		
+		
 		posX = parent.posX + parent.width / 2 - width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle)));
 		posZ = parent.posZ + parent.posY + parent.height / 2 - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle)));
 		
@@ -89,14 +113,14 @@ public class Weapon extends GameObject{
 			mirror = false;
 		}
 	}
-	public void attack(GameManager gm, GameScene gs) {
+	public void attack(GameManager gm, GameScene gs,float _angle) {
 		switch(type) {
 		case SPEAR:
 		case SWORD:
 			attacking = true;
 			break;
 		case BOW:
-			Shoot(gm,gs);
+			Shoot(gm,gs,_angle);
 			break;
 		}
 		attackTime = 0;
@@ -105,6 +129,7 @@ public class Weapon extends GameObject{
 	
 	private void attackFunction(float dt) {
 		attackTime += dt;
+		
 		switch(type) {
 		case SWORD:
 			if(attackTime >= .15f) {
@@ -136,23 +161,16 @@ public class Weapon extends GameObject{
 		
 	}
 	
-	public void Shoot(GameManager gm,GameScene gs) {
+	public void Shoot(GameManager gm,GameScene gs, float _angle) {
 		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
-		float dX = (parent.getWidth()  *.75f)* (float)Math.cos(Math.toRadians(angle))  - 16;
-		float dZ =  (parent.getHeight()*.75f )* (float)Math.sin(Math.toRadians(angle)) ;
+		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(_angle))  - 16;
+		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(_angle)) ;
 		
 		if(bullet == null) {
-			gs.addObject(new Bullet(posX + dX,posY,posZ + dZ,angle,1000,1));
+			gs.addObject(new Bullet(posX + dX,posY,posZ + dZ,_angle,1000,1));
 		}
 		else {
-			bullet.setting(posX + dX, posY, posZ + dZ, angle, 1000, 1);
-		}
-		
-		if(gm != null) {
-			if(parent instanceof Player)
-				if(((Player)parent).isLocalPlayer()) {
-					gm.getClient().send(Client.PACKET_TYPE_OBJECTSPAWN,new Object[] {"bullet"});
-				}
+			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, 1);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -191,6 +209,10 @@ public class Weapon extends GameObject{
 		}
 		
 		
+	}
+	
+	public void setDstAngle(float dstAngle) {
+		this.dstAngle = dstAngle;
 	}
 
 	public boolean isAttacking() {

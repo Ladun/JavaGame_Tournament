@@ -60,12 +60,12 @@ public class Bullet extends Projectile {
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
-		/*
+		
 		if(other instanceof Entity)
 		{
 			((Entity)other).Hit(damage);
 			this.active = false;
-		}*/
+		}
 	}
 	
 	

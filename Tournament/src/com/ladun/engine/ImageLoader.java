@@ -17,6 +17,8 @@ public class ImageLoader {
 		if(load)
 			return ;
 		
+		System.out.println("------[ Image Load ]----------------------");
+		
 		addImage("point", "/Point.png");
 		addImage("player", "/entity/Character.png",GameManager.TS,GameManager.TS);
 		
@@ -30,7 +32,8 @@ public class ImageLoader {
 		addImage("bar", "/UI/Bar.png",334,13);
 		addImage("slot", "/UI/Slot.png");
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
-		
+
+		System.out.println("------[ Image Load Finish ]---------------");
 		load = true;
 	}
 	

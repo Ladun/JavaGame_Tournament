@@ -136,7 +136,7 @@ public class Client {
 		if(!packet.getAddress().equals(serverAddress) || packet.getPort() != port)
 			return;		
 
-		if(data[2] == 0x04)
+		if(data[2] == 0x03 && data[3] == 0x12)
 			dumpPacket(packet);
 		
 		if(data[0] == 0x41 && data[1] == 0x41) {
@@ -196,7 +196,7 @@ public class Client {
 					((NetworkTransform)_p.findComponent("netTransform")).packetSend(gm);; 
 				}
 				else if(netArgs[0].toCharArray()[0] == 0x11) {	
-					// ValueType, x, y, z, angle
+					// ValueType, x, y, z, angle, anim, animType
 					
 					sb.setLength(0);
 					sb.append("Player");
@@ -211,7 +211,21 @@ public class Client {
 							Float.parseFloat(netArgs[1]),
 							Float.parseFloat(netArgs[2]),
 							Float.parseFloat(netArgs[3]),
-							Float.parseFloat(netArgs[4]));
+							Float.parseFloat(netArgs[4]),
+							Integer.parseInt(netArgs[5]),
+							Integer.parseInt(netArgs[6]));
+				}
+				else if(netArgs[0].toCharArray()[0] == 0x12) {
+					// ValueType, angle
+					System.out.println(messages[1] + " Packet Received");
+					sb.setLength(0);
+					sb.append("Player");
+					sb.append(messages[1].trim());
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+					
+					_p.attack(null, Float.parseFloat(netArgs[1]));
 				}
 
 				break;
@@ -219,20 +233,7 @@ public class Client {
 			// Object Spawn--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
 			case 0x04:
-				if(messages.length >= 3) {
-					netArgs = messages[2].split(",");
-					if(netArgs[0].equals("bullet")) {
-	
-						sb.setLength(0);
-						sb.append("Player");
-						sb.append(messages[1].trim());
-						Player _p = (Player)gm.getObject(sb.toString());
-						if(_p == null)
-							return;
-						
-						_p.Attack(gm);
-					}				
-				}
+
 				break;
 
 			// Timeout Packet--------------------------------------------------------

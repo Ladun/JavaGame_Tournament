@@ -8,6 +8,7 @@ public class Client {
 	private int clientdID;
 	
 	private int x,y,z,angle;
+	private int anim, animType;
 	
 	//------------------------------------
 	private double chekTime;
@@ -72,6 +73,18 @@ public class Client {
 	}
 	public void setAngle(int angle) {
 		this.angle = angle;
+	}
+	public int getAnim() {
+		return anim;
+	}
+	public void setAnim(int anim) {
+		this.anim = anim;
+	}
+	public int getAnimType() {
+		return animType;
+	}
+	public void setAnimType(int animType) {
+		this.animType = animType;
 	}
 	public boolean isResponed() {
 		return responed;

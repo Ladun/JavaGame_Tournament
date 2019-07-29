@@ -13,6 +13,7 @@ import com.ladun.game.Point;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
+import com.ladun.game.net.Client;
 
 public class Player extends Entity{
 	
@@ -20,9 +21,6 @@ public class Player extends Entity{
 	
 	private ArrayList<Point>	clickPoints = new ArrayList<Point>(); // 차후에 큐로 바꾸기
 	
-	private float anim = 0;
-	private float animSpeed = 12;
-	private int animType = 0;
 	private int[] animMaxIndex = {6,1,1};
 	
 	private float fcos,fsin;
@@ -55,6 +53,8 @@ public class Player extends Entity{
 		this.speed 		= 200;
 		this.jump		= -7f;
 		
+		this.animSpeed = 12;
+		
 		this.localPlayer = localPlayer;
 		this.gs = gs;
 		
@@ -86,6 +86,7 @@ public class Player extends Entity{
 				}
 				else {
 					angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
+					
 					fcos = (float)Math.cos(Math.toRadians(angle));
 					fsin = (float)Math.sin(Math.toRadians(angle));
 					if(clickPoints.size() == 0) {
@@ -101,9 +102,6 @@ public class Player extends Entity{
 					}
 				}
 				
-				for(int i = 0; i < clickPoints.size();i++) {
-					System.out.println(i + " " + clickPoints.get(i).getX() + ", " + clickPoints.get(i).getY());
-				}
 			}
 			
 			if(clickPoints.size() > 0) {
@@ -157,11 +155,11 @@ public class Player extends Entity{
 			// Attack----------------------------------------------------
 			if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
 				if(!weapon.isAttacking()) {
-					if(weapon.getType() == Weapon.Type.BOW)	{
-						readyToShoot = true;
+					if(weapon.getType() != Weapon.Type.BOW)	{
+						attack(gm,angle);
 					}
 					else {
-						weapon.attack(gm,gs);
+						readyToShoot = true;
 					}
 				}
 			}
@@ -174,8 +172,8 @@ public class Player extends Entity{
 					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
 					
 					angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-					weapon.positionSetting();
-					weapon.attack(gm,gs);					
+					weapon.setDstAngle(angle);
+					attack(gm,angle);					
 				}
 			}
 			
@@ -191,13 +189,9 @@ public class Player extends Entity{
 				ground = false;
 			}
 			groundLast = ground;				
-			this.AdjustPosition();
-			
-			
-
-			weapon.update(gc, gm, dt);
+			this.AdjustPosition();	
 		}
-
+		weapon.update(gc, gm, dt);
 		this.updateComponents(gc,gm,dt);
 	}
 
@@ -245,8 +239,17 @@ public class Player extends Entity{
 	}
 
 	//---------------------------------------------------------------------------------------
-	public void Attack(GameManager gm) {
-		weapon.attack(gm,gs);
+	public void attack(GameManager gm,float _angle) {
+
+		weapon.attack(gm,gs,_angle);			
+			
+		if(gm != null) {
+			if(localPlayer) {
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,angle});
+					
+			}
+		}
+	
 	}
 	
 	private void moving(GameContainer gc, float dt, float dX,float dY) {
@@ -307,12 +310,6 @@ public class Player extends Entity{
 		return localPlayer;
 	}
 	
-	public float getCenterX() {
-		return posX + pL + (width - pL - pR) / 2;
-	}
-	public float getCenterZ() {
-		return posZ + pT + (height - pT - pB) / 2;		
-	}
 
 	//---------------------------------------------------------------------------------------
 	
