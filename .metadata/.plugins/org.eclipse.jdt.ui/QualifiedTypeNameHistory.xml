@@ -23,8 +23,8 @@
 <fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
 <fullyQualifiedTypeName name="com.ladun.game.Point"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
-<fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.DisplayDamage"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Util"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
 </qualifiedTypeNameHistroy>

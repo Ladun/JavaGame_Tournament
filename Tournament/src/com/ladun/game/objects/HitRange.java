@@ -11,9 +11,11 @@ public class HitRange extends GameObject{
 	public enum Type{ RECT,CIRCLE}
 	
 	private GameObject parent;
+	private String ignoreTag;
 	private Type type;
+	private float damage;
 	
-	public HitRange(GameObject parent,Type t) {
+	public HitRange(GameObject parent,Type t,float damage) {
 		this.tag = "hitRange";
 		this.parent = parent;
 		this.active = false;
@@ -27,6 +29,11 @@ public class HitRange extends GameObject{
 			this.addComponent(new CircleCollider(this));			
 			break;
 		}
+	}
+	public HitRange(GameObject parent,Type t,float damage,String ignoreTag) {
+		this(parent,t,damage);
+		this.ignoreTag = ignoreTag;
+		
 	}
 	
 	@Override
@@ -62,6 +69,18 @@ public class HitRange extends GameObject{
 	
 	public GameObject getParent() {
 		return parent;
+	}
+	public String getIgnoreTag() {
+		return ignoreTag;
+	}
+	public void setIgnoreTag(String ignoreTag) {
+		this.ignoreTag = ignoreTag;
+	}
+	public float getDamage() {
+		return damage;
+	}
+	public void setDamage(float damage) {
+		this.damage = damage;
 	}
 	
 }

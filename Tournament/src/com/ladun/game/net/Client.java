@@ -227,6 +227,21 @@ public class Client {
 					
 					_p.attack(null, Float.parseFloat(netArgs[1]));
 				}
+				else if(netArgs[0].toCharArray()[0] == 0x13) {
+					// ValueType, type
+					// type : 0, 1, 2, 3 ......
+					// 0 : SWORD, 1 : BOW ......
+					System.out.println(messages[1] + " Packet Received");
+					sb.setLength(0);
+					sb.append("Player");
+					sb.append(messages[1].trim());
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+					
+					_p.setWeaponType(Integer.parseInt(netArgs[1]));
+				}
+
 
 				break;
 				

@@ -63,7 +63,7 @@ public class Bullet extends Projectile {
 		
 		if(other instanceof Entity)
 		{
-			((Entity)other).Hit(damage);
+			((Entity)other).hit(damage);
 			this.active = false;
 		}
 	}

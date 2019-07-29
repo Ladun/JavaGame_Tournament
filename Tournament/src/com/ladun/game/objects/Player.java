@@ -65,12 +65,27 @@ public class Player extends Entity{
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
-		
+		nextHitTime += dt;
 		
 		if(localPlayer){		
 			//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
-			nextHitTime += dt;
+		
 			
+			// Temporary------------------------------------------------------
+			
+			if(gc.getInput().isKeyDown(KeyEvent.VK_1)) {
+				weapon.setType(Weapon.Type.SWORD);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,0});
+			}
+			else if(gc.getInput().isKeyDown(KeyEvent.VK_2)) {
+				weapon.setType(Weapon.Type.BOW);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,1});
+			}
+			else if(gc.getInput().isKeyDown(KeyEvent.VK_3)) {
+				weapon.setType(Weapon.Type.SPEAR);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,2});
+			}
+			// Temporary End -------------------------------------------------
 
 			
 			
@@ -105,7 +120,7 @@ public class Player extends Entity{
 			}
 			
 			if(clickPoints.size() > 0) {
-				float distance = distanceSq(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
+				float distance = distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
 				if(distance >= speed  * dt) {
 					moving(gc,dt,speed * fcos,speed * fsin);
 				}
@@ -235,10 +250,30 @@ public class Player extends Entity{
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
-		
+		if(other instanceof HitRange) {
+			HitRange hr = (HitRange)other;
+			if(!hr.getIgnoreTag().equals(tag)) {
+				hit(hr.getDamage());
+				
+			}
+		}
 	}
 
 	//---------------------------------------------------------------------------------------
+	public void setWeaponType(int t) {
+		switch(t){
+			case 0 :
+				weapon.setType(Weapon.Type.SWORD);
+				break;
+			case 1 :
+				weapon.setType(Weapon.Type.BOW);
+				break;
+			case 2 :
+				weapon.setType(Weapon.Type.SPEAR);
+				break;
+		}
+	}
+	
 	public void attack(GameManager gm,float _angle) {
 
 		weapon.attack(gm,gs,_angle);			
@@ -289,7 +324,7 @@ public class Player extends Entity{
 
 	}
 	
-	private float distanceSq(float stX, float stY, float edX, float edY) {
+	private float distance(float stX, float stY, float edX, float edY) {
 		float dx = edX - stX;
 		float dy = edY - stY;
 		return (float)Math.sqrt(dx * dx  + dy * dy);

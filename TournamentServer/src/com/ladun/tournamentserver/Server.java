@@ -131,7 +131,7 @@ public class Server {
 				if(messages.length < 3)
 					break;
 				String[] netArgs = messages[2].split(",");
-				if(netArgs[0].toCharArray()[0] == 0x11 || netArgs[0].toCharArray()[0] == 0x12) {
+				if(netArgs[0].toCharArray()[0] == 0x11 || netArgs[0].toCharArray()[0] == 0x12 || netArgs[0].toCharArray()[0] == 0x13) {
 					// ValueType, x, y, z, angle
 					
 					_clientID = Integer.parseInt(messages[1].trim());

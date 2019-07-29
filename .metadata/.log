@@ -3819,3 +3819,194 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 
 !ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:22:47.353
 !MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:54:01.516
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:54:02.686
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.debug.core 4 125 2019-07-29 21:54:06.347
+!MESSAGE Error logged from Debug Core: 
+!STACK 1
+org.eclipse.debug.core.DebugException: com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine occurred retrieving source path debug attribute.
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.throwDebugException(JDIDebugElement.java:266)
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.requestFailed(JDIDebugElement.java:205)
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.targetRequestFailed(JDIDebugElement.java:185)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1532)
+	at org.eclipse.jdt.internal.launching.sourcelookup.advanced.JDIHelpers.getSourcePath(JDIHelpers.java:90)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:78)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.clearSourceElements(AbstractSourceLookupDirector.java:656)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.updateDebugElement(AdvancedSourceLookupParticipant.java:215)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.cacheContainer(AdvancedSourceLookupParticipant.java:162)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.getSourceContainer(AdvancedSourceLookupParticipant.java:121)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:72)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.getSourceElement(AbstractSourceLookupDirector.java:719)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility.lookup(SourceLookupFacility.java:337)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility$SourceLookupJob.run(SourceLookupFacility.java:704)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketSendManager.sendPacket(PacketSendManager.java:93)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:190)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:230)
+	at org.eclipse.jdi.internal.MethodImpl.getLineTable(MethodImpl.java:163)
+	at org.eclipse.jdi.internal.MethodImpl.javaStratumLineNumber(MethodImpl.java:224)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.lineInfos(ReferenceTypeImpl.java:1934)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.fileInfo(ReferenceTypeImpl.java:1902)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.sourcePath(ReferenceTypeImpl.java:1960)
+	at org.eclipse.jdi.internal.LocationImpl.sourcePath(LocationImpl.java:211)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1529)
+	... 17 more
+!SUBENTRY 1 org.eclipse.jdt.debug 4 5010 2019-07-29 21:54:06.348
+!MESSAGE com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine occurred retrieving source path debug attribute.
+!STACK 0
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketSendManager.sendPacket(PacketSendManager.java:93)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:190)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:230)
+	at org.eclipse.jdi.internal.MethodImpl.getLineTable(MethodImpl.java:163)
+	at org.eclipse.jdi.internal.MethodImpl.javaStratumLineNumber(MethodImpl.java:224)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.lineInfos(ReferenceTypeImpl.java:1934)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.fileInfo(ReferenceTypeImpl.java:1902)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.sourcePath(ReferenceTypeImpl.java:1960)
+	at org.eclipse.jdi.internal.LocationImpl.sourcePath(LocationImpl.java:211)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1529)
+	at org.eclipse.jdt.internal.launching.sourcelookup.advanced.JDIHelpers.getSourcePath(JDIHelpers.java:90)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:78)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.clearSourceElements(AbstractSourceLookupDirector.java:656)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.updateDebugElement(AdvancedSourceLookupParticipant.java:215)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.cacheContainer(AdvancedSourceLookupParticipant.java:162)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.getSourceContainer(AdvancedSourceLookupParticipant.java:121)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:72)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.getSourceElement(AbstractSourceLookupDirector.java:719)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility.lookup(SourceLookupFacility.java:337)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility$SourceLookupJob.run(SourceLookupFacility.java:704)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.debug.core 4 125 2019-07-29 21:54:06.349
+!MESSAGE Error logged from Debug Core: 
+!STACK 1
+org.eclipse.debug.core.DebugException: com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine occurred retrieving source path debug attribute.
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.throwDebugException(JDIDebugElement.java:266)
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.requestFailed(JDIDebugElement.java:205)
+	at org.eclipse.jdt.internal.debug.core.model.JDIDebugElement.targetRequestFailed(JDIDebugElement.java:185)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1532)
+	at org.eclipse.jdt.internal.launching.sourcelookup.advanced.JDIHelpers.getSourcePath(JDIHelpers.java:90)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:78)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.getSourceElement(AbstractSourceLookupDirector.java:719)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility.lookup(SourceLookupFacility.java:337)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility$SourceLookupJob.run(SourceLookupFacility.java:704)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketSendManager.sendPacket(PacketSendManager.java:93)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:190)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:230)
+	at org.eclipse.jdi.internal.MethodImpl.getLineTable(MethodImpl.java:163)
+	at org.eclipse.jdi.internal.MethodImpl.javaStratumLineNumber(MethodImpl.java:224)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.lineInfos(ReferenceTypeImpl.java:1934)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.fileInfo(ReferenceTypeImpl.java:1902)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.sourcePath(ReferenceTypeImpl.java:1960)
+	at org.eclipse.jdi.internal.LocationImpl.sourcePath(LocationImpl.java:211)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1529)
+	... 9 more
+!SUBENTRY 1 org.eclipse.jdt.debug 4 5010 2019-07-29 21:54:06.349
+!MESSAGE com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine occurred retrieving source path debug attribute.
+!STACK 0
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketSendManager.sendPacket(PacketSendManager.java:93)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:190)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:230)
+	at org.eclipse.jdi.internal.MethodImpl.getLineTable(MethodImpl.java:163)
+	at org.eclipse.jdi.internal.MethodImpl.javaStratumLineNumber(MethodImpl.java:224)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.lineInfos(ReferenceTypeImpl.java:1934)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.fileInfo(ReferenceTypeImpl.java:1902)
+	at org.eclipse.jdi.internal.ReferenceTypeImpl.sourcePath(ReferenceTypeImpl.java:1960)
+	at org.eclipse.jdi.internal.LocationImpl.sourcePath(LocationImpl.java:211)
+	at org.eclipse.jdt.internal.debug.core.model.JDIStackFrame.getSourcePath(JDIStackFrame.java:1529)
+	at org.eclipse.jdt.internal.launching.sourcelookup.advanced.JDIHelpers.getSourcePath(JDIHelpers.java:90)
+	at org.eclipse.jdt.launching.sourcelookup.advanced.AdvancedSourceLookupParticipant.findSourceElements(AdvancedSourceLookupParticipant.java:78)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector$SourceLookupQuery.run(AbstractSourceLookupDirector.java:139)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:45)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.doSourceLookup(AbstractSourceLookupDirector.java:477)
+	at org.eclipse.debug.core.sourcelookup.AbstractSourceLookupDirector.getSourceElement(AbstractSourceLookupDirector.java:719)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility.lookup(SourceLookupFacility.java:337)
+	at org.eclipse.debug.internal.ui.sourcelookup.SourceLookupFacility$SourceLookupJob.run(SourceLookupFacility.java:704)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:54:15.893
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:54:17.036
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:59:33.827
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 21:59:50.377
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-29 22:01:13.553
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:03:15.545
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:03:23.077
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:21:58.705
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:21:59.899
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:22:00.994
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:35:46.753
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:35:48.072
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:36:05.931
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:36:07.191
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:37:17.876
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:37:50.805
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:37:52.076
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:39:34.166
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:39:35.494
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:41:18.732
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
+
+!ENTRY org.eclipse.jdt.debug 2 0 2019-07-30 02:41:20.113
+!MESSAGE Unable to find location of java.lang.Thread.setName() in debuggee JVM, for type java.lang.Thread
