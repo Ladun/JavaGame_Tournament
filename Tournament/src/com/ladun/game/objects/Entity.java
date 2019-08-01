@@ -26,6 +26,8 @@ public abstract class Entity extends GameObject{
 	protected boolean ground = false;
 	protected boolean groundLast = false;
 	protected boolean moving = false;
+
+	protected float[] actionCoolDownTime;
 	
 	protected float nextHitTime = 0;
 	protected static final float HIT_TIME = .3f; 
@@ -93,6 +95,14 @@ public abstract class Entity extends GameObject{
 		return anim;
 	}
 
+	public float getMaxHealth() {
+		return maxHealth;
+	}
+
+	public float getHealth() {
+		return health;
+	}
+
 	public void setAnim(float anim) {
 		this.anim = anim;
 	}
@@ -104,4 +114,6 @@ public abstract class Entity extends GameObject{
 	public void setAnimType(int animType) {
 		this.animType = animType;
 	}
+	
+	public abstract float getCoolDownPercent(int i) ;
 }

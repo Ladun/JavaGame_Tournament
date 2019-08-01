@@ -14,7 +14,7 @@ public class Weapon extends GameObject{
 	private final static float LIMIT_TIME = 1/10f; 
 	
 	private Type type;
-	private GameObject parent;
+	private Entity parent;
 	
 	private float damage;
 	
@@ -39,7 +39,7 @@ public class Weapon extends GameObject{
 	
 	
 	
-	public Weapon(GameObject parent) {
+	public Weapon(Entity parent) {
 		this.parent = parent;
 		width = 64;
 		height = 64;

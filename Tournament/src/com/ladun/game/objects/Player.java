@@ -17,7 +17,6 @@ import com.ladun.game.net.Client;
 
 public class Player extends Entity{
 	
-	private static float HIT_TIME = .5f;
 	
 	private ArrayList<Point>	clickPoints = new ArrayList<Point>(); // 차후에 큐로 바꾸기
 	
@@ -25,6 +24,8 @@ public class Player extends Entity{
 	
 	private float fcos,fsin;
 	private boolean readyToShoot = false;
+	
+	
 	
 	private Weapon weapon;
 	
@@ -62,6 +63,12 @@ public class Player extends Entity{
 		
 		this.addComponent(new NetworkTransform(this,localPlayer));
 		this.addComponent(new RectCollider(this));
+		
+		if(localPlayer) {
+			gs.setLocalPlayer(this);
+			
+			actionCoolDownTime = new float[4];
+		}
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
@@ -69,7 +76,13 @@ public class Player extends Entity{
 		
 		if(localPlayer){		
 			//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
-		
+			for(int i = 0; i < 4; i ++) {
+				if(actionCoolDownTime[i] > 0 ) {
+					actionCoolDownTime[i] -= dt;
+					if(actionCoolDownTime[i]  < 0)
+						actionCoolDownTime[i]  = 0;
+				}
+			}
 			
 			// Temporary------------------------------------------------------
 			
@@ -168,30 +181,33 @@ public class Player extends Entity{
 			
 			
 			// Attack----------------------------------------------------
-			if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-				if(!weapon.isAttacking()) {
-					if(weapon.getType() != Weapon.Type.BOW)	{
-						attack(gm,angle);
+			if(actionCoolDownTime[0] <= 0) {
+				if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+					if(!weapon.isAttacking()) {
+						if(weapon.getType() != Weapon.Type.BOW)	{
+							actionCoolDownTime[0] = .5f;
+							attack(gm,angle);
+						}
+						else {
+							readyToShoot = true;
+						}
 					}
-					else {
-						readyToShoot = true;
+				}
+				if(gc.getInput().isButtonDown(MouseEvent.BUTTON1))
+				{
+					if(readyToShoot) {
+	
+						actionCoolDownTime[0] = .5f;
+						readyToShoot = false;
+						int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+						int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+						
+						angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+						weapon.setDstAngle(angle);
+						attack(gm,angle);					
 					}
 				}
 			}
-			if(gc.getInput().isButtonDown(MouseEvent.BUTTON1))
-			{
-				if(readyToShoot) {
-
-					readyToShoot = false;
-					int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
-					
-					angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-					weapon.setDstAngle(angle);
-					attack(gm,angle);					
-				}
-			}
-			
 			// Attack End -------------------------------------------------
 			
 			anim += dt * animSpeed;
@@ -277,9 +293,10 @@ public class Player extends Entity{
 	public void attack(GameManager gm,float _angle) {
 
 		weapon.attack(gm,gs,_angle);			
+
+		if(localPlayer) {
 			
-		if(gm != null) {
-			if(localPlayer) {
+			if(gm != null) {
 				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,angle});
 					
 			}
@@ -329,7 +346,6 @@ public class Player extends Entity{
 		float dy = edY - stY;
 		return (float)Math.sqrt(dx * dx  + dy * dy);
 	}
-	//---------------------------------------------------------------------------------------
 	private void RenderRect(Renderer r,int type) {
 		switch(type){
 		case 1:
@@ -340,6 +356,23 @@ public class Player extends Entity{
 			r.drawRect((int)posX, (int)(posZ + posY), width, height,angle, 0xffffffff);
 		}
 			 
+	}
+	//---------------------------------------------------------------------------------------
+	public float getCoolDownPercent(int i) {
+		if(i >= 4) 
+			return 1;
+		
+		switch(i) {
+		case 0:
+			return actionCoolDownTime[0] / .5f;
+		case 1:
+			return actionCoolDownTime[1] / .5f;
+		case 2:
+			return actionCoolDownTime[2] / .5f;
+		case 3:
+			return actionCoolDownTime[3] / .5f;
+		}
+		return 1;
 	}
 	public boolean isLocalPlayer() {
 		return localPlayer;

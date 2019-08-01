@@ -15,8 +15,11 @@ public class GameScene extends AbstractScene{
 	private int currentMapIndex = 0;
 	
 	
+	private float barAnim = 0;
+	
 	private Camera 		camera;
 	
+	private Player localPlayer;
 	
 	@Override
 	public boolean init(GameManager gm,boolean active) {
@@ -60,11 +63,32 @@ public class GameScene extends AbstractScene{
 		r.setzDepth(Renderer.LAYER_UI);
 		r.setCamX(0);
 		r.setCamY(0);
-		r.drawImage(((ImageTile)gc.getImageLoader().getImage("bar")).getTileImage(0, 0), gc.getWidth() / 2 - 334 / 2, gc.getHeight() - 115, 0,0,334,13);
-		r.drawImage(((ImageTile)gc.getImageLoader().getImage("bar")).getTileImage(0, 1), gc.getWidth() / 2 - 334 / 2, gc.getHeight() - 100, 0,0,334,13);
-		for(int i =1; i <=2 ; i++) {
-			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 + (int)(64 * (i-1) + 26 * ( i - .5f)), gc.getHeight() - 80, 0);
-			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 - (int)(64 * i + 26 * ( i - .5f)), gc.getHeight() - 80, 0);
+		
+		int barX = gc.getWidth() / 2 - 334 / 2;
+		int barY = gc.getHeight() - 110;
+		float playerHealthPercent = 1;
+		if(localPlayer != null) {
+			playerHealthPercent  =localPlayer.getHealth() / localPlayer.getMaxHealth();
+		}
+		
+		r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY, 0);
+		r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("hbar")),
+				barX, barY,
+				0,(int)barAnim,
+				0,0,(int)(334 * playerHealthPercent) ,13);
+		r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY+ 15, 0);
+		r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("mbar")),
+				barX, barY+ 15,
+				0,(int)barAnim,
+				0,0,(int)(334 ),13);
+		for(int i =0; i < 4 ; i++) {
+			
+			int pX = (int)(64 * (i-2) + 29* ( i  - 1.5f));
+			
+			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);			
+			r.drawImage(gc.getImageLoader().getImage("slot_black"),
+					gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
+					0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
 		}
 	}
 	
@@ -109,6 +133,14 @@ public class GameScene extends AbstractScene{
 		return maps[currentMapIndex].getCollision(tileX, tileY);
 	}
 	
+	public Player getLocalPlayer() {
+		return localPlayer;
+	}
+
+	public void setLocalPlayer(Player localPlayer) {
+		this.localPlayer = localPlayer;
+	}
+
 	@Override
 	public int getLevelW() {
 		// TODO Auto-generated method stub

@@ -296,6 +296,54 @@ public class Renderer {
 	{
 		drawImageTile(image,offX,offY,tileX,tileY,xPivot,yPivot, false,false,angle);
 	}
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX, int tileY, int stX,int stY,int width, int height)
+	{
+		offX -= camX;
+		offY -= camY;
+
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,0,0,false,false,0));
+			return;
+		}
+		
+		//Don't Render code
+		if(offX < -image.getTileW()) return;
+		if(offY < -image.getTileH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		if(stX >= image.getTileW()) return;
+		if(stY >= image.getTileH()) return;
+		if(width > image.getTileW()) return;
+		if(height > image.getTileH()) return;
+				
+		int newX = stX;
+		int newY = stY;
+		int newWidth = width;
+		int newHeight = height;				
+				
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+				
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(offX + x, offY + y,
+						 image.getP()[ x + tileX * image.getTileW() + 
+						               (y + tileY * image.getTileH()) *image.getW()]);
+				
+				setLightBlock(offX + x, offY + y,
+							  image.getLightBlock());
+			}
+		}
+	}
+
+	
 	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,boolean xMirror, boolean yMirror,float angle)
 	{
 		offX -= camX;
