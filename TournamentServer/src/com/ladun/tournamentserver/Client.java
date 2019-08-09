@@ -8,8 +8,14 @@ public class Client {
 	private int clientdID;
 	
 	private int x,y,z,angle;
-	private int anim, animType;
+	private int anim, animType;	
+
+	private byte teamNumber; //
+	private boolean ready;
 	
+	private int health;
+	
+	private int currentMapIndex;
 	//------------------------------------
 	private double chekTime;
 	private int timeSinceCheck;
@@ -19,20 +25,6 @@ public class Client {
 		this.address = address;
 		this.port = port;
 		this.clientdID = clientID;
-	}
-	public String getData() {
-		StringBuilder sb =new StringBuilder();
-		sb.append(clientdID);
-		sb.append(",");
-		sb.append(x);
-		sb.append(",");
-		sb.append(y);
-		sb.append(",");
-		sb.append(z);
-		sb.append(",");
-		sb.append(angle);
-		
-		return sb.toString();
 	}
 
 	public InetAddress getAddress() {
@@ -103,6 +95,39 @@ public class Client {
 	}
 	public void setTimeSinceCheck(int timeSinceCheck) {
 		this.timeSinceCheck = timeSinceCheck;
+	}
+
+	public byte getTeamNumber() {
+		return teamNumber;
+	}
+
+	public void setTeamNumber(byte teamNumber) {
+		this.teamNumber = teamNumber;
+	}
+
+	public boolean isReady() {
+		return ready;
+	}
+
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+
+
+	public int getCurrentMapIndex() {
+		return currentMapIndex;
+	}
+
+	public void setCurrentMapIndex(int currentMapIndex) {
+		this.currentMapIndex = currentMapIndex;
 	}
 	
 	

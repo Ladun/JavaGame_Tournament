@@ -1,0 +1,167 @@
+package com.ladun.game;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.Image;
+
+public class Map {
+	
+	private static final int SPAWN_COLOR = 0xff68f38a;
+
+	private String name;
+	private Image floorImage;
+	private Image ceilImage;
+	
+	private boolean active;
+	
+	private boolean load;
+	private float[] heights;
+	private boolean[] collisions;
+	private int levelW,levelH;
+	private ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
+	
+	public Map(String name) {
+		this(name,false);
+	}
+	
+	public Map(String name,boolean active) {
+		this.active = active;
+		this.name = name;
+		floorImage = new Image("/Map/" + name + "_floor.png");
+		ceilImage = new Image("/Map/" + name + "_ceil.png");
+		loadLevel(new Image("/Map/" + name + "_collision.png"));
+	}
+	
+	public void update(GameContainer gc, GameManager gm, float dt) {
+		
+	}
+	public void render(GameContainer gc, Renderer r) {
+		
+		r.setzDepth(0);
+		r.drawImage(floorImage, 0, 0, 0);
+		r.setzDepth(Renderer.LAYER_UI - 10);
+		r.drawImage(ceilImage, 0, 0, 0);
+		//RenderCollision(r);
+	}
+	
+	private void RenderCollision(Renderer r) {
+		int ts = GameManager.TS;
+		
+		for(int y = 0; y < levelH; y++) {
+			for(int x = 0; x < levelW;x++) {
+				//if(!collisions[x + y * levelW])
+				
+				r.setzDepth((int)(y  * ts +Math.abs(heights[x + y * levelW])) );
+				
+				int color = heights[x + y * levelW] ==0?0xffdebeed : 0xffdafadd;
+				r.drawFillRect(x * ts, y*ts + (int)heights[x + y * levelW], ts, ts,0, color); // 0xffbd91ed
+				//r.drawText(heights[x + y * levelW] + "", x * ts, y*ts + (int)heights[x + y * levelW], 0xff000000);
+				r.drawText(x+ ", " + y, x * ts, y*ts+16 + (int)heights[x + y * levelW], 0xff000000);
+			}
+		}
+		for(int y = 0; y < levelH; y++) {
+			for(int x = 0; x < levelW;x++) {
+				//if(collisions[x + y * levelW])
+				if(heights[x + y * levelW] != 0)
+					r.drawRect(x * ts, y*ts, ts, ts,0, 0xffa6ec90);
+			}
+		}
+	}
+	
+	private void loadLevel(Image collisionImage) {
+		load  		= true;
+		levelW 		= collisionImage.getW();
+		levelH 		= collisionImage.getH();
+		collisions 	= new boolean[levelW * levelH];
+		heights 	= new float[levelW * levelH];
+		
+		boolean[] flag		= new boolean[levelW * levelH];
+
+		for (int y = 0; y < levelH; y++) {
+			for (int x = 0; x < levelW; x++) {
+				if(!flag[x + y * levelW]){
+					flag[x + y * levelW] = true;
+					if (collisionImage.getP()[x + y * levelW] == SPAWN_COLOR){
+						spawnPoints.add(new SpawnPoint(x,y));
+						heights[x + y * levelW] = 0;						
+						collisions[x + y * levelW] = false;
+					}
+					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
+						heights[x + y * levelW] = -GameManager.TS;
+						collisions[x + y * levelW] = true;
+					} else {
+						heights[x + y * levelW] = 0;						
+						collisions[x + y * levelW] = false;
+					}
+				}
+			}
+		}
+	}	
+	
+	public int[] RandomSpawnPoint() {
+		if(spawnPoints.size() == 0)
+			return new int[] {0,0};
+		int randIndex =new Random().nextInt(spawnPoints.size());
+		
+		return new int[] {spawnPoints.get(randIndex).x,spawnPoints.get(randIndex).y};
+	}
+
+	//------------------------------------------------------------------------------------------------------------------------
+	
+	public boolean getCollision(int x, int y) {
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+			return true;
+		return collisions[y * levelW + x];
+	}
+	public float getHeight(int x,int y) {
+		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+			return Physics.MAX_HEIGHT;
+		return heights[y * levelW + x];
+	}
+
+	public int getLevelW() {
+		return levelW;
+	}
+	public int getLevelH() {
+		return levelH;
+	}
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	
+	
+	class SpawnPoint{
+		private boolean spawned;
+		private int x,y;
+		
+		public SpawnPoint(int x, int y) {
+			this.spawned = false;
+			this.x = x;
+			this.y = y;
+		}
+
+		public boolean isSpawned() {
+			return spawned;
+		}
+
+		public void setSpawned(boolean spawned) {
+			this.spawned = spawned;
+		}
+
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+	}
+	
+	
+}

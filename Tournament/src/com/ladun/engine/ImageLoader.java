@@ -34,8 +34,11 @@ public class ImageLoader {
 		addImage("bar_frame", "/UI/BarFrame.png");
 		addImage("slot", "/UI/Slot.png");
 		addImage("slot_black", "/UI/SlotBlack.png");
+		addImage("window", "/UI/Window.png");
+		addImage("inv","/UI/Inventory.png");
 		addImage("warrior_skill", "/UI/SlotContents/Warrior_Skill.png",64,64);
 		
+		addImage("items","/UI/Items.png",54,54);
 		
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
 

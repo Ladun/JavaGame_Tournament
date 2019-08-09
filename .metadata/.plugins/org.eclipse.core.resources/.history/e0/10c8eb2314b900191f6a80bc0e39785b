@@ -1,0 +1,20 @@
+package com.ladun.game.objects.projectile;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.GameManager;
+import com.ladun.game.components.CircleCollider;
+import com.ladun.game.objects.Entity;
+import com.ladun.game.objects.GameObject;
+
+public class Bullet extends Projectile {
+	
+
+	public Bullet(float posX, float posY, float posZ, float angle,float speed, float damage) {
+		super(posX,posY,posZ,angle,speed, damage);
+	}	
+	
+	
+
+}

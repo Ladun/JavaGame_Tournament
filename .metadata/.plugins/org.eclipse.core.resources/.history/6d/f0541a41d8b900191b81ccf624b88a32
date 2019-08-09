@@ -1,0 +1,11 @@
+package com.ladun.game;
+
+public class Item {
+	
+	private int index;
+	
+	
+	public Item(int index) {
+		this.index = index;
+	}
+}

@@ -14,7 +14,7 @@ public abstract class AbstractScene {
 	
 	protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
 
-	public abstract boolean init(GameManager gm,boolean active);
+	public abstract boolean init(GameContainer gc,GameManager gm,boolean active);
 	public abstract void update(GameContainer gc,GameManager gm,float dt);
 	public abstract void render(GameContainer gc, Renderer r);
 	public abstract int getLevelW();

@@ -8,7 +8,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
-import com.ladun.game.Physics;
+import com.ladun.game.Item;
 import com.ladun.game.Point;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
@@ -19,6 +19,7 @@ public class Player extends Entity{
 	
 	
 	private ArrayList<Point>	clickPoints = new ArrayList<Point>(); // 차후에 큐로 바꾸기
+	private Item[] items = new Item[6];
 	
 	private int[] animMaxIndex = {6,1,1};
 	
@@ -28,8 +29,13 @@ public class Player extends Entity{
 	
 	
 	private Weapon weapon;
+	//--------------------------------------
 	
 	private boolean localPlayer;
+	private boolean ready;
+	private int teamNumber;
+	//--------------------------------------
+	
 
 	public Player(String tag,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
 		this.tag = tag;
@@ -60,6 +66,11 @@ public class Player extends Entity{
 		this.gs = gs;
 		
 		this.weapon = new Weapon(this);
+		
+		for(int i =0;i < 6;i++) {
+			items[i] = new Item(0);
+		}
+		
 		
 		this.addComponent(new NetworkTransform(this,localPlayer));
 		this.addComponent(new RectCollider(this));
@@ -140,12 +151,20 @@ public class Player extends Entity{
 				else {
 					moving(gc,dt,distance * fcos, distance *fsin);
 					clickPoints.remove(0);
+					if(clickPoints.size() > 0) {
+						angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
+						fcos = (float)Math.cos(Math.toRadians(angle));
+						fsin = (float)Math.sin(Math.toRadians(angle));
+						
+					}
 				}
 			}
 			// Moving End --------------------------------------------------
 			
 						
 			// Jump And Gravity ----------------------------------------
+			
+			/*
 			fallDistance += Physics.GRAVITY * dt;
 			
 			if(fallDistance > 0) { 
@@ -176,7 +195,9 @@ public class Player extends Entity{
 					fallDistance = jump;
 			}
 			
-			posY += fallDistance;
+			posY += fallDistance;			
+			*/
+			
 			// Jump And Gravity End ------------------------------------
 			
 			
@@ -357,6 +378,10 @@ public class Player extends Entity{
 		}
 			 
 	}
+	
+	public Item[] getItems() {
+		return items;
+	}
 	//---------------------------------------------------------------------------------------
 	public float getCoolDownPercent(int i) {
 		if(i >= 4) 
@@ -376,6 +401,18 @@ public class Player extends Entity{
 	}
 	public boolean isLocalPlayer() {
 		return localPlayer;
+	}
+	public boolean isReady() {
+		return ready;
+	}
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+	public int getTeamNumber() {
+		return teamNumber;
+	}
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
 	}
 	
 

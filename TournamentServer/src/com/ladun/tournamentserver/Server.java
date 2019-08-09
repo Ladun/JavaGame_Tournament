@@ -131,27 +131,54 @@ public class Server {
 				if(messages.length < 3)
 					break;
 				String[] netArgs = messages[2].split(",");
-				if(netArgs[0].toCharArray()[0] == 0x11 || netArgs[0].toCharArray()[0] == 0x12 || netArgs[0].toCharArray()[0] == 0x13) {
-					// ValueType, x, y, z, angle
-					
-					_clientID = Integer.parseInt(messages[1].trim());
+				// re-send --------------------------------------------------
+				_clientID = Integer.parseInt(messages[1].trim());
 
-					if(_clientID < 1000 || !isClientExist(_clientID))
-						break;	
+				if(_clientID < 1000 || !isClientExist(_clientID))
+					break;	
 
-					sb.setLength(0);
-					bw.clear();
-					bw.write((byte)0x03);
-					sb.append(":");
-					sb.append(_clientID);
-					sb.append(":");
-					sb.append(messages[2]);
-					bw.write((sb.toString()).getBytes());			
-					
+				sb.setLength(0);
+				bw.clear();
+				bw.write((byte)0x03);
+				sb.append(":");
+				sb.append(_clientID);
+				sb.append(":");
+				sb.append(messages[2]);
+				bw.write((sb.toString()).getBytes());			
+				
 
-					sendToAllClients(bw.getBytes(), _clientID); 
-					
+				sendToAllClients(bw.getBytes(), _clientID); 
+				//--------------------------------------------------
+				
+				switch(netArgs[0].toCharArray()[0]) {
+				case 0x11:
+				case 0x12:
+				case 0x13:
+					// 0x11 : ValueType, x, y, z, angle
+					// 0x12 : ValueType, angle
+					// 0x13 : ValueType, type		
+					break;
+				case 0x14:{
+					// ValueType, teamNumber, ready
+					// ready : 0 = false, 1 = true
+					Client c = getClient(_clientID);
+					c.setTeamNumber(Byte.parseByte(netArgs[1]));
+					c.setReady(Byte.parseByte(netArgs[2]) == 0? false : true);
+					break;
 				}
+				case 0x15:{
+					// ValueType, health
+					Client c = getClient(_clientID);
+					c.setHealth(Byte.parseByte(netArgs[1]));			
+					break;
+				}
+				case 0x16:{
+					// ValueType, currentMapIndex
+					Client c = getClient(_clientID);
+					c.setCurrentMapIndex(Integer.parseInt(netArgs[1]));
+				}
+				}
+				
 				break;
 			// Object Spawn--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]

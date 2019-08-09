@@ -2,7 +2,6 @@ package com.ladun.game.objects;
 
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
-import com.ladun.game.objects.projectile.Bullet;
 
 public abstract class Entity extends GameObject{
 	
@@ -31,6 +30,8 @@ public abstract class Entity extends GameObject{
 	
 	protected float nextHitTime = 0;
 	protected static final float HIT_TIME = .3f; 
+	
+	protected int currentMapIndex;
 	
 	public void hit(float damage) {
 		
@@ -103,6 +104,10 @@ public abstract class Entity extends GameObject{
 		return health;
 	}
 
+	public void setHealth(float health) {
+		this.health = health;
+	}
+
 	public void setAnim(float anim) {
 		this.anim = anim;
 	}
@@ -115,5 +120,13 @@ public abstract class Entity extends GameObject{
 		this.animType = animType;
 	}
 	
+	public int getCurrentMapIndex() {
+		return currentMapIndex;
+	}
+
+	public void setCurrentMapIndex(int currentMapIndex) {
+		this.currentMapIndex = currentMapIndex;
+	}
+
 	public abstract float getCoolDownPercent(int i) ;
 }

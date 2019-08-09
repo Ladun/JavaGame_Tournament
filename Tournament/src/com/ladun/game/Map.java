@@ -12,24 +12,19 @@ public class Map {
 	private static final int SPAWN_COLOR = 0xff68f38a;
 
 	private String name;
-	private Image mapImage;
-	
-	private boolean active;
+	private Image floorImage;
+	private Image ceilImage;
 	
 	private boolean load;
 	private float[] heights;
 	private boolean[] collisions;
 	private int levelW,levelH;
 	private ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
-	
+		
 	public Map(String name) {
-		this(name,false);
-	}
-	
-	public Map(String name,boolean active) {
-		this.active = active;
 		this.name = name;
-		mapImage = new Image("/Map/" + name + ".png");
+		floorImage = new Image("/Map/" + name + "_floor.png");
+		ceilImage = new Image("/Map/" + name + "_ceil.png");
 		loadLevel(new Image("/Map/" + name + "_collision.png"));
 	}
 	
@@ -39,7 +34,9 @@ public class Map {
 	public void render(GameContainer gc, Renderer r) {
 		
 		r.setzDepth(0);
-		r.drawImage(mapImage, 0, 0, 0);
+		r.drawImage(floorImage, 0, 0, 0);
+		r.setzDepth(Renderer.LAYER_UI - 10);
+		r.drawImage(ceilImage, 0, 0, 0);
 		//RenderCollision(r);
 	}
 	
@@ -86,7 +83,7 @@ public class Map {
 						collisions[x + y * levelW] = false;
 					}
 					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
-						heights[x + y * levelW] = -50;
+						heights[x + y * levelW] = -GameManager.TS;
 						collisions[x + y * levelW] = true;
 					} else {
 						heights[x + y * levelW] = 0;						
@@ -124,13 +121,6 @@ public class Map {
 	public int getLevelH() {
 		return levelH;
 	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	
 	
 	class SpawnPoint{
 		private boolean spawned;

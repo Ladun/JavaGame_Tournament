@@ -64,13 +64,13 @@ public class Button extends GameObject{
 		if(image == null) {
 			if(pressed)
 			{
-				r.drawFillRect((int)posX, (int)posY, width, height, 0, color - 0x00333333);
+				r.drawFillRect((int)posX, (int)posY, width, height, 0, color - 0x00151515);
 			}
 			else
 			{
 				if(over)
 				{
-					r.drawFillRect((int)posX, (int)posY, width, height, 0, color + 0x00333333);
+					r.drawFillRect((int)posX, (int)posY, width, height, 0, color + 0x00151515);
 				}
 				else
 				{
@@ -115,6 +115,14 @@ public class Button extends GameObject{
 
 	public boolean isReleased() {
 		return released;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public void setColor(int color) {
+		this.color = color;
 	}
 
 }

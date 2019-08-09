@@ -3,9 +3,8 @@ package com.ladun.game.objects;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.game.GameManager;
+import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
-import com.ladun.game.objects.UI.Util;
-import com.ladun.game.objects.projectile.Bullet;
 
 public class Weapon extends GameObject{
 	public enum Type{
@@ -173,12 +172,12 @@ public class Weapon extends GameObject{
 	}
 	
 	public void Shoot(GameManager gm,GameScene gs, float _angle) {
-		Bullet bullet = (Bullet)gs.getInactiveObject("bullet");
+		Projectile bullet = (Projectile)gs.getInactiveObject("bullet");
 		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(_angle))  - 16;
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(_angle)) ;
 		
 		if(bullet == null) {
-			gs.addObject(new Bullet(posX + dX,posY,posZ + dZ,_angle,1000,1));
+			gs.addObject(new Projectile(posX + dX,posY,posZ + dZ,_angle,1000,1));
 		}
 		else {
 			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, 1);

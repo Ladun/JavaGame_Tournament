@@ -174,10 +174,10 @@ public class Client {
 			// Server -> Client Packet : [header type: clientID : ValueType, value,....]
 			case 0x03: //type			
 				netArgs = messages[2].split(",");
-				if(netArgs[0].toCharArray()[0] == 0x10)
-				{
+				switch(netArgs[0].toCharArray()[0]) {
+				case 0x10:{
 					this.clientID = Integer.parseInt(messages[1].trim());
-					
+				
 					sb.setLength(0);
 					sb.append("Player");
 					sb.append(this.clientID);
@@ -194,10 +194,10 @@ public class Client {
 					send(bw.getBytes());
 					
 					((NetworkTransform)_p.findComponent("netTransform")).packetSend(gm);; 
+					break;
 				}
-				else if(netArgs[0].toCharArray()[0] == 0x11) {	
-					// ValueType, x, y, z, angle, anim, animType
-					
+				case 0x11:{
+					// ValueType, x, y, z, angle, anim, animType					
 					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
@@ -214,10 +214,11 @@ public class Client {
 							Float.parseFloat(netArgs[4]),
 							Integer.parseInt(netArgs[5]),
 							Integer.parseInt(netArgs[6]));
+					
+					break;
 				}
-				else if(netArgs[0].toCharArray()[0] == 0x12) {
+				case 0x12:{
 					// ValueType, angle
-					System.out.println(messages[1] + " Packet Received");
 					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
@@ -226,12 +227,12 @@ public class Client {
 						return;
 					
 					_p.attack(null, Float.parseFloat(netArgs[1]));
+					break;
 				}
-				else if(netArgs[0].toCharArray()[0] == 0x13) {
+				case 0x13:{
 					// ValueType, type
 					// type : 0, 1, 2, 3 ......
 					// 0 : SWORD, 1 : BOW ......
-					System.out.println(messages[1] + " Packet Received");
 					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
@@ -240,8 +241,51 @@ public class Client {
 						return;
 					
 					_p.setWeaponType(Integer.parseInt(netArgs[1]));
+					break;
 				}
+				case 0x14:{
+					// ValueType, teamNumber, ready 
+					// ready : 0 = false, 1 = true
 
+					sb.setLength(0);
+					sb.append("Player");
+					sb.append(messages[1].trim());
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+
+					_p.setTeamNumber(Byte.parseByte(netArgs[1]));
+					_p.setReady(Byte.parseByte(netArgs[2]) == 0? false : true);			
+					break;
+				}
+				case 0x15:{
+					// ValueType, health 
+
+					sb.setLength(0);
+					sb.append("Player");
+					sb.append(messages[1].trim());
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+
+					_p.setHealth(Byte.parseByte(netArgs[1]));	
+					break;
+				}
+				case 0x16:{
+					// ValueType, currentMapIndex
+
+					sb.setLength(0);
+					sb.append("Player");
+					sb.append(messages[1].trim());
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+
+					_p.setCurrentMapIndex(Integer.parseInt(netArgs[1]));	
+				
+					break;
+				}
+				}
 
 				break;
 				

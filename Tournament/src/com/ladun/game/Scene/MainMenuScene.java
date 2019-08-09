@@ -11,7 +11,7 @@ public class MainMenuScene extends AbstractScene{
 	
 	
 	@Override
-	public boolean init(GameManager gm, boolean active) {
+	public boolean init(GameContainer gc,GameManager gm, boolean active) {
 		// TODO Auto-generated method stub
 		this.active = active;
 		this.name = "MainMenu";

@@ -16,22 +16,20 @@ public class GameManager extends AbstractGame {
 	private Client client;
 	
 	private boolean loading;
-	private float loadingAngle;
+	private float loadingAngle;	
 	
 	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
-	
-
 	@Override
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
 		gc.getRenderer().setAmbientColor(-1);
 		gc.getImageLoader().ImageLoad();
 		
-		if(!addScene(new MainMenuScene(),true)) {
+		if(!addScene(gc,new MainMenuScene(),true)) {
 			return false;
 		}
-		if(!addScene(new GameScene())) {
+		if(!addScene(gc,new GameScene())) {
 			return false;
 		}
 		
@@ -76,15 +74,15 @@ public class GameManager extends AbstractGame {
 	}
 	
 	
-	private boolean addScene(AbstractScene scene) {
-		return addScene(scene,false);
+	private boolean addScene(GameContainer gc,AbstractScene scene) {
+		return addScene(gc,scene,false);
 	}
 	
-	private boolean addScene(AbstractScene scene,boolean active) {
+	private boolean addScene(GameContainer gc,AbstractScene scene,boolean active) {
 		scenes[sceneInedx] = scene;
 		sceneInedx++;
 		
-		if(!scene.init(this,active)) {
+		if(!scene.init(gc,this,active)) {
 			//System.out.println("Scene Init Failed");
 			return false;
 		}
@@ -128,7 +126,6 @@ public class GameManager extends AbstractGame {
 		}		
 		return null;
 	}
-	
 	
 	public Client getClient() {
 		return client;

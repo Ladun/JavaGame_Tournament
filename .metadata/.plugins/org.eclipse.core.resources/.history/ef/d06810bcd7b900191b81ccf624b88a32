@@ -1,0 +1,8 @@
+package com.ladun.game;
+
+public class Item {
+	
+	public Item() {
+		
+	}
+}
