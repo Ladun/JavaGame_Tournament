@@ -29,10 +29,8 @@ public class Player extends Entity{
 	
 	
 	private Weapon weapon;
-	//--------------------------------------
-	
+	//--------------------------------------	
 	private boolean localPlayer;
-	private boolean ready;
 	private int teamNumber;
 	//--------------------------------------
 	
@@ -158,6 +156,11 @@ public class Player extends Entity{
 						
 					}
 				}
+
+				moving = true;
+			}
+			else			{
+				moving = false;
 			}
 			// Moving End --------------------------------------------------
 			
@@ -401,12 +404,6 @@ public class Player extends Entity{
 	}
 	public boolean isLocalPlayer() {
 		return localPlayer;
-	}
-	public boolean isReady() {
-		return ready;
-	}
-	public void setReady(boolean ready) {
-		this.ready = ready;
 	}
 	public int getTeamNumber() {
 		return teamNumber;

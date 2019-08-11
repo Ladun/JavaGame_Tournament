@@ -11,7 +11,7 @@ public class Client {
 	private int anim, animType;	
 
 	private byte teamNumber; //
-	private boolean ready;
+	private int targetMapIndex;
 	
 	private int health;
 	
@@ -105,12 +105,13 @@ public class Client {
 		this.teamNumber = teamNumber;
 	}
 
-	public boolean isReady() {
-		return ready;
+
+	public int getTargetMapIndex() {
+		return targetMapIndex;
 	}
 
-	public void setReady(boolean ready) {
-		this.ready = ready;
+	public void setTargetMapIndex(int targetMapIndex) {
+		this.targetMapIndex = targetMapIndex;
 	}
 
 	public int getHealth() {

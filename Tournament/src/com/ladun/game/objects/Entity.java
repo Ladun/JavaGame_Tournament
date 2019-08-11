@@ -116,6 +116,10 @@ public abstract class Entity extends GameObject{
 		return animType;
 	}
 
+	public boolean isMoving() {
+		return moving;
+	}
+
 	public void setAnimType(int animType) {
 		this.animType = animType;
 	}
@@ -126,6 +130,14 @@ public abstract class Entity extends GameObject{
 
 	public void setCurrentMapIndex(int currentMapIndex) {
 		this.currentMapIndex = currentMapIndex;
+	}
+
+	public int getTileX() {
+		return tileX;
+	}
+
+	public int getTileZ() {
+		return tileZ;
 	}
 
 	public abstract float getCoolDownPercent(int i) ;

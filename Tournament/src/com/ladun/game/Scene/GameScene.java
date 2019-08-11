@@ -29,12 +29,14 @@ public class GameScene extends AbstractScene{
 	private Camera 		camera;
 	private Player localPlayer;
 	
-	//Buttons----------------------------------
+	// -----------------------------------------
+	private int targetMapIndex;
+	private boolean allClientReady = false;
+	private float readyToStartTime = 5;
+	// Buttons----------------------------------
 	private Button teamChooseButton;
-	private Button readyButton;
 	//-----------------------------------------
-	private int[] teamColor = new int[] {0xffd83c3c,0xffd8953c,0xffd8d13c,0xff74d83c,0xff74d83c,0xff3c6ed8,0xff843cd8,0xffc53cd8};
-	private int[] readyColor = new int[] {0xff7e91a3,0xff2580de};
+	private TeamColor teamColor = TeamColor.TEAM1;
 	
 	@Override
 	public boolean init(GameContainer gc,GameManager gm,boolean active) {
@@ -51,8 +53,7 @@ public class GameScene extends AbstractScene{
 		this.maps[2] = new Map("map1");
 		
 		//Buttons Init---------------------------------------
-		teamChooseButton = new Button(30,gc.getHeight()/2 - 70, 100 ,50,teamColor[0]);
-		readyButton = new Button(30,gc.getHeight()/2 +20, 100 ,50,readyColor[0]);
+		teamChooseButton = new Button(30,gc.getHeight()/2 - 70, 100 ,50,teamColor.getValue());
 		//---------------------------------------------------
 		return true;
 	}
@@ -65,25 +66,55 @@ public class GameScene extends AbstractScene{
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
 				objects.get(i).update(gc, gm, dt);
-		}
+		}		
 		
 		if(currentMapIndex == 0) {
 			teamChooseButton.update(gc, gm, dt);
-			readyButton.update(gc, gm, dt);
 			
+			if(allClientReady) {
+				if(readyToStartTime - dt >0) {
+					readyToStartTime -= dt;
+				}
+				else {
+					// TODO: Map Change And Send Packet(
+					readyToStartTime = 5;
+					allClientReady = false;
+					
+					gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x00});
+				}
+			}
+			else {
+				readyToStartTime = 5;
+			}
+			
+			// Set targetMapIndex --------------------------------------------------------------------
+			if(localPlayer != null) {
+				if(localPlayer.isMoving()) {
+					int preIndex = targetMapIndex;
+					if(localPlayer.getTileZ() >= 1 && localPlayer.getTileZ() <= 2 ) {
+						if(localPlayer.getTileX() >= 1 && localPlayer.getTileX() <= 2) {
+							targetMapIndex = 2;
+						}
+						else {
+							targetMapIndex = 0;
+						}					
+					}
+					else {
+						targetMapIndex = 0;
+					}
+					
+					if(preIndex != targetMapIndex)
+						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x17,targetMapIndex});
+				}
+			}
+			
+			// Button ---------------------------------------------------------------------------------
 			if(teamChooseButton.isReleased()) {
 				teamChange();			
 				
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber(),localPlayer.isReady()});
-				
-				teamChooseButton.setColor(teamColor[localPlayer.getTeamNumber()]);
-			}
-			if(readyButton.isReleased()) {
-				localPlayer.setReady(!localPlayer.isReady());
-				
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber(),localPlayer.isReady()});
-				
-				readyButton.setColor(readyColor[localPlayer.isReady()? 1:0]);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber()});
+				teamColor = TeamColor.values()[localPlayer.getTeamNumber()];
+				teamChooseButton.setColor(teamColor.getValue());
 			}
 		}
 		
@@ -97,7 +128,7 @@ public class GameScene extends AbstractScene{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		camera.render(r);
-		//maps[currentMapIndex].render(gc, r);
+		maps[currentMapIndex].render(gc, r);
 		
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive()) {
@@ -111,6 +142,7 @@ public class GameScene extends AbstractScene{
 				}
 			}
 		}
+		
 		renderUI(gc,r);
 		
 	}
@@ -156,13 +188,17 @@ public class GameScene extends AbstractScene{
 					gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
 					0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
 		}
+		
+		
+		if(allClientReady) {
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("count"), gc.getWidth()/2 - 64, gc.getWidth()/2 - 64,(int)readyToStartTime,0, 0);
+		}
 	}
 
 	private void renderButtons(GameContainer gc, Renderer r) {
 		switch(currentMapIndex) {
 		case 0:
 			teamChooseButton.render(gc, r);
-			readyButton.render(gc, r);
 			break;
 		case 1:
 			break;
@@ -187,8 +223,8 @@ public class GameScene extends AbstractScene{
 		
 	}
 	
-	public void changeMap(int currentMapIndex) {
-		this.currentMapIndex = currentMapIndex;
+	public void changeMap() {
+		this.currentMapIndex = targetMapIndex;
 	}
 
 	private void teamChange() {
@@ -243,6 +279,14 @@ public class GameScene extends AbstractScene{
 		this.localPlayer = localPlayer;
 	}
 
+	public int getTargetMapIndex() {
+		return targetMapIndex;
+	}
+
+	public void setTargetMapIndex(int targetMapIndex) {
+		this.targetMapIndex = targetMapIndex;
+	}
+
 	@Override
 	public int getLevelW() {
 		return maps[currentMapIndex].getLevelW();
@@ -260,5 +304,13 @@ public class GameScene extends AbstractScene{
 
 	public Camera getCamera() {
 		return camera;
+	}
+
+	public boolean isAllClientReady() {
+		return allClientReady;
+	}
+
+	public void setAllClientReady(boolean allClientReady) {
+		this.allClientReady = allClientReady;
 	}
 }

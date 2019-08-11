@@ -22,7 +22,6 @@ public class TournamentServer {
 		System.out.println("[Server Port] " + 8192);
 		System.out.println("========================================================================");
 		
-		
 		String s;
 		String[] commands;
 		while(running) {

@@ -40,6 +40,10 @@ public class ImageLoader {
 		
 		addImage("items","/UI/Items.png",54,54);
 		
+		addImage("count","/UI/count.png",128,128);
+		addImage("loading","/UI/loading.png",128,128);
+		addImage("map_icon","/UI/MapIcon.png",160,160);
+		
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
 
 		System.out.println("------[ Image Load Finish ]---------------");

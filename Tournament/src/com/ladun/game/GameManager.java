@@ -3,6 +3,7 @@ package com.ladun.game;
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.MainMenuScene;
@@ -16,7 +17,7 @@ public class GameManager extends AbstractGame {
 	private Client client;
 	
 	private boolean loading;
-	private float loadingAngle;	
+	private float loadingAnim;	
 	
 	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
@@ -48,7 +49,9 @@ public class GameManager extends AbstractGame {
 		
 
 		if(loading) {
-			loadingAngle = (loadingAngle + dt * 360) % 360;
+			loadingAnim+= dt * 16;
+			if(loadingAnim >= 16)
+				loadingAnim = 0;
 		}
 	}
 	@Override
@@ -62,8 +65,7 @@ public class GameManager extends AbstractGame {
 		
 
 		if(loading) {
-			//TODO 로딩 이미지 띄우기
-			r.drawFillRect(gc.getWidth() - 30, gc.getHeight() - 30, 20, 20, loadingAngle, 0xffd8a7c3);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
 		}
 		
 	}

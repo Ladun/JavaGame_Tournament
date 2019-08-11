@@ -19,6 +19,7 @@ public class Client {
 	private final static byte PACKET_TYPE_DISCONNECT = 0x02;
 	public final static byte PACKET_TYPE_VALUECHANGE = 0x03; 
 	public final static byte PACKET_TYPE_OBJECTSPAWN = 0x04; 
+	public final static byte PACKET_TYPE_GAMESTATE = 0x06; 
 	
 	public enum Error{
 		NONE, INVALID_HOST,SOCKET_EXCEPTION
@@ -136,8 +137,7 @@ public class Client {
 		if(!packet.getAddress().equals(serverAddress) || packet.getPort() != port)
 			return;		
 
-		if(data[2] == 0x03 && data[3] == 0x12)
-			dumpPacket(packet);
+		//dumpPacket(packet);
 		
 		if(data[0] == 0x41 && data[1] == 0x41) {
 			String[] messages = new String(data,0,packet.getLength()).split(":");	
@@ -244,8 +244,7 @@ public class Client {
 					break;
 				}
 				case 0x14:{
-					// ValueType, teamNumber, ready 
-					// ready : 0 = false, 1 = true
+					// ValueType, teamNumber
 
 					sb.setLength(0);
 					sb.append("Player");
@@ -254,8 +253,7 @@ public class Client {
 					if(_p == null)
 						return;
 
-					_p.setTeamNumber(Byte.parseByte(netArgs[1]));
-					_p.setReady(Byte.parseByte(netArgs[2]) == 0? false : true);			
+					_p.setTeamNumber(Byte.parseByte(netArgs[1]));		
 					break;
 				}
 				case 0x15:{
@@ -308,7 +306,24 @@ public class Client {
 				
 				send(bw.getBytes());
 				break;
+			// Game State Packet--------------------------------------------------------
+			// Server -> Client Packet : [header type: GameState, parameter.......]
+			// GameState : 0 = all_client_ready, 1 = all_client_loading			
+			case 0x06:
+				netArgs = messages[1].split(",");
+				switch(netArgs[0].toCharArray()[0]) {
+				case 0x00:
+					if(Integer.parseInt(netArgs[1]) == 1)
+						((GameScene)gm.getScene("InGame")).setAllClientReady(true);
+					else
+						((GameScene)gm.getScene("InGame")).setAllClientReady(false);
+					break;
+				case 0x01:
+					((GameScene)gm.getScene("InGame")).changeMap();
+					break;
+				}
 				
+				break;
 			}
 		}
 	}
@@ -408,7 +423,7 @@ public class Client {
 				}
 			}
 		
-		});timeoutThread.start();
+		},"Timeout-Thread");timeoutThread.start();
 	}
 	
 	private void dumpPacket(DatagramPacket packet) {

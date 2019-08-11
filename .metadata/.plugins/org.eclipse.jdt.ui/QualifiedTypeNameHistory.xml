@@ -2,7 +2,6 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.MainMenuScene"/>
-<fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
 <fullyQualifiedTypeName name="java.net.SocketTimeoutException"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.GameObject"/>
@@ -24,7 +23,9 @@
 <fullyQualifiedTypeName name="com.ladun.game.Point"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.DisplayDamage"/>
-<fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Util"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
+<fullyQualifiedTypeName name="javax.crypto.spec.GCMParameterSpec"/>
 </qualifiedTypeNameHistroy>
