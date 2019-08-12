@@ -61,7 +61,7 @@ public class Button extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
 
-		if(imageName == null) {
+		if(imagename == null) {
 			if(pressed)
 			{
 				r.drawFillRect((int)posX, (int)posY, width, height, 0, color - 0x00151515);

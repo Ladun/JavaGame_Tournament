@@ -24,19 +24,19 @@ public class Button extends GameObject{
 		this.height 	= height;
 		this.posX		= x;
 		this.posY		= y;
-		this.imageName 	= null;
+		this.imageName 		= null;
 		this.color 		= color;
 	}
 	
 	public Button(float x, float y
-			,int width, int height, String buttonImageName)
+			, String buttonImageName)
 	{
 		this.tag 		= "button";
-		this.width 		= width;
-		this.height 	= height;
+		this.width 		= buttonImage.getTileW();
+		this.height 	= buttonImage.getTileH();
 		this.posX		= x;
 		this.posY		= y;
-		this.imageName 	= buttonImageName;
+		this.imageName 		= buttonImageName;
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class Button extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
 
-		if(imageName == null) {
+		if(image == null) {
 			if(pressed)
 			{
 				r.drawFillRect((int)posX, (int)posY, width, height, 0, color - 0x00151515);
@@ -81,17 +81,17 @@ public class Button extends GameObject{
 		else {
 			if(pressed)
 			{
-				r.drawImage(((ImageTile)gc.getImageLoader().getImage(imageName)).getTileImage(2, 0), (int)posX,(int)posY,0);
+				r.drawImage(image.getTileImage(2, 0), (int)posX,(int)posY,0);
 			}
 			else
 			{
 				if(over)
 				{
-					r.drawImage(((ImageTile)gc.getImageLoader().getImage(imageName)).getTileImage(1, 0), (int)posX,(int)posY,0);
+					r.drawImage(image.getTileImage(1, 0), (int)posX,(int)posY,0);
 				}
 				else
 				{
-					r.drawImage(((ImageTile)gc.getImageLoader().getImage(imageName)).getTileImage(0, 0), (int)posX,(int)posY,0);
+					r.drawImage(image.getTileImage(0, 0), (int)posX,(int)posY,0);
 				}
 			}
 		}

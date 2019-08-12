@@ -35,7 +35,6 @@ public class GameScene extends AbstractScene{
 	private float readyToStartTime = 5;
 	// Buttons----------------------------------
 	private Button teamChooseButton;
-	private Button storeButton;
 	//-----------------------------------------
 	private TeamColor teamColor = TeamColor.TEAM1;
 	
@@ -52,7 +51,6 @@ public class GameScene extends AbstractScene{
 		
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(30,gc.getHeight()/2 - 70, 100 ,50,teamColor.getValue());
-		storeButton = new Button(30, gc.getHeight()/2 - 84,128,128,"store_button");
 		//---------------------------------------------------
 		return true;
 	}
@@ -121,10 +119,6 @@ public class GameScene extends AbstractScene{
 					teamChooseButton.setColor(teamColor.getValue());
 				}
 			}
-		}
-		else if(currentMapIndex == 1) {
-			storeButton.update(gc, gm, dt);
-			
 		}
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
@@ -216,7 +210,6 @@ public class GameScene extends AbstractScene{
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
-			storeButton.render(gc, r);
 			break;
 		case 2:
 			break;

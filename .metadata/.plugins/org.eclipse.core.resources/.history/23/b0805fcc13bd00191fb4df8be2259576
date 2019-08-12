@@ -122,10 +122,6 @@ public class GameScene extends AbstractScene{
 				}
 			}
 		}
-		else if(currentMapIndex == 1) {
-			storeButton.update(gc, gm, dt);
-			
-		}
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
 			inventoryView = !inventoryView;
@@ -216,7 +212,6 @@ public class GameScene extends AbstractScene{
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
-			storeButton.render(gc, r);
 			break;
 		case 2:
 			break;

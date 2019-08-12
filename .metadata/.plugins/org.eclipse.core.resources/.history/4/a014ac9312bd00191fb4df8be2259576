@@ -38,8 +38,6 @@ public class ImageLoader {
 		addImage("inv","/UI/Inventory.png");
 		addImage("warrior_skill", "/UI/SlotContents/Warrior_Skill.png",64,64);
 		
-		addImage("store_button","/UI/StoreButton.png",128,128);
-		
 		addImage("items","/UI/Items.png",54,54);
 		
 		addImage("count","/UI/count.png",128,128);

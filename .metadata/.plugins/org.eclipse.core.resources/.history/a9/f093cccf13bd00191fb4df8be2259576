@@ -121,9 +121,7 @@ public class GameScene extends AbstractScene{
 					teamChooseButton.setColor(teamColor.getValue());
 				}
 			}
-		}
-		else if(currentMapIndex == 1) {
-			storeButton.update(gc, gm, dt);
+		}else if(currentMapIndex == 1) {
 			
 		}
 		
@@ -216,7 +214,6 @@ public class GameScene extends AbstractScene{
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
-			storeButton.render(gc, r);
 			break;
 		case 2:
 			break;
