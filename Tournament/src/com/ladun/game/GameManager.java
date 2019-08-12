@@ -44,7 +44,7 @@ public class GameManager extends AbstractGame {
 		// TODO Auto-generated method stub
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
-				scenes[i].update(gc,this,dt);
+				scenes[i].update(gc,dt);
 		}
 		
 

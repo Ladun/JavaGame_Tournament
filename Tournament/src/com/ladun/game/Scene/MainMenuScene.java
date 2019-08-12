@@ -13,6 +13,7 @@ public class MainMenuScene extends AbstractScene{
 	@Override
 	public boolean init(GameContainer gc,GameManager gm, boolean active) {
 		// TODO Auto-generated method stub
+		this.gm = gm;
 		this.active = active;
 		this.name = "MainMenu";
 		
@@ -23,7 +24,7 @@ public class MainMenuScene extends AbstractScene{
 	}
 
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, float dt) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
@@ -81,6 +82,7 @@ public class MainMenuScene extends AbstractScene{
 				}
 				else {
 					gm.changeScene("InGame");
+					((GameScene)gm.getScene("InGame")).mapLoad(0);
 				}
 				gm.setLoading(false);
 			}

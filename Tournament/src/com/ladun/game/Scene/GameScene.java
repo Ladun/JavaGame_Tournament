@@ -2,8 +2,6 @@ package com.ladun.game.Scene;
 
 import java.awt.event.KeyEvent;
 
-import javax.crypto.spec.GCMParameterSpec;
-
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.ImageTile;
@@ -18,8 +16,10 @@ import com.ladun.game.objects.UI.Button;
 
 public class GameScene extends AbstractScene{
 
-	private Map[] maps = new Map[3];
-	private int currentMapIndex = 0;
+
+	private String[] mapNames = new String[] {"waitingroom","teamwait","map1"};
+	private Map currentMap;
+	private int currentMapIndex = -1;
 	
 	
 	private float barAnim = 0;
@@ -41,16 +41,13 @@ public class GameScene extends AbstractScene{
 	@Override
 	public boolean init(GameContainer gc,GameManager gm,boolean active) {
 		// TODO Auto-generated method stub
+		this.gm = gm;
 		this.active = active;
 		
 		this.name = "InGame";		
 		//this.objects.add(new Player(1,1,this));
 		this.camera = new Camera(gm,"Player");
 		//this.addObject(new TempObject(this));
-
-		this.maps[0] = new Map("waitingroom");
-		this.maps[1] = new Map("teamwait");
-		this.maps[2] = new Map("map1");
 		
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(30,gc.getHeight()/2 - 70, 100 ,50,teamColor.getValue());
@@ -59,14 +56,17 @@ public class GameScene extends AbstractScene{
 	}
 
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, float dt) {
 		// TODO Auto-generated method stub
-		//maps[currentMapIndex].update(gc, gm, dt);
 
-		for(int i = 0; i < objects.size();i++) {
-			if(objects.get(i).isActive())
-				objects.get(i).update(gc, gm, dt);
-		}		
+		if(!gm.isLoading()) {
+			if(currentMap != null)
+				currentMap.update(gc, gm, dt);
+			for(int i = 0; i < objects.size();i++) {
+				if(objects.get(i).isActive())
+					objects.get(i).update(gc, gm, dt);
+			}		
+		}
 		
 		if(currentMapIndex == 0) {
 			teamChooseButton.update(gc, gm, dt);
@@ -102,19 +102,22 @@ public class GameScene extends AbstractScene{
 					else {
 						targetMapIndex = 0;
 					}
-					
-					if(preIndex != targetMapIndex)
+
+					if(preIndex != targetMapIndex) {
 						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x17,targetMapIndex});
+					}
 				}
 			}
 			
 			// Button ---------------------------------------------------------------------------------
-			if(teamChooseButton.isReleased()) {
-				teamChange();			
-				
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber()});
-				teamColor = TeamColor.values()[localPlayer.getTeamNumber()];
-				teamChooseButton.setColor(teamColor.getValue());
+			if(!gm.isLoading()) {
+				if(teamChooseButton.isReleased()) {
+					teamChange();			
+					
+					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber()});
+					teamColor = TeamColor.values()[localPlayer.getTeamNumber()];
+					teamChooseButton.setColor(teamColor.getValue());
+				}
 			}
 		}
 		
@@ -128,7 +131,8 @@ public class GameScene extends AbstractScene{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		camera.render(r);
-		maps[currentMapIndex].render(gc, r);
+		if(currentMap != null)
+			currentMap.render(gc, r);
 		
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive()) {
@@ -142,7 +146,7 @@ public class GameScene extends AbstractScene{
 				}
 			}
 		}
-		
+
 		renderUI(gc,r);
 		
 	}
@@ -153,8 +157,12 @@ public class GameScene extends AbstractScene{
 		r.setzDepth(Renderer.LAYER_UI);
 		r.setCamX(0);
 		r.setCamY(0);
+		
+		if(currentMap == null)
+			return;
+		
 
-		renderButtons(gc,r);
+		renderOthers(gc,r);
 		
 		//r.drawImage(gc.getImageLoader().getImage("window"), gc.getWidth() / 2 - 192, gc.getHeight() /2- 240, 0);
 		
@@ -191,14 +199,15 @@ public class GameScene extends AbstractScene{
 		
 		
 		if(allClientReady) {
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("count"), gc.getWidth()/2 - 64, gc.getWidth()/2 - 64,(int)readyToStartTime,0, 0);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("count"), gc.getWidth()/2 - 64, gc.getHeight()/2 - 64,((int)readyToStartTime +1)% 6,0, 0);
 		}
 	}
 
-	private void renderButtons(GameContainer gc, Renderer r) {
+	private void renderOthers(GameContainer gc, Renderer r) {
 		switch(currentMapIndex) {
 		case 0:
 			teamChooseButton.render(gc, r);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
 			break;
@@ -206,6 +215,7 @@ public class GameScene extends AbstractScene{
 			break;
 		}
 	}
+	
 	private void renderInven(GameContainer gc,Renderer r) {
 		int ltX = gc.getWidth() / 2 + 180;
 		int ltY = gc.getHeight() - 309;
@@ -223,8 +233,24 @@ public class GameScene extends AbstractScene{
 		
 	}
 	
-	public void changeMap() {
-		this.currentMapIndex = targetMapIndex;
+	public void mapLoad(int index) {
+		this.currentMapIndex = index;
+		
+		new Thread(() ->{ 
+			while(gm.isLoading()) {}
+			
+			
+			gm.setLoading(true);
+			currentMap = new Map(mapNames[currentMapIndex]);
+			
+			this.localPlayer.setCurrentMapIndex(currentMapIndex);			
+			int[] _pos = currentMap.randomSpawnPoint();
+			localPlayer.setPos(_pos[0], _pos[1]);
+
+			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
+			gm.setLoading(false);
+		},"Map Load").start();
+		
 	}
 
 	private void teamChange() {
@@ -237,7 +263,13 @@ public class GameScene extends AbstractScene{
 		return p;
 	}
 	public Player addPlayer(String name,boolean isLocalPlayer) {
-		int[] pos = maps[currentMapIndex].RandomSpawnPoint();
+		int[] pos;
+		if(currentMap == null) {
+			pos = new int[] {0,0};
+		}
+		else{
+			pos = currentMap.randomSpawnPoint();
+		}
 		Player p = new Player(name,pos[0], pos[1], this,isLocalPlayer);
 		this.objects.add(p);
 		return p;
@@ -254,22 +286,14 @@ public class GameScene extends AbstractScene{
 	//-------------------------------------------------------------------------------------
 	
 	public float getHeight(int tileX, int tileY) {
-		if(currentMapIndex >= maps.length || currentMapIndex < 0)
+		if(currentMapIndex >= mapNames.length || currentMapIndex < 0)
 			return Physics.MAX_HEIGHT;
-		if(maps[currentMapIndex] == null)
+		if(currentMap == null)
 			return Physics.MAX_HEIGHT;
 		
-		return maps[currentMapIndex].getHeight(tileX, tileY);		
+		return currentMap.getHeight(tileX, tileY);		
 	}
 	
-	public boolean getCollision(int tileX,int tileY) {
-		if(currentMapIndex >= maps.length || currentMapIndex < 0)
-			return true;
-		if(maps[currentMapIndex] == null)
-			return true;
-		
-		return maps[currentMapIndex].getCollision(tileX, tileY);
-	}
 	
 	public Player getLocalPlayer() {
 		return localPlayer;
@@ -289,12 +313,18 @@ public class GameScene extends AbstractScene{
 
 	@Override
 	public int getLevelW() {
-		return maps[currentMapIndex].getLevelW();
+		if(currentMap == null)
+			return 0;
+		
+		return currentMap.getLevelW();
 	}
 
 	@Override
 	public int getLevelH() {
-		return maps[currentMapIndex].getLevelH();
+		if(currentMap == null)
+			return 0;
+		
+		return currentMap.getLevelH();
 		
 	}
 

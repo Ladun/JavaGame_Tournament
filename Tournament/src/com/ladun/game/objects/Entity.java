@@ -2,6 +2,7 @@ package com.ladun.game.objects;
 
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.net.Client;
 
 public abstract class Entity extends GameObject{
 	
@@ -38,7 +39,8 @@ public abstract class Entity extends GameObject{
 		if(nextHitTime >= HIT_TIME) {
 			nextHitTime = 0;
 			health -= damage;
-			
+
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health});
 			//----------------------------------------------------------------------------------------
 			DisplayDamage displayDamage = (DisplayDamage)gs.getInactiveObject("displayDamage");		
 			if(displayDamage == null) {
@@ -140,5 +142,11 @@ public abstract class Entity extends GameObject{
 		return tileZ;
 	}
 
+	public void setPos(int tileX,int tileZ) {
+		this.tileX = tileX;
+		this.tileZ =tileZ;
+		this.offX = 0;
+		this.offZ = 0;
+	}
 	public abstract float getCoolDownPercent(int i) ;
 }

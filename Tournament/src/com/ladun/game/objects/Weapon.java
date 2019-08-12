@@ -177,10 +177,10 @@ public class Weapon extends GameObject{
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(_angle)) ;
 		
 		if(bullet == null) {
-			gs.addObject(new Projectile(posX + dX,posY,posZ + dZ,_angle,1000,1));
+			gs.addObject(new Projectile(posX + dX,posY,posZ + dZ,_angle,1000,10));
 		}
 		else {
-			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, 1);
+			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, 10);
 		}
 	}
 	// -------------------------------------------------------------------------

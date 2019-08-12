@@ -11,11 +11,12 @@ public abstract class AbstractScene {
 	
 	protected String 	name;
 	protected boolean 	active;	
+	protected GameManager gm;
 	
 	protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
 
 	public abstract boolean init(GameContainer gc,GameManager gm,boolean active);
-	public abstract void update(GameContainer gc,GameManager gm,float dt);
+	public abstract void update(GameContainer gc,float dt);
 	public abstract void render(GameContainer gc, Renderer r);
 	public abstract int getLevelW();
 	public abstract int getLevelH();
@@ -56,5 +57,8 @@ public abstract class AbstractScene {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public GameManager getGm() {
+		return gm;
 	}
 }

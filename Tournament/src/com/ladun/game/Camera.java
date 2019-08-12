@@ -36,12 +36,18 @@ public class Camera {
 		//offY -= dt * (int)(offY - targetY) * cameraSensitivity;
 		
 		
-		
-		if(offX < 0) offX = 0;
-		if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
-		if(offZ < 0) offZ = 0;
-		if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
-
+		if(gm.getActiveScene().getLevelW() * GameManager.TS < gc.getWidth()) {
+			offX =-( gc.getWidth() - gm.getActiveScene().getLevelW() * GameManager.TS )/2;
+		}else {
+			if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
+			if(offX < 0) offX = 0;
+		}
+		if(gm.getActiveScene().getLevelH() * GameManager.TS < gc.getHeight()) {
+			offZ =-( gc.getHeight() - gm.getActiveScene().getLevelH() * GameManager.TS )/2;		
+		}else {
+			if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
+			if(offZ < 0) offZ = 0;
+		}
 
 		
 	}

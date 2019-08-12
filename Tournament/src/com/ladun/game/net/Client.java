@@ -280,7 +280,6 @@ public class Client {
 						return;
 
 					_p.setCurrentMapIndex(Integer.parseInt(netArgs[1]));	
-				
 					break;
 				}
 				}
@@ -308,18 +307,21 @@ public class Client {
 				break;
 			// Game State Packet--------------------------------------------------------
 			// Server -> Client Packet : [header type: GameState, parameter.......]
-			// GameState : 0 = all_client_ready, 1 = all_client_loading			
+			// GameState : 0 = all_client_ready, 1 = start_game
 			case 0x06:
 				netArgs = messages[1].split(",");
 				switch(netArgs[0].toCharArray()[0]) {
 				case 0x00:
+					// GameState, allClientReady
+					// allClientReady : 0 = false, 1 = true
 					if(Integer.parseInt(netArgs[1]) == 1)
 						((GameScene)gm.getScene("InGame")).setAllClientReady(true);
 					else
 						((GameScene)gm.getScene("InGame")).setAllClientReady(false);
 					break;
 				case 0x01:
-					((GameScene)gm.getScene("InGame")).changeMap();
+					// GameState
+					((GameScene)gm.getScene("InGame")).mapLoad(1);
 					break;
 				}
 				
@@ -371,6 +373,7 @@ public class Client {
 		sb.append(":");
 		for(int i = 0 ;i < _data.length;i++) {
 			sb.append(_data[i]);
+			
 			if(i != _data.length -1)
 				sb.append(',');
 		}
@@ -416,6 +419,7 @@ public class Client {
 							else {
 								System.out.println("Server is down");
 								//TODO ¼­¹ö¶û Á¢¼Ó ²÷±â
+								listening = false;
 							}
 						}
 					}

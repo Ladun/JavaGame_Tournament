@@ -177,19 +177,25 @@ public class Server {
 				case 0x15:{
 					// ValueType, health
 					Client c = getClient(_clientID);
-					c.setHealth(Byte.parseByte(netArgs[1]));			
+					c.setHealth(Integer.parseInt(netArgs[1]));			
 					break;
 				}
 				case 0x16:{
 					// ValueType, currentMapIndex
 					Client c = getClient(_clientID);
 					c.setCurrentMapIndex(Integer.parseInt(netArgs[1]));
+					//System.out.println("Receive");
+					break;
 				}
 				case 0x17:{
 					// ValueType, targetMapIndex
 					Client c = getClient(_clientID);
 					c.setTargetMapIndex(Integer.parseInt(netArgs[1]));
 					
+					dumpPacket(packet);
+					
+					if(clients.size() == 1)
+						break;
 					
 					boolean allSame= true;
 					for(Client _c :clients) {
@@ -200,13 +206,12 @@ public class Server {
 							}
 						}
 					}
-
 					sb.setLength(0);
 					bw.clear();
 					bw.write((byte)0x06);
 					sb.append(":");
-					sb.append((char)0);
-					sb.append(":");
+					sb.append((char)0x00);
+					sb.append(",");
 					if(allSame) {
 						sb.append(1);
 						gaming = true;
@@ -216,8 +221,9 @@ public class Server {
 						gaming = false;		
 					}
 
+
 					bw.write((sb.toString()).getBytes());					
-					sendToAllClients(data);	
+					sendToAllClients(bw.getBytes());	
 				}
 				}
 				
@@ -299,27 +305,25 @@ public class Server {
 				break;
 			// Game State Packet--------------------------------------------------------
 			// Client -> Server Packet : [header type:clientID: GameState, parameter.........]
-			// GameState : 0 = all_client_ready_inLobby_finish, 1 = all_client_loading_inLobby		
+			// GameState : 0 = allClientReady 	
 			case 0x06:{
-				_clientID = Integer.parseInt(messages[1].trim());
-
-				if(_clientID < 1000 || !isClientExist(_clientID))
-					break;	
-				
 				String[] netArgs = messages[2].split(",");
 				switch(netArgs[0].toCharArray()[0]) {
-				case 0x00:
+				case 0x00:{				
+
+					
 					sb.setLength(0);
 					bw.clear();
 					bw.write((byte)0x06);
-					sb.append(":");
-					sb.append(_clientID);
 					sb.append(":");
 					sb.append((char)0x01);
 					bw.write((sb.toString()).getBytes());			
 					
 					send(bw.getBytes(), address, port);
 					break;
+				}
+				
+				
 				}
 				
 				break;

@@ -11,10 +11,7 @@ public class DisplayDamage extends GameObject{
 	
 	public DisplayDamage(int damage,float posX, float posY) {
 		this.tag = "displayDamage";
-		this.damage = damage;
-		this.posX = posX;
-		this.posY = posY;
-		this.time = 0;
+		setting(damage,posX,posY);
 	}
 	
 	@Override
@@ -33,7 +30,7 @@ public class DisplayDamage extends GameObject{
 		// TODO Auto-generated method stub
 		r.setzDepth(Renderer.LAYER_UI);
 		
-		r.drawText(Integer.toString(damage), (int)posX, (int)posY, 0xff000000);
+		r.drawText(Integer.toString(damage), (int)posX, (int)posY, 0xfff9472c);
 	}
 
 	@Override

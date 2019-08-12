@@ -28,4 +28,5 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="javax.crypto.spec.GCMParameterSpec"/>
+<fullyQualifiedTypeName name="javax.swing.Box.Filler"/>
 </qualifiedTypeNameHistroy>
