@@ -24,11 +24,11 @@ public class MainMenuScene extends AbstractScene{
 	}
 
 	@Override
-	public void update(GameContainer gc, float dt) {
+	public void update(GameContainer gc) {
 		// TODO Auto-generated method stub
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
-				objects.get(i).update(gc, gm, dt);
+				objects.get(i).update(gc, gm);
 		}
 		
 		if(testButton.isReleased())

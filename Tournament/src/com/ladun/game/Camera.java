@@ -19,7 +19,7 @@ public class Camera {
 		this.target = gm.getObject(targetTag);
 	}
 	
-	public void update(GameContainer gc,GameManager gm,float dt)
+	public void update(GameContainer gc,GameManager gm)
 	{
 		if(target == null) {
 			this.target = gm.getObject(targetTag);

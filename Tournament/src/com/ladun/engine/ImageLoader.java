@@ -33,6 +33,7 @@ public class ImageLoader {
 		addImage("mbar", "/UI/MBar.png",334,13);
 		addImage("bar_frame", "/UI/BarFrame.png");
 		addImage("slot", "/UI/Slot.png");
+		addImage("key_image", "/UI/KeyImage.png",16,16);
 		addImage("slot_black", "/UI/SlotBlack.png");
 		addImage("window", "/UI/Window.png");
 		addImage("inv","/UI/Inventory.png");
@@ -47,6 +48,9 @@ public class ImageLoader {
 		addImage("map_icon","/UI/MapIcon.png",160,160);
 		
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
+		
+		// Map Object Image Load
+		addImage("portal","/Map/objects/portal.png",80,72);
 
 		System.out.println("------[ Image Load Finish ]---------------");
 		load = true;

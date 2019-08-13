@@ -2,6 +2,7 @@ package com.ladun.game.components;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
 import com.ladun.game.Util;
 import com.ladun.game.net.Client;
@@ -44,9 +45,9 @@ public class NetworkTransform extends Component{
 	}
 	
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
-		time += dt;
+		time += Time.DELTA_TIME;
 		
 		
 		if(time > PACKET_SEND_TIME)

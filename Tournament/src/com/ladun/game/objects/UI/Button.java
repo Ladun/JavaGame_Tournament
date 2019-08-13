@@ -40,7 +40,7 @@ public class Button extends GameObject{
 	}
 	
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		over 			= isOver(gc.getInput().getMouseX(),gc.getInput().getMouseY());
 		released 		= false;
 		if(over)

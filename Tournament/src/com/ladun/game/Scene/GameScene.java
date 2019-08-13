@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
@@ -11,6 +12,8 @@ import com.ladun.game.Map;
 import com.ladun.game.Physics;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.Entity;
+import com.ladun.game.objects.GameObject;
+import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
 import com.ladun.game.objects.UI.Button;
 
@@ -28,6 +31,7 @@ public class GameScene extends AbstractScene{
 	
 	private Camera 		camera;
 	private Player localPlayer;
+	private int interactIndex;
 	
 	// -----------------------------------------
 	private int targetMapIndex;
@@ -58,24 +62,24 @@ public class GameScene extends AbstractScene{
 	}
 
 	@Override
-	public void update(GameContainer gc, float dt) {
+	public void update(GameContainer gc) {
 		// TODO Auto-generated method stub
 
 		if(!gm.isLoading()) {
 			if(currentMap != null)
-				currentMap.update(gc, gm, dt);
+				currentMap.update(gc, gm);
 			for(int i = 0; i < objects.size();i++) {
 				if(objects.get(i).isActive())
-					objects.get(i).update(gc, gm, dt);
+					objects.get(i).update(gc, gm);
 			}		
 		}
 		
 		if(currentMapIndex == 0) {
-			teamChooseButton.update(gc, gm, dt);
+			teamChooseButton.update(gc, gm);
 			
 			if(allClientReady) {
-				if(readyToStartTime - dt >0) {
-					readyToStartTime -= dt;
+				if(readyToStartTime - Time.DELTA_TIME >0) {
+					readyToStartTime -= Time.DELTA_TIME;
 				}
 				else {
 					// TODO: Map Change And Send Packet(
@@ -123,14 +127,25 @@ public class GameScene extends AbstractScene{
 			}
 		}
 		else if(currentMapIndex == 1) {
-			storeButton.update(gc, gm, dt);
-			
+			storeButton.update(gc, gm);
+			// Set targetMapIndex --------------------------------------------------------------------
+			if(localPlayer != null) {
+				if(localPlayer.isMoving()) {
+					targetMapIndex = 0;
+					if(localPlayer.getTileZ() >= 1 && localPlayer.getTileZ() <= 2 ) {
+						if(localPlayer.getTileX() >= 1 && localPlayer.getTileX() <= 2) {
+							interactIndex = 1;
+						}			
+					}
+				}
+			}
+						
 		}
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
 			inventoryView = !inventoryView;
 
-		camera.update(gc, gm, dt);
+		camera.update(gc, gm);
 		Physics.update();
 	}
 	@Override
@@ -151,6 +166,10 @@ public class GameScene extends AbstractScene{
 					objects.get(i).render(gc, r);
 				}
 			}
+		}
+		
+		if(interactIndex != 0) {
+			
 		}
 
 		renderUI(gc,r);
@@ -197,7 +216,9 @@ public class GameScene extends AbstractScene{
 			
 			int pX = (int)(64 * (i-2) + 29* ( i  - 1.5f));
 			
-			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);			
+			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);		
+			
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
 			r.drawImage(gc.getImageLoader().getImage("slot_black"),
 					gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
 					0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
@@ -248,11 +269,30 @@ public class GameScene extends AbstractScene{
 			
 			
 			gm.setLoading(true);
-			currentMap = new Map(mapNames[currentMapIndex]);
+			switch(currentMapIndex) {
+			case 1:
+				currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
+						new Interior("portal",249,187,80,72,14f,14,false)
+				});
+				currentMap.setBackgroundColor(0xff405947);
+				break;
+			default:
+				currentMap = new Map(mapNames[currentMapIndex]);
+			}
 			
-			this.localPlayer.setCurrentMapIndex(currentMapIndex);			
-			int[] _pos = currentMap.randomSpawnPoint();
-			localPlayer.setPos(_pos[0], _pos[1]);
+			float t = 0;
+			while(localPlayer == null) {
+				t += Time.DELTA_TIME;
+				if(t >= 5) {
+					break;
+				}
+			}
+			
+			if(t < 5) {
+				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
+				int[] _pos = currentMap.randomSpawnPoint();
+				localPlayer.setPos(_pos[0], _pos[1]);
+			}
 
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
 			gm.setLoading(false);

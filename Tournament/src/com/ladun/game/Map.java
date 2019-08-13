@@ -6,15 +6,19 @@ import java.util.Random;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.Image;
+import com.ladun.game.objects.GameObject;
 
 public class Map {
 	
 	private static final int SPAWN_COLOR = 0xff68f38a;
 
+	private ArrayList<GameObject> objects = new ArrayList<GameObject>();
+	
 	private String name;
 	private Image floorImage;
 	private Image ceilImage;
 	
+	private int backgroundColor = 0;
 	private boolean load;
 	private float[] heights;
 	private boolean[] collisions;
@@ -27,17 +31,33 @@ public class Map {
 		ceilImage = new Image("/Map/" + name + "_ceil.png");
 		loadLevel(new Image("/Map/" + name + "_collision.png"));
 	}
-	
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public Map(String name,GameObject[] objects) {
+		this(name);
+		
+		for(int i = 0; i  < objects.length;i++) {
+			this.objects.add(objects[i]);
+		}
 		
 	}
+	
+	public void update(GameContainer gc, GameManager gm) {
+		for(int i =0;i < objects.size();i++) {
+			objects.get(i).update(gc, gm);
+		}
+	}
 	public void render(GameContainer gc, Renderer r) {
-		
+
+		r.setBackgroundColor(backgroundColor);
 		r.setzDepth(0);
-		r.drawImage(floorImage, 0, 0, 0);
+		r.drawMap(floorImage);
 		r.setzDepth(Renderer.LAYER_UI - 10);
-		r.drawImage(ceilImage, 0, 0, 0);
+		r.drawMap(ceilImage);
 		//RenderCollision(r);
+		
+
+		for(GameObject obj : objects) {
+			obj.render(gc, r);
+		}
 	}
 	
 	private void RenderCollision(Renderer r) {
@@ -122,6 +142,13 @@ public class Map {
 		return levelH;
 	}
 	
+	public int getBackgroundColor() {
+		return backgroundColor;
+	}
+	public void setBackgroundColor(int backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
 	class SpawnPoint{
 		private boolean spawned;
 		private int x,y;

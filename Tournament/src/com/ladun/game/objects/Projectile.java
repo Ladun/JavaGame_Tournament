@@ -2,6 +2,7 @@ package com.ladun.game.objects;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.components.CircleCollider;
@@ -39,18 +40,18 @@ public class Projectile extends GameObject{
 	}
 
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
-		offX += speed * c * dt;
-		offZ += speed * s * dt;
+	public void update(GameContainer gc, GameManager gm) {
+		offX += speed * c * Time.DELTA_TIME;
+		offZ += speed * s * Time.DELTA_TIME;
 		
-		time += dt;
+		time += Time.DELTA_TIME;
 		if(time > 3) {
 			this.active = false;
 		}
 		
 		this.AdjustPosition();
 		
-		this.updateComponents(gc, gm, dt);
+		this.updateComponents(gc, gm);
 	}
 
 	@Override

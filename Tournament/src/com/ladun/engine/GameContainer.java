@@ -10,7 +10,6 @@ public class GameContainer implements Runnable{
 	private AbstractGame game;
 	
 	private boolean running = false;
-	private final double UPDATE_CAP = 1.0/60.0;
 	private int width = 320 ,height = 240;
 	private float scale = 1f;
 	private String title = "Tournament";
@@ -78,12 +77,12 @@ public class GameContainer implements Runnable{
 			
 			
 			
-			while(unprocessedTime >= UPDATE_CAP)
+			while(unprocessedTime >= Time.DELTA_TIME)
 			{
-				unprocessedTime -= UPDATE_CAP;
+				unprocessedTime -= Time.DELTA_TIME;
 				render = true;
 				
-				game.update(this, (float)UPDATE_CAP);
+				game.update(this);
 				input.update();				
 				ticks++;
 

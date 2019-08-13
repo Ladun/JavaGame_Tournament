@@ -3,6 +3,7 @@ package com.ladun.game;
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
@@ -40,16 +41,16 @@ public class GameManager extends AbstractGame {
 	}
 
 	@Override
-	public void update(GameContainer gc, float dt) {
+	public void update(GameContainer gc) {
 		// TODO Auto-generated method stub
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
-				scenes[i].update(gc,dt);
+				scenes[i].update(gc);
 		}
 		
 
 		if(loading) {
-			loadingAnim+= dt * 16;
+			loadingAnim+= Time.DELTA_TIME * 16;
 			if(loadingAnim >= 16)
 				loadingAnim = 0;
 		}

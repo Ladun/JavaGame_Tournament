@@ -2,6 +2,7 @@ package com.ladun.engine;
 
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -16,10 +17,12 @@ public class Renderer {
 	
 	public final static int LAYER_UI = Integer.MAX_VALUE;
 	
+	
 	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
 	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
 	
+	private int backgroundColor = 0;
 	
 	private int pW,pH;
 	private int[] p;
@@ -32,8 +35,11 @@ public class Renderer {
 	private boolean processing = false;
 	private int camX, camY;
 	
+	private GameContainer gc;
+	
 	public Renderer(GameContainer gc){
 		
+		this.gc = gc;
 		
 		pW = gc.getWidth();
 		pH = gc.getHeight();
@@ -44,13 +50,20 @@ public class Renderer {
 	}
 	
 	public void clear(){
+		
+		Arrays.fill(p, backgroundColor);
+		Arrays.fill(zb, 0);
+		Arrays.fill(lm, ambientColor);
+		Arrays.fill(lb, 0);
+		
+		/*
 		for(int i =0; i < p.length;i++)
 		{
 			p[i] = 0;
 			zb[i] = 0;
 			lm[i] = ambientColor;
 			lb[i] = 0;
-		}
+		}*/
 	}
 	
 	public void process(){
@@ -397,6 +410,11 @@ public class Renderer {
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------------------------------------
+	public void drawMap(Image image) {
+		//TODO : ÃÖÀûÈ­ ¤¡¤¡
+		drawImage(image,0,0,0);
+	}
 	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawRect(int offX,int offY,int width, int height, float angle,int color)
 	{
@@ -800,6 +818,14 @@ public class Renderer {
 
 	public void setCamY(int camY) {
 		this.camY = camY;
+	}
+
+	public int getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	public void setBackgroundColor(int backgroundColor) {
+		this.backgroundColor = backgroundColor;
 	}
 
 	public int getzDepth() {

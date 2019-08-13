@@ -20,7 +20,7 @@ public class CircleCollider extends Collider{
 	}
 
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
 		lastCenterX = centerX;
 		lastCenterZ = centerZ;

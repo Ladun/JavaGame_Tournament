@@ -19,15 +19,15 @@ public abstract class GameObject
 	
 	protected ArrayList<Component> components = new ArrayList<Component>();
 	
-	public abstract void update(GameContainer gc,GameManager gm,float dt);
+	public abstract void update(GameContainer gc,GameManager gm);
 	public abstract void render(GameContainer gc, Renderer r);
 	public abstract void collision(GameObject other);
 	
-	public void updateComponents(GameContainer gc,GameManager gm,float dt)
+	public void updateComponents(GameContainer gc,GameManager gm)
 	{
 		for(Component c : components)
 		{
-			c.update(gc, gm, dt);
+			c.update(gc, gm);
 		}
 	}
 	

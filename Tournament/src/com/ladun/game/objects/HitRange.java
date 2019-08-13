@@ -37,9 +37,9 @@ public class HitRange extends GameObject{
 	}
 	
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
-		this.updateComponents(gc, gm, dt);
+		this.updateComponents(gc, gm);
 	}
 
 	@Override

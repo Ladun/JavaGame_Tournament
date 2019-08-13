@@ -18,7 +18,6 @@
 <fullyQualifiedTypeName name="com.ladun.game.Physics"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.TempObject"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.CircleCollider"/>
-<fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
 <fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
 <fullyQualifiedTypeName name="com.ladun.game.Point"/>
 <fullyQualifiedTypeName name="java.lang.Math"/>
@@ -29,4 +28,7 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="javax.crypto.spec.GCMParameterSpec"/>
 <fullyQualifiedTypeName name="javax.swing.Box.Filler"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="com.ladun.engine.Time"/>
+<fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
 </qualifiedTypeNameHistroy>

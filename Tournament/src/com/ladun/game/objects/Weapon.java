@@ -2,6 +2,7 @@ package com.ladun.game.objects;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
 import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
@@ -50,17 +51,17 @@ public class Weapon extends GameObject{
 	}
 	
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
-		time += dt;
+		time += Time.DELTA_TIME;
 		positionSetting();
 		
 		if(attacking) {
-			attackFunction(dt);
+			attackFunction();
 		}
 		
 		if(hitRange.isActive())
-			hitRange.update(gc, gm, dt);
+			hitRange.update(gc, gm);
 	}
 
 	@Override
@@ -120,8 +121,8 @@ public class Weapon extends GameObject{
 		
 	}
 	
-	private void attackFunction(float dt) {
-		attackTime += dt;
+	private void attackFunction() {
+		attackTime += Time.DELTA_TIME;
 		
 		switch(type) {
 		case SWORD:
@@ -133,14 +134,14 @@ public class Weapon extends GameObject{
 			else {
 				
 				if(mirror) {
-					deltaAngle -= dt * 975;		
+					deltaAngle -= Time.DELTA_TIME * 975;		
 					float co = (float)Math.cos(Math.toRadians(deltaAngle +90 +angle));
 					float si = (float)Math.sin(Math.toRadians(deltaAngle +90 +angle));
 
 					hitRange.active(posX + width * xPivot - 8 + 48 * co , posZ  + height * yPivot  - 8+  48* si , 16, 16);		
 				}
 				else {
-					deltaAngle += dt * 975;
+					deltaAngle += Time.DELTA_TIME * 975;
 					float co = (float)Math.cos(Math.toRadians(deltaAngle -90 +angle));
 					float si = (float)Math.sin(Math.toRadians(deltaAngle -90 +angle));
 
@@ -160,8 +161,8 @@ public class Weapon extends GameObject{
 				float co = (float)Math.cos(Math.toRadians(angle));
 				float si = (float)Math.sin(Math.toRadians(angle));
 				
-				deltaX += dt * 500 * co;
-				deltaZ += dt * 500 * si;
+				deltaX += Time.DELTA_TIME * 500 * co;
+				deltaZ += Time.DELTA_TIME * 500 * si;
 
 				hitRange.active(posX +deltaX + width * xPivot - 8  +64 * co, posZ + deltaZ + height * yPivot  - 8 + 64 * si, 16, 16);
 			}

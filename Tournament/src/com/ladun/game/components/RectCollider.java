@@ -19,7 +19,7 @@ public class RectCollider extends Collider{
 	}
 
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		lastCenterX = centerX;
 		lastCenterZ = centerZ;
 

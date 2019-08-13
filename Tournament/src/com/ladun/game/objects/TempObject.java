@@ -20,13 +20,13 @@ public class TempObject extends GameObject{
 		//this.addComponent(new RectCollider(this));
 	}
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
+	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
 		color = 0xffff0000;
 		
 		this.posX = gc.getInput().getMouseX() + gs.getCamera().getOffX();
 		this.posZ = gc.getInput().getMouseY() + gs.getCamera().getOffY();
-		this.updateComponents(gc, gm, dt);
+		this.updateComponents(gc, gm);
 	}
 
 	@Override

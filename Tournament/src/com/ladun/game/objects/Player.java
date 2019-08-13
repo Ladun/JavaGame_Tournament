@@ -6,9 +6,12 @@ import java.util.ArrayList;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Item;
+import com.ladun.game.Physics;
+import com.ladun.game.Physics;
 import com.ladun.game.Point;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
@@ -80,14 +83,14 @@ public class Player extends Entity{
 		}
 	}
 	@Override
-	public void update(GameContainer gc, GameManager gm, float dt) {
-		nextHitTime += dt;
+	public void update(GameContainer gc, GameManager gm) {
+		nextHitTime += Time.DELTA_TIME;
 		
 		if(localPlayer){		
 			//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 			for(int i = 0; i < 4; i ++) {
 				if(actionCoolDownTime[i] > 0 ) {
-					actionCoolDownTime[i] -= dt;
+					actionCoolDownTime[i] -= Time.DELTA_TIME;
 					if(actionCoolDownTime[i]  < 0)
 						actionCoolDownTime[i]  = 0;
 				}
@@ -143,11 +146,11 @@ public class Player extends Entity{
 			
 			if(clickPoints.size() > 0) {
 				float distance = distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
-				if(distance >= speed  * dt) {
-					moving(gc,dt,speed * fcos,speed * fsin);
+				if(distance >= speed  * Time.DELTA_TIME) {
+					moving(gc,speed * fcos,speed * fsin);
 				}
 				else {
-					moving(gc,dt,distance * fcos, distance *fsin);
+					moving(gc,distance * fcos, distance *fsin);
 					clickPoints.remove(0);
 					if(clickPoints.size() > 0) {
 						angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
@@ -164,44 +167,7 @@ public class Player extends Entity{
 			}
 			// Moving End --------------------------------------------------
 			
-						
-			// Jump And Gravity ----------------------------------------
-			
-			/*
-			fallDistance += Physics.GRAVITY * dt;
-			
-			if(fallDistance > 0) { 
-				
-				int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
-				float _h;
-				for(int _y = 0; _y < 2; _y++) {
-					for(int _x = 0; _x< 2; _x++) {
-						groundHeight= gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
-						if(groundHeight== Physics.MAX_HEIGHT) {
-							continue;
-						}
-						
-						if(Math.round(posY) >= groundHeight)
-						{
-							posY = groundHeight;
-							fallDistance = 0;
-							ground = true;
-						}					
-					}				
-				}
-			}
-			
-			
-			if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) 
-			{
-				if(ground)
-					fallDistance = jump;
-			}
-			
-			posY += fallDistance;			
-			*/
-			
-			// Jump And Gravity End ------------------------------------
+			// jump(gc);
 			
 			
 			// Attack----------------------------------------------------
@@ -234,7 +200,7 @@ public class Player extends Entity{
 			}
 			// Attack End -------------------------------------------------
 			
-			anim += dt * animSpeed;
+			anim += Time.DELTA_TIME * animSpeed;
 			if(anim >= animMaxIndex[animType]) {
 				anim -=animMaxIndex[animType];
 			}
@@ -246,8 +212,8 @@ public class Player extends Entity{
 			groundLast = ground;				
 			this.AdjustPosition();	
 		}
-		weapon.update(gc, gm, dt);
-		this.updateComponents(gc,gm,dt);
+		weapon.update(gc, gm);
+		this.updateComponents(gc,gm);
 	}
 
 	@Override
@@ -328,12 +294,12 @@ public class Player extends Entity{
 	
 	}
 	
-	private void moving(GameContainer gc, float dt, float dX,float dY) {
+	private void moving(GameContainer gc, float dX,float dY) {
 		int h = (int)Math.signum(dX);
 		int v = (int)Math.signum(dY);
 					
 		// Moving -------------
-		offX += dX * dt;
+		offX += dX * Time.DELTA_TIME;
 		if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
 		   (gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
 				
@@ -346,7 +312,7 @@ public class Player extends Entity{
 					offX = -pL;
 			}
 		}	
-		offZ += dY * dt;
+		offZ += dY * Time.DELTA_TIME;
 		if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
 		   (gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
 			
@@ -363,6 +329,44 @@ public class Player extends Entity{
 
 		// Moving End --------------
 
+	}
+	
+	private void jump(GameContainer gc) {
+
+		
+		fallDistance += Physics.GRAVITY * Time.DELTA_TIME;
+		
+		if(fallDistance > 0) { 
+			
+			int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
+			float _h;
+			for(int _y = 0; _y < 2; _y++) {
+				for(int _x = 0; _x< 2; _x++) {
+					groundHeight= gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
+					if(groundHeight== Physics.MAX_HEIGHT) {
+						continue;
+					}
+					
+					if(Math.round(posY) >= groundHeight)
+					{
+						posY = groundHeight;
+						fallDistance = 0;
+						ground = true;
+					}					
+				}				
+			}
+		}
+		
+		
+		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) 
+		{
+			if(ground)
+				fallDistance = jump;
+		}
+		
+		posY += fallDistance;			
+		
+		
 	}
 	
 	private float distance(float stX, float stY, float edX, float edY) {

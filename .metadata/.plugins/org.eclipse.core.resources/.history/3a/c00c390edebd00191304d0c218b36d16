@@ -1,0 +1,49 @@
+package com.ladun.game.objects;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+
+public class Interior extends GameObject{
+
+	
+	private boolean animation;
+	private float anim;
+	private float animSpeed;
+	
+	private String imageName;
+	private boolean collision;
+	
+	public Interior(String imageName,float posX,float posY) {
+		this.imageName = imageName;
+		this.collision = false;
+	}
+
+	public Interior(String imageName,
+			float posX,float posY,
+			int width, int height) {
+		this.imageName = imageName;
+		this.collision = true;
+		this.width = width;
+		this.height = height;
+	}
+	
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		// TODO Auto-generated method stub
+		r.drawImage(gc.getImageLoader().getImage(imageName), offX, offY, angle);
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

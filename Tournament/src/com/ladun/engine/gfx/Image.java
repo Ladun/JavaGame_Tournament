@@ -11,10 +11,11 @@ public class Image {
 	private boolean alpha = false;
 	private int lightBlock = Light.NONE;
 	
-	
+
+	BufferedImage image;
 	public Image(String path)
 	{
-		BufferedImage image = null;
+		image = null;
 		try {
 			image = ImageIO.read(Image.class.getResourceAsStream(path));
 		} catch (IOException e) {
@@ -74,5 +75,9 @@ public class Image {
 
 	public void setP(int[] p) {
 		this.p = p;
+	}
+
+	public BufferedImage getImage() {
+		return image;
 	}
 }

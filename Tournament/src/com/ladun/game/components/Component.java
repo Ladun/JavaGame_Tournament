@@ -9,7 +9,7 @@ public abstract class Component {
 
 	protected String tag;
 	protected GameObject parent;
-	public abstract void update(GameContainer gc,GameManager gm,float dt);
+	public abstract void update(GameContainer gc,GameManager gm);
 	public abstract void render(GameContainer gc,Renderer r);
 	public String getTag() {
 		return tag;
