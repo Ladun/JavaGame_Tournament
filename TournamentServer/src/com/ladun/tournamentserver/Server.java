@@ -56,9 +56,9 @@ public class Server {
 		
 		listenThread = new Thread(() -> listen(), "Server-ListenThread");		
 		listenThread.start();
-		
+		/*
 		timeoutThread = new Thread(new Timeout(this));
-		timeoutThread.start();
+		timeoutThread.start();*/
 		
 		
 		stTime = System.currentTimeMillis();
@@ -118,12 +118,17 @@ public class Server {
 				break;
 			// Disconnection--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID]
-			case 0x02:
-				_clientID = Integer.parseInt(messages[1].trim());
-				
-				if(_clientID < 1000 || !isClientExist(_clientID))
-					break;		
+			case 0x02:	
+				try {
+					_clientID =Integer.parseInt(messages[1].trim());
+					
+				} catch (NumberFormatException e) {
+					return;	
+				}
 
+				if(_clientID < 1000 || !isClientExist(_clientID))
+					return;	
+				
 				for(int i = 0 ; i < clients.size(); i++) {
 					if(clients.get(i).getClientdID() == _clientID) {
 						clients.remove(i);
@@ -142,11 +147,16 @@ public class Server {
 					break;
 				String[] netArgs = messages[2].split(",");
 				// re-send --------------------------------------------------
-				_clientID = Integer.parseInt(messages[1].trim());
+				try {
+					_clientID =Integer.parseInt(messages[1].trim());
+					
+				} catch (NumberFormatException e) {
+					return;	
+				}
 
 				if(_clientID < 1000 || !isClientExist(_clientID))
-					break;	
-
+					return;	
+				
 				sb.setLength(0);
 				bw.clear();
 				bw.write((byte)0x03);
@@ -164,9 +174,11 @@ public class Server {
 				case 0x11:
 				case 0x12:
 				case 0x13:
+				case 0x18:
 					// 0x11 : ValueType, x, y, z, angle
 					// 0x12 : ValueType, angle
-					// 0x13 : ValueType, type		
+					// 0x13 : ValueType, type	
+					// 0x18 : ValueType, hiding		
 					break;
 				case 0x14:{
 					// ValueType, teamNumber
@@ -183,8 +195,30 @@ public class Server {
 				case 0x16:{
 					// ValueType, currentMapIndex
 					Client c = getClient(_clientID);
-					c.setCurrentMapIndex(Integer.parseInt(netArgs[1]));
-					//System.out.println("Receive");
+					int _currentMapIndex = Integer.parseInt(netArgs[1]);
+					c.setCurrentMapIndex(_currentMapIndex);
+					
+					if(_currentMapIndex == c.getTargetMapIndex() && c.getTargetMapIndex() >= 2) {
+						boolean allSame = true;
+						for(Client _c : clients) {
+							if(_c.getClientdID() != c.getClientdID()) {
+								if(_c.getCurrentMapIndex() != c.getTargetMapIndex()) {
+									allSame = false;
+									break;
+								}
+							}
+						}
+						if(allSame) {
+	
+							sb.setLength(0);
+							bw.clear();
+							bw.write((byte)0x06);
+							sb.append(":");
+							sb.append((char)0x03);
+							bw.write((sb.toString()).getBytes());	
+							sendToAllClients(bw.getBytes());
+						}
+					}
 					break;
 				}
 				case 0x17:{
@@ -192,8 +226,7 @@ public class Server {
 					Client c = getClient(_clientID);
 					c.setTargetMapIndex(Integer.parseInt(netArgs[1]));
 					
-					dumpPacket(packet);
-					
+					//dumpPacket(packet);
 					if(clients.size() == 1)
 						break;
 					
@@ -236,11 +269,15 @@ public class Server {
 				if(messages.length < 2)
 					break;
 				if(messages.length == 2) {		// Player Spawn		
-					_clientID = Integer.parseInt(messages[1].trim());
+					try {
+						_clientID =Integer.parseInt(messages[1].trim());
+						
+					} catch (NumberFormatException e) {
+						return;	
+					}
 
 					if(_clientID < 1000 || !isClientExist(_clientID))
-						break;	
-					
+						return;	
 					sb.setLength(0);
 					bw.clear();
 					bw.write((byte)0x01);
@@ -290,10 +327,15 @@ public class Server {
 
 				if(messages.length < 2)
 					break;
-				_clientID = Integer.parseInt(messages[1].trim());
+				try {
+					_clientID =Integer.parseInt(messages[1].trim());
+					
+				} catch (NumberFormatException e) {
+					return;	
+				}
 
 				if(_clientID < 1000 || !isClientExist(_clientID))
-					break;	
+					return;	
 				
 				for(Client c : clients) {
 					if(c.getClientdID() == _clientID) {
@@ -321,6 +363,23 @@ public class Server {
 					
 					send(bw.getBytes(), address, port);
 					break;
+				}
+				case 0x01:{
+					_clientID =Integer.parseInt(messages[1].trim());
+
+					if(_clientID < 1000 || !isClientExist(_clientID))
+						return;	
+					sb.setLength(0);
+					bw.clear();
+					bw.write((byte)0x06);
+					sb.append(":");
+					sb.append((char)0x02);
+					sb.append(",");
+					sb.append(getClient(_clientID).getTargetMapIndex());
+					bw.write((sb.toString()).getBytes());						
+
+					send(bw.getBytes(), address, port);				
+					
 				}
 				
 				

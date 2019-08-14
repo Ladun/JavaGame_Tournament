@@ -84,10 +84,17 @@ public class Player extends Entity{
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
+		if(currentMapIndex != gs.getCurrentMapIndex())
+			return;
+		
+		if(!gs.isGameisStart())
+			return;
+		
 		nextHitTime += Time.DELTA_TIME;
 		
-		if(localPlayer){		
-			//System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+		if(localPlayer){	
+			if(gc.getInput().isKeyDown(KeyEvent.VK_L))
+				System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
 			for(int i = 0; i < 4; i ++) {
 				if(actionCoolDownTime[i] > 0 ) {
 					actionCoolDownTime[i] -= Time.DELTA_TIME;
@@ -219,10 +226,19 @@ public class Player extends Entity{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 
+		if(currentMapIndex != gs.getCurrentMapIndex())
+			return;
+		if(!localPlayer)
+			if(hiding)
+				return;
+		
+		
 		
 		r.setzDepth((int)(posZ + Math.abs(groundHeight)) + pT + (height - (pT + pB)) );		
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
+		
+		
 		/*
 		r.setzDepth((int)(Math.abs(posY) ));
 		// PosX PosZ Position Draw
@@ -235,17 +251,15 @@ public class Player extends Entity{
 		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY,angle, 0xff30b2c9);
 		 */
 		
-		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
-		//r.drawImage(gc.getImageLoader().getImage("player"), (int)posX, (int)(posZ + posY), angle);
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,0);
-		//r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
-		r.drawFillRect((int)posX , (int)(posZ + posY) - 15 , (int)(64 * (health/maxHealth)), 15, 0, 0xff63c564);
-		
 		for(int i = 0; i < clickPoints.size();i++) {
 			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
 			r.drawImage(gc.getImageLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
 		}
+		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,0);
+		//r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
+		r.drawFillRect((int)posX , (int)(posZ + posY) - 15 , (int)(64 * (health/maxHealth)), 15, 0, 0xff63c564);
+		
 		
 		weapon.render(gc, r);
 		

@@ -26,6 +26,7 @@ public abstract class Entity extends GameObject{
 	protected boolean ground = false;
 	protected boolean groundLast = false;
 	protected boolean moving = false;
+	protected boolean hiding = false;
 
 	protected float[] actionCoolDownTime;
 	
@@ -120,6 +121,14 @@ public abstract class Entity extends GameObject{
 
 	public boolean isMoving() {
 		return moving;
+	}
+
+	public boolean isHiding() {
+		return hiding;
+	}
+
+	public void setHiding(boolean hiding) {
+		this.hiding = hiding;
 	}
 
 	public void setAnimType(int animType) {
