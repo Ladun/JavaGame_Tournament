@@ -1,5 +1,6 @@
 package com.ladun.game.Scene;
 
+import java.awt.AWTException;
 import java.awt.event.KeyEvent;
 
 import com.ladun.engine.GameContainer;
@@ -11,7 +12,6 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Map;
 import com.ladun.game.Physics;
 import com.ladun.game.net.Client;
-import com.ladun.game.objects.Entity;
 import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
@@ -34,10 +34,9 @@ public class GameScene extends AbstractScene{
 	
 	// -----------------------------------------
 	private int targetMapIndex;
-	private boolean allClientReady = false;
-	private float readyToStartTime = 5;
-	private boolean gameisStart = false;
-	private boolean inteamWaitRoom = false;
+	private float readyToStartTime = 0;
+	private boolean gameisStart = false;// 게임 중임 표시
+	private boolean inteamWaitRoom = false; // 게임 시작 바로 전에 서버로 데이터를 한 번 보내기 위해서
 	// Buttons----------------------------------
 	private Button teamChooseButton;
 	private Button storeButton;
@@ -52,7 +51,13 @@ public class GameScene extends AbstractScene{
 		
 		this.name = "InGame";		
 		//this.objects.add(new Player(1,1,this));
-		this.camera = new Camera(gm,"Player");
+		try {
+			this.camera = new Camera(gm,"Player");
+		}
+		catch(AWTException e0) {
+			System.out.println("Camera AWTException");
+			return false;
+		}
 		//this.addObject(new TempObject(this));
 		
 		//Buttons Init---------------------------------------
@@ -78,11 +83,10 @@ public class GameScene extends AbstractScene{
 		if(currentMapIndex == 0) {
 			teamChooseButton.update(gc, gm);
 			
-			if(allClientReady) {
+			if(readyToStartTime > 0) {
 				readyToStartTime -= Time.DELTA_TIME;
 				if(readyToStartTime <= 0) {
 					readyToStartTime = 0;
-					allClientReady = false;
 					
 					gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x00});
 				}
@@ -138,15 +142,26 @@ public class GameScene extends AbstractScene{
 						
 		}
 		else {
-			if(allClientReady) {
-				readyToStartTime -= Time.DELTA_TIME;
-				if(readyToStartTime <= 0) {
-					readyToStartTime = 0;
-					allClientReady = false;
-					gameisStart = true;
-					
-					localPlayer.setHiding(false);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+			if(!gameisStart) {
+				if(readyToStartTime > 0) {
+					readyToStartTime -= Time.DELTA_TIME;
+					if(readyToStartTime <= 0) {
+						readyToStartTime = 0;
+						gameisStart = true;
+						
+						localPlayer.setHiding(false);
+						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+					}
+				}
+			}else {
+				if(readyToStartTime > 0) {
+					readyToStartTime -= Time.DELTA_TIME;
+					if(readyToStartTime <= 0) {
+						readyToStartTime = 0;
+						gameisStart = false;
+						localPlayer.revival();
+						mapLoad(gc,1);
+					}
 				}
 			}
 		}
@@ -223,7 +238,7 @@ public class GameScene extends AbstractScene{
 		}
 		
 		
-		if(allClientReady) {
+		if(readyToStartTime > 0) {
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("count"), gc.getWidth()/2 - 64, gc.getHeight()/2 - 64,((int)readyToStartTime +1)% 6,0, 0);
 		}
 	}
@@ -259,23 +274,22 @@ public class GameScene extends AbstractScene{
 		
 	}
 	
-	public void mapLoad() {
-		System.out.println(targetMapIndex);
-		mapLoad(targetMapIndex);
+	public void mapLoad(GameContainer gc) {
+		mapLoad(gc,targetMapIndex);
 	}
 	
-	public void mapLoad(int index) {
+	public void mapLoad(GameContainer gc,int index) {
 		this.currentMapIndex = index;
 		
 		new Thread(() ->{ 
-			while(gm.isLoading()) {}
+
+			synchronized (gm) {
+				while(gm.isLoading()) {}
 			
 			
-			gm.setLoading(true);
-			synchronized (this) {
+				gm.setLoading(true);
 				switch(currentMapIndex) {
 				case 1:
-					System.out.println(targetMapIndex);
 					inteamWaitRoom = true;
 					currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
 							new Interior("portal",249,187,80,72,14f,14,false)
@@ -293,16 +307,18 @@ public class GameScene extends AbstractScene{
 						break;
 					}
 				}
-				
+				 
 				if(t < 5) {
 					this.localPlayer.setCurrentMapIndex(currentMapIndex);			
 					int[] _pos = currentMap.randomSpawnPoint();
 					localPlayer.setPos(_pos[0], _pos[1]);
 				}
+				synchronized (gc) {
+					camera.focusTarget(gc, gm);
+				}
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
+				gm.setLoading(false);
 			}
-
-			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
-			gm.setLoading(false);
 		},"Map Load").start();
 		
 	}
@@ -390,14 +406,11 @@ public class GameScene extends AbstractScene{
 		return camera;
 	}
 
-	public boolean isAllClientReady() {
-		return allClientReady;
-	}
-
 	public void setAllClientReady(boolean allClientReady) {
-		this.allClientReady = allClientReady;
 		if(allClientReady)
 			readyToStartTime = 3;
+		else 
+			readyToStartTime = 0;
 	}
 
 	public boolean isGameisStart() {

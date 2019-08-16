@@ -40,7 +40,7 @@ public class TournamentServer {
 					System.out.println("[" + c.getAddress().getHostAddress()+":"+c.getPort()+"] ID: "+c.getClientdID());
 				}
 				System.out.println("------------------------------------");
-				break;
+				break;			
 			case "packet":
 				if(commands.length == 1) {
 					server.setPacketCatchType((byte)0x00);
@@ -56,7 +56,28 @@ public class TournamentServer {
 						NoneCommand(s);
 					}
 				}
-				break;
+				break;			
+			case "kick":{
+
+				try {
+					int _clientID = Integer.parseInt(commands[1]);
+					if(_clientID < 1000 || !server.isClientExist(_clientID))
+						return;	
+
+					System.out.printf("[%s:%d] ID: %d kick\n",server.getClient(_clientID).getAddress().getHostAddress() , server.getClient(_clientID).getPort(), _clientID );	
+					for(int i = 0 ; i < server.getClients().size(); i++) {
+						if(server.getClients().get(i).getClientdID() == _clientID) {
+							server.getClients().remove(i);
+							break;
+						}
+					}
+					server.clientDisconnect(_clientID);
+
+				}
+				catch(NumberFormatException e) {
+					System.out.println("parameter is not a number");
+				}
+			}
 			default:
 				NoneCommand(s);
 			}

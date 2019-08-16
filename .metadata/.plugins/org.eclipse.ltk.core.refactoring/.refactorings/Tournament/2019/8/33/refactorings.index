@@ -1,3 +1,6 @@
 1565535848674	Rename method 'renderButtons'
 1565604186664	Rename method 'RandomSpawnPoint'
 1565608949710	Rename method 'changeMap'
+1565958045201	Rename local variable 'damage'
+1565958049149	Rename field 'damage'
+1565958067897	Rename type 'DisplayDamage'

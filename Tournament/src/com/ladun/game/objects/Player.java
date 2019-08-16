@@ -56,17 +56,19 @@ public class Player extends Entity{
 		this.pB = 0;
 		this.pT = 30;
 		
-		this.maxHealth 	= 100;
-		this.health 	= maxHealth;
 		this.speed 		= 200;
-		this.jump		= -7f;
-		
+		this.jump		= -7f;		
 		this.animSpeed = 12;
 		
-		this.localPlayer = localPlayer;
 		this.gs = gs;
 		
+		this.localPlayer = localPlayer;
+		this.maxHealth 	= 100;
+		
 		this.weapon = new Weapon(this);
+		this.maxHealth 	= 100;
+		revival();
+				
 		
 		for(int i =0;i < 6;i++) {
 			items[i] = new Item(0);
@@ -270,13 +272,50 @@ public class Player extends Entity{
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
-		if(other instanceof HitRange) {
-			HitRange hr = (HitRange)other;
-			if(!hr.getIgnoreTag().equals(tag)) {
-				hit(hr.getDamage());
-				
+		if(localPlayer) {
+			if(other instanceof HitRange) {
+				HitRange hr = (HitRange)other;
+				if(!hr.getIgnoreTag().equals(tag)) {
+					hit(hr.getDamage());
+					
+				}
+			}
+			else if(other instanceof Projectile) {
+				hit(((Projectile)other).getDamage());
 			}
 		}
+	}
+	@Override
+	public void hit(float damage) {
+		if(nextHitTime >= HIT_TIME) {
+			nextHitTime = 0;
+			health -= damage;
+
+			if(localPlayer)
+				gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01});
+			//----------------------------------------------------------------------------------------
+			DisplayNumber displayDamage = (DisplayNumber)gs.getInactiveObject("displayDamage");		
+			if(displayDamage == null) {
+				gs.addObject(new DisplayNumber((int)-damage, getCenterX(), posZ + posY));
+			}
+			else {
+				displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
+			}
+			//----------------------------------------------------------------------------------------
+			
+			if(health <= 0) {
+				active =false;
+			}
+		}
+	}
+	@Override
+	public void revival() {
+		this.health = maxHealth;
+
+		if(localPlayer)
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00});
+	
+		this.active = true;
 	}
 
 	//---------------------------------------------------------------------------------------

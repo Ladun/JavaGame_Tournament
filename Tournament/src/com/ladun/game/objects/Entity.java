@@ -35,28 +35,8 @@ public abstract class Entity extends GameObject{
 	
 	protected int currentMapIndex;
 	
-	public void hit(float damage) {
-		
-		if(nextHitTime >= HIT_TIME) {
-			nextHitTime = 0;
-			health -= damage;
-
-			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health});
-			//----------------------------------------------------------------------------------------
-			DisplayDamage displayDamage = (DisplayDamage)gs.getInactiveObject("displayDamage");		
-			if(displayDamage == null) {
-				gs.addObject(new DisplayDamage((int)damage, getCenterX(), posZ + posY));
-			}
-			else {
-				displayDamage.setting((int)damage,getCenterX(), posZ + posY);
-			}
-			//----------------------------------------------------------------------------------------
-			
-			if(health <= 0) {
-				active =false;
-			}
-		}
-	}
+	public abstract void hit(float damage);
+	public abstract void revival();
 	
 	protected void AdjustPosition()
 	{
@@ -156,6 +136,7 @@ public abstract class Entity extends GameObject{
 		this.tileZ =tileZ;
 		this.offX = 0;
 		this.offZ = 0;
+		AdjustPosition();
 	}
 	public abstract float getCoolDownPercent(int i) ;
 }

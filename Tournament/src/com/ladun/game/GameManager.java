@@ -22,11 +22,14 @@ public class GameManager extends AbstractGame {
 	
 	private AbstractScene[] scenes = new AbstractScene[2];
 	private int 			sceneInedx = 0;
+	
+	private Announce announce;
 	@Override
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
 		gc.getRenderer().setAmbientColor(-1);
 		gc.getImageLoader().ImageLoad();
+		announce = new Announce();
 		
 		if(!addScene(gc,new MainMenuScene(),true)) {
 			return false;
@@ -35,7 +38,7 @@ public class GameManager extends AbstractGame {
 			return false;
 		}
 		
-		client = new Client("localhost",8192,this);
+		client = new Client("localhost",8192,gc,this);
 		//client.connect();
 		return true;
 	}
@@ -48,6 +51,7 @@ public class GameManager extends AbstractGame {
 				scenes[i].update(gc);
 		}
 		
+		announce.update(gc, this);
 
 		if(loading) {
 			loadingAnim+= Time.DELTA_TIME * 16;
@@ -64,16 +68,20 @@ public class GameManager extends AbstractGame {
 				scenes[i].render(gc, r);
 		}
 		
-
+		r.setzDepth(Renderer.LAYER_UI);
+		r.setCamX(0);
+		r.setCamY(0);
 		if(loading) {
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
 		}
+		announce.render(gc, r);
 		
 	}
 
 	@Override
 	public void dispose() {
-		client.disconnect();		
+		client.disconnect();
+		
 	}
 	
 	
@@ -130,6 +138,10 @@ public class GameManager extends AbstractGame {
 		return null;
 	}
 	
+	public Announce getAnnounce() {
+		return announce;
+	}
+
 	public Client getClient() {
 		return client;
 	}

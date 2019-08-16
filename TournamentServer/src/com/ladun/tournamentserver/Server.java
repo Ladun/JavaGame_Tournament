@@ -29,7 +29,6 @@ public class Server {
 	private byte[] receiveDataBuffer = new byte[MAX_PACKET_SIZE * 10];
 	
 	private BinaryWritter bw = new BinaryWritter();
-	private StringBuffer sb = new StringBuffer();
 	
 	private long stTime;
 	
@@ -37,6 +36,8 @@ public class Server {
 	private byte packetCatchType = 0x00;
 
 	private boolean gaming;
+	
+	private int[] teamPoint = new int[8];
 	
 	public Server(int port) {
 		this.port = port;
@@ -92,7 +93,7 @@ public class Server {
 			switch(data[2]) {
 			// Connection-----------------------------------------------------------
 			// Client -> Server Packet : [header type]
-			case 0x01 : 
+			case 0x01 : {
 				
 				if(gaming) {
 					
@@ -102,8 +103,8 @@ public class Server {
 				}
 				
 				clients.add(new Client(address,port,clientID));
-				
-				sb.setLength(0);
+
+				StringBuilder sb = new StringBuilder();
 				bw.clear();
 				bw.write((byte)0x03); //0x03 Value_Change -> 값 변경, clientID를 변경함
 				sb.append(":");
@@ -116,6 +117,7 @@ public class Server {
 				System.out.printf("[%s:%d] ID: %d Connect\n",address.getHostAddress() , port, clientID );			
 				clientID++;
 				break;
+			}
 			// Disconnection--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID]
 			case 0x02:	
@@ -156,8 +158,8 @@ public class Server {
 
 				if(_clientID < 1000 || !isClientExist(_clientID))
 					return;	
-				
-				sb.setLength(0);
+
+				StringBuilder sb = new StringBuilder();
 				bw.clear();
 				bw.write((byte)0x03);
 				sb.append(":");
@@ -166,7 +168,8 @@ public class Server {
 				sb.append(messages[2]);
 				bw.write((sb.toString()).getBytes());			
 				
-
+				
+				
 				sendToAllClients(bw.getBytes(), _clientID); 
 				//--------------------------------------------------
 				
@@ -187,9 +190,51 @@ public class Server {
 					break;
 				}
 				case 0x15:{
-					// ValueType, health
+					// ValueType, health, changeType
+					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
+					// 
 					Client c = getClient(_clientID);
-					c.setHealth(Integer.parseInt(netArgs[1]));			
+					c.setHealth(Integer.parseInt(netArgs[1]));	
+
+					if(c.getHealth() <= 0) {
+						
+						int[] alivePopulation = new int[8];
+						
+						for(Client _c : clients) {
+							if(_c.getHealth() > 0) {
+								alivePopulation[_c.getTeamNumber()]++;
+							}
+						}
+						int aliveTeamIndex = -1;
+						boolean flag = false;
+						for(int i = 0; i < 8; i ++) {
+							if(alivePopulation[i] > 0) {
+								if(aliveTeamIndex != -1) {
+									flag = false;
+									break;
+								}
+								flag = true;
+								aliveTeamIndex = i;
+							}
+						}
+						if(flag){
+
+							teamPoint[aliveTeamIndex]++;
+							
+							sb.setLength(0);
+							bw.clear();
+							bw.write((byte)0x06);
+							sb.append(":");
+							sb.append((char)0x04);
+							sb.append(",");
+							sb.append(aliveTeamIndex);
+							bw.write((sb.toString()).getBytes());			
+							
+							sendToAllClients(bw.getBytes());
+						}
+						
+					}
+					
 					break;
 				}
 				case 0x16:{
@@ -197,6 +242,8 @@ public class Server {
 					Client c = getClient(_clientID);
 					int _currentMapIndex = Integer.parseInt(netArgs[1]);
 					c.setCurrentMapIndex(_currentMapIndex);
+					
+					//System.out.println(_clientID);
 					
 					if(_currentMapIndex == c.getTargetMapIndex() && c.getTargetMapIndex() >= 2) {
 						boolean allSame = true;
@@ -264,10 +311,12 @@ public class Server {
 			}
 			// Object Spawn--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
-			case 0x04:
+			case 0x04:{
 
 				if(messages.length < 2)
 					break;
+
+				StringBuilder sb = new StringBuilder();
 				if(messages.length == 2) {		// Player Spawn		
 					try {
 						_clientID =Integer.parseInt(messages[1].trim());
@@ -278,7 +327,7 @@ public class Server {
 
 					if(_clientID < 1000 || !isClientExist(_clientID))
 						return;	
-					sb.setLength(0);
+					
 					bw.clear();
 					bw.write((byte)0x01);
 					sb.append(":");
@@ -307,7 +356,6 @@ public class Server {
 					if(_clientID < 1000 || !isClientExist(_clientID))
 						break;	
 
-					sb.setLength(0);
 					bw.clear();
 					bw.write((byte)0x04);
 					sb.append(":");
@@ -321,6 +369,7 @@ public class Server {
 				}
 				
 				break;
+			}
 			// Timeout Packet--------------------------------------------------------
 			// Client -> Server Packet : [header type:clientID]
 			case 0x05:
@@ -349,6 +398,8 @@ public class Server {
 			// Client -> Server Packet : [header type:clientID: GameState, parameter.........]
 			// GameState : 0 = allClientReady 	
 			case 0x06:{
+
+				StringBuilder sb = new StringBuilder();
 				String[] netArgs = messages[2].split(",");
 				switch(netArgs[0].toCharArray()[0]) {
 				case 0x00:{				
@@ -443,9 +494,9 @@ public class Server {
 		}
 	}
 	
-	public synchronized void clientDisconnect(int _clientID) {
+	public void clientDisconnect(int _clientID) {
 
-		sb.setLength(0);
+		StringBuilder sb = new StringBuilder();
 		bw.clear();
 		bw.write((byte)0x02);
 		sb.append(":");
@@ -481,7 +532,7 @@ public class Server {
 		
 	}
 	//--------------------------------------------------------------------------
-	private boolean isClientExist(int _clientID) {
+	public boolean isClientExist(int _clientID) {
 		for(Client c : clients) {
 			if(c.getClientdID() == _clientID)
 				return true;

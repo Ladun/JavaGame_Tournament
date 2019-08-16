@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import com.ladun.engine.GameContainer;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
@@ -41,11 +42,11 @@ public class Client {
 
 	private final int MAX_PACKET_SIZE = 1024;
 	private byte[] receiveDataBuffer = new byte[MAX_PACKET_SIZE * 10];
-	
+
+	private GameContainer gc;
 	private GameManager gm;
 	
 	private BinaryWritter bw = new BinaryWritter();	
-	private StringBuffer sb = new StringBuffer();
 	
 	//-------------------------------------------------------------------	
 	/**
@@ -53,7 +54,7 @@ public class Client {
 	 * @param host
 	 * 			  Eg. 192.168.1.1:5000
 	 */
-	public Client(String host,GameManager gm) {
+	public Client(String host,GameContainer gc,GameManager gm) {
 		String[] parts = host.split(":");
 		if(parts.length != 2) {
 			errorCode = Error.INVALID_HOST;
@@ -68,6 +69,7 @@ public class Client {
 			return;
 		}
 		this.gm = gm;
+		this.gc = gc;
 	}	
 	/**
 	 * 
@@ -76,10 +78,11 @@ public class Client {
 	 * @param port
 	 * 			  Eg. 5000
 	 */
-	public Client(String host, int port,GameManager gm) {
+	public Client(String host, int port,GameContainer gc,GameManager gm) {
 		this.ipAddress= host;
 		this.port = port;
 		this.gm = gm;
+		this.gc = gc;
 	}
 	
 	//-------------------------------------------------------------------
@@ -103,7 +106,6 @@ public class Client {
 		
 		
 		// Send connection packet to server
-		sb.setLength(0);
 		bw.clear();
 		bw.write(PACKET_TYPE_CONNECT);
 		send(bw.getBytes());
@@ -149,40 +151,42 @@ public class Client {
 			// Connection -> Receive Other Player Connection
 			// ,Or player connect and spawn other Player
 			// Server -> Client Packet : [header type: clientID]
-			case 0x01 :  //type				
-				
-				sb.setLength(0);
+			case 0x01 : { //type				
+
+				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
-				sb.append(messages[1].trim());
-				
+				sb.append(messages[1].trim());			
 				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),0,0,	false);
-				
+								
 				break;
-				
+			}
 			// Disconnection
 			// Server -> Client Packet : [header type: clientID]	
-			case 0x02 :  //type			
+			case 0x02 : { //type			
 				//TODO: Ohter Player disconnect server, delete other Player 	
-				sb.setLength(0);
+
+				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
 				sb.append(messages[1].trim());
-				
+		
 				((GameScene)gm.getScene("InGame")).removePlayer(sb.toString());
-				break;
 				
+				break;
+			}
 			// Value Change
 			// Server -> Client Packet : [header type: clientID : ValueType, value,....]
-			case 0x03: //type			
+			case 0x03:{ //type			
 				netArgs = messages[2].split(",");
+				StringBuilder sb = new StringBuilder();
+				
 				switch(netArgs[0].toCharArray()[0]) {
 				case 0x10:{
 					this.clientID = Integer.parseInt(messages[1].trim());
-				
-					sb.setLength(0);
+					
 					sb.append("Player");
 					sb.append(this.clientID);
-					
-					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(), true);					
+		
+					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(), true);		
 					((GameScene)gm.getScene("InGame")).getCamera().setTargetTag(sb.toString());
 					
 					sb.setLength(0);
@@ -194,19 +198,21 @@ public class Client {
 					send(bw.getBytes());
 					
 					((NetworkTransform)_p.findComponent("netTransform")).packetSend(gm);; 
+
 					break;
 				}
 				case 0x11:{
 					// ValueType, x, y, z, angle, anim, animType					
-					sb.setLength(0);
+
 					sb.append("Player");
 					sb.append(messages[1].trim());
+			
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-
+	
 					NetworkTransform nt = (NetworkTransform)_p.findComponent("netTransform");
-					
+						
 					nt.setInfo(
 							Float.parseFloat(netArgs[1]),
 							Float.parseFloat(netArgs[2]),
@@ -214,92 +220,113 @@ public class Client {
 							Float.parseFloat(netArgs[4]),
 							Integer.parseInt(netArgs[5]),
 							Integer.parseInt(netArgs[6]));
-					
+
 					break;
 				}
 				case 0x12:{
 					// ValueType, angle
-					sb.setLength(0);
 					sb.append("Player");
-					sb.append(messages[1].trim());
+					sb.append(messages[1].trim());		
+						
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
 					
 					_p.attack(null, Float.parseFloat(netArgs[1]));
+					
 					break;
 				}
 				case 0x13:{
 					// ValueType, type
 					// type : 0, 1, 2, 3 ......
 					// 0 : SWORD, 1 : BOW ......
-					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
+
+					
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
 					
 					_p.setWeaponType(Integer.parseInt(netArgs[1]));
+					
 					break;
 				}
 				case 0x14:{
 					// ValueType, teamNumber
 
-					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
+
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-
-					_p.setTeamNumber(Byte.parseByte(netArgs[1]));		
+					
+					_p.setTeamNumber(Byte.parseByte(netArgs[1]));	
+					
 					break;
 				}
 				case 0x15:{
-					// ValueType, health 
+					// ValueType, health, changeType
+					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
+					// 
+					if(netArgs.length <3){
+						System.out.println("0x03-0x15 : netArgs Error");
+						break;
+					}
 
-					sb.setLength(0);
 					sb.append("Player");
-					sb.append(messages[1].trim());
+					sb.append(messages[1].trim());		
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-
-					_p.setHealth(Byte.parseByte(netArgs[1]));	
+	
+					int _health = Integer.parseInt(netArgs[1]);
+					switch(netArgs[2].charAt(0)) {
+					case 0x00:
+						_p.setHealth(_health);
+						_p.setActive(true);
+					case 0x01:
+						_p.hit(_p.getHealth() - _health);
+						break;
+					}
+					
 					break;
 				}
 				case 0x16:{
 					// ValueType, currentMapIndex
 
-					sb.setLength(0);
 					sb.append("Player");
 					sb.append(messages[1].trim());
+		
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-
+					System.out.println("0x03-0x17" +_p.getTag());
+	
 					_p.setCurrentMapIndex(Integer.parseInt(netArgs[1]));	
+					
 					break;
 				}
 				case 0x18:{
 					// ValueType, hiding
 					// hiding : 0 == false, 1 == true
 
-					sb.setLength(0);
 					sb.append("Player");
-					sb.append(messages[1].trim());
+					sb.append(messages[1].trim());	
+					
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-
+	
 					_p.setHiding(Integer.parseInt(netArgs[1]) == 1);	
+					
 					break;
 				}
 				}
 
 				break;
-				
+			}
 			// Object Spawn--------------------------------------------------------
 			// Client -> Server Packet : [header type: clientID (: objectName,parameter,.....)]
 			case 0x04:
@@ -308,10 +335,10 @@ public class Client {
 
 			// Timeout Packet--------------------------------------------------------
 			// Server -> Client Packet : [header type]
-			case 0x05:
+			case 0x05:{
 				
 				bw.clear();
-				sb.setLength(0);
+				StringBuilder sb = new StringBuilder();
 				bw.write(data[2]);
 				sb.append(":");
 				sb.append(clientID);
@@ -319,6 +346,7 @@ public class Client {
 				
 				send(bw.getBytes());
 				break;
+			}
 			// Game State Packet--------------------------------------------------------
 			// Server -> Client Packet : [header type: GameState, parameter.......]
 			// GameState : 0 = all_client_ready, 1 = start_game_and_wait
@@ -328,6 +356,7 @@ public class Client {
 				case 0x00:
 					// GameState, allClientReady
 					// allClientReady : 0 = false, 1 = true
+						
 					if(Integer.parseInt(netArgs[1]) == 1)
 						((GameScene)gm.getScene("InGame")).setAllClientReady(true);
 					else
@@ -335,59 +364,77 @@ public class Client {
 					break;
 				case 0x01:
 					// GameState
-					((GameScene)gm.getScene("InGame")).mapLoad(1);
+					((GameScene)gm.getScene("InGame")).mapLoad(gc,1);
+						
 					break;
 				case 0x02:
 					// GameState, targetMapIndex
-
+	
 					try {
-						((GameScene)gm.getScene("InGame")).mapLoad(Integer.parseInt(netArgs[1]));	
-						System.out.println(netArgs[1]);
+						((GameScene)gm.getScene("InGame")).mapLoad(gc,Integer.parseInt(netArgs[1]));						
 					}catch(NumberFormatException e) {
 						break;
 					}
+					
 					((GameScene)gm.getScene("InGame")).getLocalPlayer().setHiding(true);
 					send(PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
 					
 					break;
 				case 0x03:
-					System.out.println("Start");
+					// GameState
 					((GameScene)gm.getScene("InGame")).setAllClientReady(true);					
 					break;
-					
+				case 0x04:
+					// GameState, winTeamNumber 
+					((GameScene)gm.getScene("InGame")).setAllClientReady(true);	
+					gm.getAnnounce().Announce("Team " + netArgs[1] + "Win");
 				}
-				
 				break;
 			}
 		}
 	}
 	
 	public void disconnect() {
-		
-		bw.clear();
-		sb.setLength(0);
-		bw.write(PACKET_TYPE_DISCONNECT);
-		sb.append(":");
-		sb.append(clientID);
-		bw.write((sb.toString()).getBytes());
-		send(bw.getBytes());	
-		
-		/*
-		byte[] data = new byte[] {0x00,0x00};
-		DatagramPacket packet;
-		try {
-			packet = new DatagramPacket(data, data.length, InetAddress.getByName("127.0.0.1"),socket.getPort());
+		if(socket != null) {
+			listening = false;
 			
+			StringBuilder sb = new StringBuilder();
+			bw.clear();
+			bw.write(PACKET_TYPE_DISCONNECT);
+			sb.append(":");
+			sb.append(clientID);
+			bw.write((sb.toString()).getBytes());
+			send(bw.getBytes());						
+			/*
+			byte[] data = new byte[] {0x00,0x00};
+			DatagramPacket packet;
 			try {
-				socket.send(packet);
-			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println(socket.getPort());
+				packet = new DatagramPacket(data, data.length, InetAddress.getByName("127.0.0.1"),socket.getPort());
+				
+				try {
+					socket.send(packet);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} catch (UnknownHostException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			//socket.close();
+			*/
+			
+
+			/*
+			try {
+				listenThread.join();
+				timeoutThread.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+			
 		}
-		socket.close();*/
 	}
 	/*
 	 * PACKET_HEADER는 send 함수에서 자동으로 붙여짐
@@ -397,8 +444,9 @@ public class Client {
 	}
 	
 	public void send(byte type, Object[] _data) {
+		
+		StringBuilder sb = new StringBuilder();
 		bw.clear();
-		sb.setLength(0);
 		bw.write(type);
 		sb.append(":");
 		sb.append(clientID);
@@ -451,7 +499,7 @@ public class Client {
 							else {
 								System.out.println("Server is down");
 								//TODO 서버랑 접속 끊기
-								listening = false;
+								disconnect();
 							}
 						}
 					}

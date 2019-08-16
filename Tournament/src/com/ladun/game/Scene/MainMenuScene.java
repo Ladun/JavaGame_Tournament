@@ -33,7 +33,7 @@ public class MainMenuScene extends AbstractScene{
 		
 		if(testButton.isReleased())
 		{
-			ConnectToServer(gm);
+			ConnectToServer(gc,gm);
 		}
 		
 	}
@@ -50,7 +50,7 @@ public class MainMenuScene extends AbstractScene{
 	}
 
 	//-------------------------------------------------------------------------------
-	private void ConnectToServer(GameManager gm) {
+	private void ConnectToServer(GameContainer gc,GameManager gm) {
 		if(gm.isLoading())
 			return;
 		
@@ -61,30 +61,30 @@ public class MainMenuScene extends AbstractScene{
 
 			@Override
 			public void run() {
-				
+					
 				gm.getClient().connect();
 				
-				double nowTime = 0;
-			
+				double nowTime = 0; 
+				
 				while(!gm.getClient().isServerRespond()) {
 					//System.out.println(gm.getClient().isServerRespond());
-					synchronized (gm) {					
-						
-						nowTime = (System.currentTimeMillis() - stTime) / 1000; 
-						if(nowTime >= 5|| gm.getClient().isServerRespond()) {
-							break;
-						}
+					nowTime = (System.currentTimeMillis() - stTime) / 1000; 
+					if(nowTime >= 5|| gm.getClient().isServerRespond()) {
+						break;
 					}
+					
 				}
 				if(nowTime>= 5) {
 					//TODO 서버가 닫혀있음
 					System.out.println("Server is Closed");
+					gm.getClient().disconnect();
 				}
 				else {
 					gm.changeScene("InGame");
-					((GameScene)gm.getScene("InGame")).mapLoad(0);
+					((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
 				}
 				gm.setLoading(false);
+				
 			}
 			
 		},"Connecting-Thread").start();;

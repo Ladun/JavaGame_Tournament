@@ -60,6 +60,7 @@ public class Projectile extends GameObject{
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xaff385610);
+		//r.drawFillRect((int)(posX ), (int)(posZ ), tileZ, tileX, c, color);
 		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)(posX ), (int)(posZ ), anim, 0, xPivot, yPivot, angle);
 		
 		//r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 3, 3, 0, 0xffff0000);
@@ -71,10 +72,7 @@ public class Projectile extends GameObject{
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
-		
-		if(other instanceof Entity)
-		{
-			((Entity)other).hit(damage);
+		if(other instanceof Entity) {
 			this.active = false;
 		}
 	}
@@ -146,6 +144,12 @@ public class Projectile extends GameObject{
 		yPivot = (pT + (height - pT -pB) / 2f)/ height;
 		
 	}
-
 	//-------------------------------------------------------------------------------------------------------
+
+
+	public float getDamage() {
+		return damage;
+	}
+
+	
 }
