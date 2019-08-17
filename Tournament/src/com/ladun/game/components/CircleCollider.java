@@ -8,9 +8,7 @@ import com.ladun.game.objects.GameObject;
 
 public class CircleCollider extends Collider{
 
-	private int centerX,centerZ;
 	private int radius;
-	private int lastCenterX, lastCenterZ;
 	
 	
 	public CircleCollider(GameObject parent) {
@@ -40,21 +38,6 @@ public class CircleCollider extends Collider{
 		
 	}
 	//---------------------------------------------------------------
-	public int getCenterX() {
-		return centerX;
-	}
-
-	public void setCenterX(int centerX) {
-		this.centerX = centerX;
-	}
-
-	public int getCenterZ() {
-		return centerZ;
-	}
-
-	public void setCenterZ(int centerZ) {
-		this.centerZ = centerZ;
-	}
 
 	public int getRadius() {
 		return radius;
@@ -62,22 +45,6 @@ public class CircleCollider extends Collider{
 
 	public void setRadius(int radius) {
 		this.radius = radius;
-	}
-
-	public int getLastCenterX() {
-		return lastCenterX;
-	}
-
-	public void setLastCenterX(int lastCenterX) {
-		this.lastCenterX = lastCenterX;
-	}
-
-	public int getLastCenterZ() {
-		return lastCenterZ;
-	}
-
-	public void setLastCenterZ(int lastCenterZ) {
-		this.lastCenterZ = lastCenterZ;
 	}
 
 }

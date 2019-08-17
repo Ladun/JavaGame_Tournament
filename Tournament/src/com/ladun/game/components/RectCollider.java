@@ -8,13 +8,11 @@ import com.ladun.game.objects.GameObject;
 
 public class RectCollider extends Collider{
 
-	private int centerX,centerZ;
 	private int halfWidth, halfHeight; // xy
-	private int lastCenterX, lastCenterZ;
 	
 	public RectCollider(GameObject parent) {
 		super(parent);
-		this.tag = "RectCollider";
+		this.tag = "rectCollider";
 		this.type = Type.RECT;
 	}
 
@@ -34,35 +32,12 @@ public class RectCollider extends Collider{
 	@Override
 	public void render(GameContainer gc,  Renderer r) {
 		// TODO Auto-generated method stub
-		//r.drawRect(centerX - halfWidth, centerZ - halfHeight, halfWidth * 2, halfHeight * 2,0, 0xffa6ec90);
+		r.setzDepth(Renderer.LAYER_UI - 1);
+		r.drawRect(centerX - halfWidth, centerZ - halfHeight, halfWidth * 2, halfHeight * 2,0, 0xffa6ec90);
 		
 	}
 	//-----------------------------------------------
 
-	public int getLastCenterX() {
-		return lastCenterX;
-	}
-	public void setLastCenterX(int lastCenterX) {
-		this.lastCenterX = lastCenterX;
-	}
-	public int getLastCenterZ() {
-		return lastCenterZ;
-	}
-	public void setLastCenterZ(int lastCenterZ) {
-		this.lastCenterZ = lastCenterZ;
-	}
-	public int getCenterX() {
-		return centerX;
-	}
-	public void setCenterX(int centerX) {
-		this.centerX = centerX;
-	}
-	public int getCenterZ() {
-		return centerZ;
-	}
-	public void setCenterZ(int centerZ) {
-		this.centerZ = centerZ;
-	}
 	public int getHalfWidth() {
 		return halfWidth;
 	}

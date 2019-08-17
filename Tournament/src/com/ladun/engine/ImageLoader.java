@@ -51,6 +51,8 @@ public class ImageLoader {
 		
 		// Map Object Image Load
 		addImage("portal","/Map/objects/portal.png",80,72);
+		addImage("battle_stone","/Map/objects/BattleStone.png",80,115);
+		addImage("stone_bush_1","/Map/objects/StoneBush_1.png");
 
 		System.out.println("------[ Image Load Finish ]---------------");
 		load = true;

@@ -292,7 +292,10 @@ public class GameScene extends AbstractScene{
 				case 1:
 					inteamWaitRoom = true;
 					currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
-							new Interior("portal",249,187,80,72,14f,14,false)
+							new Interior("portal",249,187,80,72,14f,14,false),
+							(new Interior("battle_stone",249,72,80,115,8f,8,true)).setpT(95).setpB(5),
+							(new Interior("stone_bush_1",128,188,64,41,true)).setpT(19).setpB(8),
+							(new Interior("stone_bush_1",398,379,64,41,true)).setpT(19).setpB(8)
 					});
 					currentMap.setBackgroundColor(0xff405947);
 					break;

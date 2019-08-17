@@ -1,8 +1,11 @@
 package com.ladun.game.objects;
 
 import com.ladun.game.GameManager;
+import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
-import com.ladun.game.net.Client;
+import com.ladun.game.components.Collider;
+import com.ladun.game.components.Collider.Type;
+import com.ladun.game.components.RectCollider;
 
 public abstract class Entity extends GameObject{
 	
@@ -37,6 +40,67 @@ public abstract class Entity extends GameObject{
 	
 	public abstract void hit(float damage);
 	public abstract void revival();
+	
+	public void collision(GameObject other) {
+		
+		 if(other.getTag().equalsIgnoreCase("interior")) {
+			 Collider myC 		= (Collider) this.getCollider();
+			 Collider otherC 	= (Collider) other.getCollider();
+
+			 switch(myC.getType()) {
+			 case CIRCLE:
+				 if(otherC.getType() == Type.RECT) {
+					 //TODO : if RECT-CIRCLE collision, move object non-collision position
+					 
+				 }
+				 else if(otherC.getType() == Type.CIRCLE) {
+
+				 }
+				 break;
+			 case RECT:
+				 if(otherC.getType() == Type.RECT) {
+					 
+					 if(Math.abs(myC.getLastCenterX() - otherC.getLastCenterX()) < ((RectCollider)myC).getHalfWidth() + ((RectCollider)otherC).getHalfWidth()){
+						if(myC.getCenterZ() < otherC.getCenterZ()) {
+							int distance 	= (((RectCollider)myC).getHalfHeight() + ((RectCollider)otherC).getHalfHeight()) - (otherC.getCenterZ() - myC.getCenterZ());
+							offZ 			-= distance;
+							posZ 			-= distance;
+							myC.setCenterZ(myC.getCenterZ() - distance);
+							fallDistance 	= 0;
+							ground 			= true;
+						}
+						if(myC.getCenterZ() > otherC.getCenterZ()){
+							int distance 	= (((RectCollider)myC).getHalfHeight() + ((RectCollider)otherC).getHalfHeight()) - (myC.getCenterZ() - otherC.getCenterZ());
+							offZ 			+= distance;
+							posY 			+= distance;
+							((RectCollider)myC).setCenterZ(myC.getCenterZ() + distance);
+							fallDistance 	= 0;
+						}
+					}
+					else {
+						if(myC.getCenterX() < otherC.getCenterX()) {
+							int distance 	= (((RectCollider)myC).getHalfWidth() + ((RectCollider)otherC).getHalfWidth()) - (otherC.getCenterX() - ((RectCollider)myC).getCenterX());
+							offX 			-= distance;
+							posX 			-= distance;
+							moving 			= false;
+							myC.setCenterX(myC.getCenterX() - distance);
+						}
+						if(myC.getCenterX() > otherC.getCenterX()) {
+							int distance 	= (((RectCollider)myC).getHalfWidth() + ((RectCollider)otherC).getHalfWidth()) - (((RectCollider)myC).getCenterX() - otherC.getCenterX());
+							offX 			+= distance;
+							posX 			+= distance;
+							moving 			= false;
+							myC.setCenterX(myC.getCenterX() + distance);
+						}
+					}
+				 }
+				 else if(otherC.getType() == Type.CIRCLE) {
+					 
+				 }
+				 break;
+			 }
+		}
+	}
 	
 	protected void AdjustPosition()
 	{

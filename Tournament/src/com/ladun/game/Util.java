@@ -9,4 +9,10 @@ public class Util {
 		
 		return src + (dst - src) * percent;
 	}
+	
+	public static float distance(float stX, float stY, float edX, float edY) {
+		float dx = edX - stX;
+		float dy = edY - stY;
+		return (float)Math.sqrt(dx * dx  + dy * dy);
+	}
 }

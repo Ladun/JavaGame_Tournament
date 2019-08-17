@@ -68,22 +68,28 @@ public class MainMenuScene extends AbstractScene{
 				
 				while(!gm.getClient().isServerRespond()) {
 					//System.out.println(gm.getClient().isServerRespond());
-					nowTime = (System.currentTimeMillis() - stTime) / 1000; 
-					if(nowTime >= 5|| gm.getClient().isServerRespond()) {
-						break;
+					synchronized (gm) {
+						nowTime = (System.currentTimeMillis() - stTime) / 1000; 
+						if(nowTime >= 5|| gm.getClient().isServerRespond()) {
+							break;
+						}
+					
 					}
 					
 				}
-				if(nowTime>= 5) {
-					//TODO 서버가 닫혀있음
-					System.out.println("Server is Closed");
-					gm.getClient().disconnect();
+
+				synchronized (gm) {
+					if(nowTime>= 5) {
+						//TODO 서버가 닫혀있음
+						System.out.println("Server is Closed");
+						gm.getClient().disconnect();
+					}
+					else {
+						gm.changeScene("InGame");
+						((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
+					}
+					gm.setLoading(false);
 				}
-				else {
-					gm.changeScene("InGame");
-					((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
-				}
-				gm.setLoading(false);
 				
 			}
 			

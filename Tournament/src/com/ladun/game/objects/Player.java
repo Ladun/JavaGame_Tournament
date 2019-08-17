@@ -11,8 +11,8 @@ import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Item;
 import com.ladun.game.Physics;
-import com.ladun.game.Physics;
 import com.ladun.game.Point;
+import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
@@ -154,7 +154,7 @@ public class Player extends Entity{
 			}
 			
 			if(clickPoints.size() > 0) {
-				float distance = distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
+				float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
 				if(distance >= speed  * Time.DELTA_TIME) {
 					moving(gc,speed * fcos,speed * fsin);
 				}
@@ -272,6 +272,7 @@ public class Player extends Entity{
 	@Override
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
+		super.collision(other);
 		if(localPlayer) {
 			if(other instanceof HitRange) {
 				HitRange hr = (HitRange)other;
@@ -420,12 +421,6 @@ public class Player extends Entity{
 		posY += fallDistance;			
 		
 		
-	}
-	
-	private float distance(float stX, float stY, float edX, float edY) {
-		float dx = edX - stX;
-		float dy = edY - stY;
-		return (float)Math.sqrt(dx * dx  + dy * dy);
 	}
 	private void RenderRect(Renderer r,int type) {
 		switch(type){

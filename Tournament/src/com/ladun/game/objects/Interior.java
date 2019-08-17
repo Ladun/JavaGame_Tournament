@@ -16,11 +16,12 @@ public class Interior extends GameObject{
 	private float animSpeed;
 	private int animMaxIndex;
 	
+	
 	private String imageName;
 	private boolean collision;
 	
 	public Interior(String imageName,
-			float posX,float posY,
+			float posX,float posZ,
 			int width, int height,boolean collision) {
 		
 		this.tag = "interior";
@@ -30,14 +31,14 @@ public class Interior extends GameObject{
 		this.height = height;
 
 		this.posX = posX;
-		this.posY = posY;
+		this.posZ = posZ;
 		
 		if(collision) {
 			this.addComponent(new RectCollider(this));
 		}
 	}
 	public Interior(String imageName,
-			float posX,float posY,
+			float posX,float posZ,
 			int radius,boolean collision) {
 		
 		this.tag = "interior";
@@ -47,34 +48,36 @@ public class Interior extends GameObject{
 		this.height = radius;
 
 		this.posX = posX;
-		this.posY = posY;
+		this.posZ = posZ;
 
 		if(collision) {
 			this.addComponent(new CircleCollider(this));
 		}
 	}
 	public Interior(String imageName,
-			float posX,float posY,
+			float posX,float posZ,
 			int width, int height,
 			float animSpeed,int animMaxIndex,boolean collision) {
 
 		this.tag = "interior";
 		this.imageName = imageName;
 		this.collision = false;
-		
+
 		this.posX = posX;
-		this.posY = posY;
-		
+		this.posZ = posZ;
+		this.width = width;
+		this.height = height;	
 		
 		this.animSpeed =animSpeed;
 		this.animMaxIndex = animMaxIndex;
 		this.animation = true;
+		System.out.println(collision);
 		if(collision) {
 			this.addComponent(new RectCollider(this));
 		}
 	}
 	public Interior(String imageName,
-			float posX,float posY,
+			float posX,float posZ,
 			int radius,
 			float animSpeed,int animMaxIndex,boolean collision) {
 
@@ -83,7 +86,7 @@ public class Interior extends GameObject{
 		this.collision = false;
 		
 		this.posX = posX;
-		this.posY = posY;
+		this.posZ = posZ;
 		
 		
 		this.animSpeed =animSpeed;
@@ -103,18 +106,20 @@ public class Interior extends GameObject{
 			if(anim >= animMaxIndex)
 				anim -= animMaxIndex;
 		}
+		this.updateComponents(gc, gm);
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		
-		r.setzDepth((int)posY + height);
+		r.setzDepth((int)posZ + height - pB);
 		if(!animation) 
-			r.drawImage(gc.getImageLoader().getImage(imageName), (int)posX	, (int)posY, angle);
+			r.drawImage(gc.getImageLoader().getImage(imageName), (int)posX	, (int)posZ, angle);
 		else{
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage(imageName), (int)posX, (int)posY, (int)anim, 0, 0);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage(imageName), (int)posX, (int)posZ, (int)anim, 0, 0);
 		}
+		this.renderComponents(gc, r);
 	}
 
 	@Override

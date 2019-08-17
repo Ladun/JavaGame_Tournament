@@ -8,6 +8,9 @@ public abstract class Collider extends Component{
 		RECT, CIRCLE
 	}
 	
+	protected int lastCenterX, lastCenterZ;
+	protected int centerX,centerZ;
+	
 	protected Type type;
 	
 	public Collider(GameObject parent)
@@ -27,4 +30,34 @@ public abstract class Collider extends Component{
 	public void setType(Type type) {
 		this.type = type;
 	}
+	
+	public int getCenterX() {
+		return centerX;
+	}
+
+	public void setCenterX(int centerX) {
+		this.centerX = centerX;
+	}
+
+	public int getCenterZ() {
+		return centerZ;
+	}
+
+	public void setCenterZ(int centerZ) {
+		this.centerZ = centerZ;
+	}
+
+	public int getLastCenterX() {
+		return lastCenterX;
+	}
+	public void setLastCenterX(int lastCenterX) {
+		this.lastCenterX = lastCenterX;
+	}
+	public int getLastCenterZ() {
+		return lastCenterZ;
+	}
+	public void setLastCenterZ(int lastCenterZ) {
+		this.lastCenterZ = lastCenterZ;
+	}
+
 }
