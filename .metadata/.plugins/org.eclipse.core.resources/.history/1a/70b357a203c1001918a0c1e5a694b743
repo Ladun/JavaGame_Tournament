@@ -470,8 +470,7 @@ public class Player extends Entity{
 	}
 	@Override
 	public void setPos(int tileX,int tileY) {
-		super.setPos(tileX, tileY);
-		clickPoints.clear();
+		
 	}
 	
 

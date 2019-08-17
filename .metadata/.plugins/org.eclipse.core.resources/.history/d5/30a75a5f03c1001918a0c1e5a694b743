@@ -135,24 +135,26 @@ public class Player extends Entity{
 					fsin = (float)Math.sin(Math.toRadians(angle));
 					clickPoints.add(new Point(_x,_y));
 				}
-				else {					
-					if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
-					{
-						clickPoints.add(new Point(_x,_y));					
+				
+				if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
+				{
+					clickPoints.add(new Point(_x,_y));					
+				}
+				else {
+					angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
+					
+					fcos = (float)Math.cos(Math.toRadians(angle));
+					fsin = (float)Math.sin(Math.toRadians(angle));
+					if(clickPoints.size() == 0) {
+						clickPoints.add(new Point(_x,_y));
+					}
+					else if(clickPoints.size() == 1) {
+						clickPoints.get(0).setX(_x);
+						clickPoints.get(0).setY(_y);
 					}
 					else {
-						angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
-						
-						fcos = (float)Math.cos(Math.toRadians(angle));
-						fsin = (float)Math.sin(Math.toRadians(angle));
-						if(clickPoints.size() == 1) {
-							clickPoints.get(0).setX(_x);
-							clickPoints.get(0).setY(_y);
-						}
-						else {
-							clickPoints.clear();
-							clickPoints.add(new Point(_x,_y));
-						}
+						clickPoints.clear();
+						clickPoints.add(new Point(_x,_y));
 					}
 				}
 				
@@ -467,11 +469,6 @@ public class Player extends Entity{
 	}
 	public void setTeamNumber(int teamNumber) {
 		this.teamNumber = teamNumber;
-	}
-	@Override
-	public void setPos(int tileX,int tileY) {
-		super.setPos(tileX, tileY);
-		clickPoints.clear();
 	}
 	
 
