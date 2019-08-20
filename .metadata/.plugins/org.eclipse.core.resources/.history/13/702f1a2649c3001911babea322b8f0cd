@@ -1,0 +1,41 @@
+package com.ladun.game.components;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+import com.ladun.game.objects.GameObject;
+
+public class Rigidbody extends Component{
+
+	private float power;
+	private float angle;
+	
+	public Rigidbody(GameObject parent) {
+		this.tag = "rigidbody";
+		this.parent = parent;
+	}
+	
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+	
+	
+	public void addPower(float power) {
+		
+	}
+	public void addPower(float power, float angle) {
+		
+	}
+	public void addForce(float x, float y) {
+		
+	}
+
+}

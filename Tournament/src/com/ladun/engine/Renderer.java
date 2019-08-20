@@ -1,5 +1,7 @@
 package com.ladun.engine;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ import com.ladun.engine.gfx.ImageRequest;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.engine.gfx.Light;
 import com.ladun.engine.gfx.LightRequest;
+import com.ladun.engine.gfx.StringRequest;
 
 public class Renderer {
 	
@@ -21,6 +24,7 @@ public class Renderer {
 	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
 	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
+	private ArrayList<StringRequest> stringRequests = new ArrayList<StringRequest>();	
 	
 	private int backgroundColor = 0;
 	
@@ -40,6 +44,8 @@ public class Renderer {
 	public Renderer(GameContainer gc){
 		
 		this.gc = gc;
+		
+		gc.getWindow().getG().setFont(new java.awt.Font("¼Ò¾ß¼Ö9", java.awt.Font.BOLD, 80));
 		
 		pW = gc.getWidth();
 		pH = gc.getHeight();
@@ -111,6 +117,19 @@ public class Renderer {
 		
 		imageRequests.clear();
 		lightRequests.clear();
+		processing = false;
+	}
+	
+	public void processText() {
+		
+		processing = true;
+		for(int i = 0; i < stringRequests.size();i++)
+		{
+			StringRequest sr = stringRequests.get(i);
+			
+			drawString(sr.str,sr.posX,sr.posY,sr.size,sr.color);
+		}
+		stringRequests.clear();
 		processing = false;
 	}
 	
@@ -200,6 +219,18 @@ public class Renderer {
 			
 			offset += font.getWidths()[unicode];
 		}
+	}
+	
+	public void drawString(String str, int offX, int offY,float size, int color) {
+		
+		if(!processing) {
+			stringRequests.add(new StringRequest(str, offX, offY, size, color));
+		}
+		
+		Graphics2D g2 = (Graphics2D)gc.getWindow().getG();
+		g2.setFont(g2.getFont().deriveFont(size));
+		g2.setColor(new Color(color));
+		g2.drawString(str, offX, offY);
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------------------

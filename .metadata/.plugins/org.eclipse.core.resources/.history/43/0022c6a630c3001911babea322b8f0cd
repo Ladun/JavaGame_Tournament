@@ -1,0 +1,12 @@
+package com.ladun.engine.gfx;
+
+public class StringRequest {
+	public String str;
+	public int size;
+	public int color;
+	public int posX, posY;
+	
+	public StringRequest(String str,int posX, int posY, int size, int color) {
+		
+	}
+}

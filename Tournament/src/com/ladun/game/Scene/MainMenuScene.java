@@ -1,13 +1,19 @@
 package com.ladun.game.Scene;
 
+import javax.swing.plaf.SliderUI;
+
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.Image;
 import com.ladun.game.GameManager;
+import com.ladun.game.net.Client.ServerState;
 import com.ladun.game.objects.UI.Button;
 
 public class MainMenuScene extends AbstractScene{
 
 	private Button testButton;
+	
+	private Image backgroundImage;
 	
 	
 	@Override
@@ -16,6 +22,8 @@ public class MainMenuScene extends AbstractScene{
 		this.gm = gm;
 		this.active = active;
 		this.name = "MainMenu";
+		
+		backgroundImage = new Image("/UI/mainScene/mainScene.png");
 		
 		testButton = new Button(50, 50, 100,100,0xffad3867);
 		objects.add(testButton);
@@ -26,6 +34,8 @@ public class MainMenuScene extends AbstractScene{
 	@Override
 	public void update(GameContainer gc) {
 		// TODO Auto-generated method stub
+		
+		
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
 				objects.get(i).update(gc, gm);
@@ -41,7 +51,7 @@ public class MainMenuScene extends AbstractScene{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-
+		r.drawImage(backgroundImage, 0, 0, 0);
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
 				objects.get(i).render(gc, r);
@@ -77,16 +87,25 @@ public class MainMenuScene extends AbstractScene{
 					}
 					
 				}
+				try {
+					Thread.sleep(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				synchronized (gm) {
-					if(nowTime>= 5) {
-						//TODO 서버가 닫혀있음
-						System.out.println("Server is Closed");
-						gm.getClient().disconnect();
-					}
-					else {
-						gm.changeScene("InGame");
-						((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
+					if(gm.getClient().getServerState() != ServerState.GAME_START) {
+						if(nowTime>= 5) {
+							//TODO 서버가 닫혀있음
+							System.out.println("Server is Closed");
+							gm.getClient().disconnect();
+							gm.getAnnounce().Announce("Server is Closed");
+						}
+						else {
+							gm.changeScene("InGame");
+							((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
+						}
 					}
 					gm.setLoading(false);
 				}

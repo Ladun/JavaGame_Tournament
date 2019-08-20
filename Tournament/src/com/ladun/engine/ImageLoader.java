@@ -46,6 +46,7 @@ public class ImageLoader {
 		addImage("count","/UI/count.png",128,128);
 		addImage("loading","/UI/loading.png",128,128);
 		addImage("map_icon","/UI/MapIcon.png",160,160);
+		addImage("team_select","/UI/teamSelect.png");
 		
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
 		

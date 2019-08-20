@@ -2,7 +2,6 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="java.lang.Integer"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.MainMenuScene"/>
-<fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
 <fullyQualifiedTypeName name="java.net.SocketTimeoutException"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.GameObject"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.projectile.Bullet"/>
@@ -35,4 +34,8 @@
 <fullyQualifiedTypeName name="java.awt.MouseInfo"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Time"/>
+<fullyQualifiedTypeName name="com.ladun.game.Util"/>
+<fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
+<fullyQualifiedTypeName name="java.awt.Font"/>
+<fullyQualifiedTypeName name="java.awt.Color"/>
 </qualifiedTypeNameHistroy>

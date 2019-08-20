@@ -4,8 +4,8 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
-import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.util.Util;
 
 public class Weapon extends GameObject{
 	public enum Type{
@@ -17,6 +17,7 @@ public class Weapon extends GameObject{
 	private Entity parent;
 	
 	private float damage;
+	private float knockback;
 	
 	private float deltaAngle;
 	private float deltaX;
@@ -178,10 +179,10 @@ public class Weapon extends GameObject{
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(_angle)) ;
 		
 		if(bullet == null) {
-			gs.addObject(new Projectile(posX + dX,posY,posZ + dZ,_angle,1000,30));
+			gs.addObject(new Projectile(posX + dX,posY,posZ + dZ,_angle,1000,damage,parent.tag));
 		}
 		else {
-			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, 30);
+			bullet.setting(posX + dX, posY, posZ + dZ, _angle, 1000, damage,parent.tag);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -193,6 +194,8 @@ public class Weapon extends GameObject{
 		this.type = type;
 		switch(type) {
 		case SWORD:
+			damage = 18;
+			knockback = 220;
 			imageName = "sword";
 			width = 64;
 			height = 64;
@@ -201,6 +204,8 @@ public class Weapon extends GameObject{
 			distanceToParent = 18;
 			break;
 		case BOW:
+			damage = 15;
+			knockback = 120;
 			imageName = "bow";
 			width = 64;
 			height = 64;
@@ -210,6 +215,8 @@ public class Weapon extends GameObject{
 			break;
 
 		case SPEAR:
+			damage = 13;
+			knockback = 160;
 			imageName = "spear";
 			width = 128;
 			height = 64;
@@ -228,6 +235,14 @@ public class Weapon extends GameObject{
 
 	public boolean isAttacking() {
 		return attacking;
+	}
+
+	public float getKnockback() {
+		return knockback;
+	}
+
+	public void setKnockback(float knockback) {
+		this.knockback = knockback;
 	}
 
 }

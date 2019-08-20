@@ -1,7 +1,0 @@
-package com.ladun.game.Scene;
-
-public enum TeamColor {
-	
-	
-	private final int color;
-}

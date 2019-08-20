@@ -1,0 +1,10 @@
+package com.ladun.game;
+
+public class ChatBox {
+
+	
+	public void update(GameContainer gc, GameManager gm){
+		
+		
+	}
+}

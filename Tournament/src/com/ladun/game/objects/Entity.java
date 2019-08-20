@@ -1,15 +1,16 @@
 package com.ladun.game.objects;
 
 import com.ladun.game.GameManager;
-import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.Collider;
 import com.ladun.game.components.Collider.Type;
+import com.ladun.game.util.Util;
 import com.ladun.game.components.RectCollider;
 
 public abstract class Entity extends GameObject{
 	
 	protected GameScene gs;
+	protected GameManager gm;
 	protected float maxHealth;
 	protected float health;
 	protected float speed;
@@ -38,7 +39,7 @@ public abstract class Entity extends GameObject{
 	
 	protected int currentMapIndex;
 	
-	public abstract void hit(float damage);
+	public abstract void hit(float damage, String tag);
 	public abstract void revival();
 	
 	public void collision(GameObject other) {
@@ -66,15 +67,12 @@ public abstract class Entity extends GameObject{
 							offZ 			-= distance;
 							posZ 			-= distance;
 							myC.setCenterZ(myC.getCenterZ() - distance);
-							fallDistance 	= 0;
-							ground 			= true;
 						}
 						if(myC.getCenterZ() > otherC.getCenterZ()){
 							int distance 	= (((RectCollider)myC).getHalfHeight() + ((RectCollider)otherC).getHalfHeight()) - (myC.getCenterZ() - otherC.getCenterZ());
 							offZ 			+= distance;
-							posY 			+= distance;
+							posZ 			+= distance;
 							((RectCollider)myC).setCenterZ(myC.getCenterZ() + distance);
-							fallDistance 	= 0;
 						}
 					}
 					else {
@@ -82,14 +80,12 @@ public abstract class Entity extends GameObject{
 							int distance 	= (((RectCollider)myC).getHalfWidth() + ((RectCollider)otherC).getHalfWidth()) - (otherC.getCenterX() - ((RectCollider)myC).getCenterX());
 							offX 			-= distance;
 							posX 			-= distance;
-							moving 			= false;
 							myC.setCenterX(myC.getCenterX() - distance);
 						}
 						if(myC.getCenterX() > otherC.getCenterX()) {
 							int distance 	= (((RectCollider)myC).getHalfWidth() + ((RectCollider)otherC).getHalfWidth()) - (((RectCollider)myC).getCenterX() - otherC.getCenterX());
 							offX 			+= distance;
 							posX 			+= distance;
-							moving 			= false;
 							myC.setCenterX(myC.getCenterX() + distance);
 						}
 					}

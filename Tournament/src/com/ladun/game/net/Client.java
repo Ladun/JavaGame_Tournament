@@ -26,9 +26,14 @@ public class Client {
 		NONE, INVALID_HOST,SOCKET_EXCEPTION
 	}
 	
+	public enum ServerState{
+		OPEN,CLOSE,GAME_START
+	}
+	
 	private String ipAddress;
 	private int port;
 	private Error errorCode = Error.NONE;
+	private ServerState serverState = ServerState.CLOSE;
 	private int clientID;
 	
 	private boolean serverRespond = false;
@@ -156,6 +161,8 @@ public class Client {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
 				sb.append(messages[1].trim());			
+
+				gm.getChatBox().addTexts(sb.toString() + " connect");
 				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),0,0,	false);
 								
 				break;
@@ -168,7 +175,8 @@ public class Client {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
 				sb.append(messages[1].trim());
-		
+
+				gm.getChatBox().addTexts(sb.toString() + " disconnect");
 				((GameScene)gm.getScene("InGame")).removePlayer(sb.toString());
 				
 				break;
@@ -267,10 +275,10 @@ public class Client {
 					break;
 				}
 				case 0x15:{
-					// ValueType, health, changeType
+					// ValueType, health, changeType, tag
 					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
 					// 
-					if(netArgs.length <3){
+					if(netArgs.length <4){
 						System.out.println("0x03-0x15 : netArgs Error");
 						break;
 					}
@@ -287,7 +295,7 @@ public class Client {
 						_p.setHealth(_health);
 						_p.setActive(true);
 					case 0x01:
-						_p.hit(_p.getHealth() - _health);
+						_p.hit(_p.getHealth() - _health,netArgs[3]);
 						break;
 					}
 					
@@ -390,7 +398,26 @@ public class Client {
 					gm.getAnnounce().Announce("Team " + netArgs[1] + "Win");
 				}
 				break;
+			// Other Game Packet--------------------------------------------------------
+			// Server -> Client Packet : [header type: type,parameter.......]
+			case 0x07:
+				netArgs = messages[1].split(",");
+				switch(netArgs[0].toCharArray()[0]) {
+				case 0x00:
+					// type
+					// Game is already Started
+					
+					gm.getAnnounce().Announce("Game is Started!");
+					serverState = ServerState.GAME_START;
+					
+					break;
+				}
+				break;
 			}
+			
+			if(serverState != ServerState.GAME_START)
+				serverState = ServerState.OPEN;
+			
 		}
 	}
 	
@@ -557,5 +584,8 @@ public class Client {
 	}
 	public Error getErrorCode() {
 		return errorCode;
+	}
+	public ServerState getServerState() {
+		return serverState;
 	}
 }

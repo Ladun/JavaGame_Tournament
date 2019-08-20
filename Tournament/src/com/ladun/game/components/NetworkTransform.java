@@ -4,9 +4,9 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
-import com.ladun.game.Util;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.Entity;
+import com.ladun.game.util.Util;
 
 public class NetworkTransform extends Component{
 

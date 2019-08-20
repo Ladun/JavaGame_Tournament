@@ -1,5 +1,7 @@
 package com.ladun.game;
 
+import java.awt.event.KeyEvent;
+
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -24,6 +26,7 @@ public class GameManager extends AbstractGame {
 	private int 			sceneInedx = 0;
 	
 	private Announce announce;
+	private ChatBox chatBox;
 	@Override
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
@@ -40,6 +43,7 @@ public class GameManager extends AbstractGame {
 		
 		client = new Client("localhost",8192,gc,this);
 		//client.connect();
+		chatBox = new ChatBox();
 		return true;
 	}
 
@@ -52,6 +56,14 @@ public class GameManager extends AbstractGame {
 		}
 		
 		announce.update(gc, this);
+		chatBox.update(gc, this);
+		
+
+		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
+			chatBox.addTexts("Hello this is Chat Box");
+		}
+		
+		
 
 		if(loading) {
 			loadingAnim+= Time.DELTA_TIME * 16;
@@ -75,6 +87,7 @@ public class GameManager extends AbstractGame {
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
 		}
 		announce.render(gc, r);
+		chatBox.render(gc, r);
 		
 	}
 
@@ -140,6 +153,10 @@ public class GameManager extends AbstractGame {
 	
 	public Announce getAnnounce() {
 		return announce;
+	}
+
+	public ChatBox getChatBox() {
+		return chatBox;
 	}
 
 	public Client getClient() {

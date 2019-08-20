@@ -21,8 +21,8 @@ public class Announce {
 		if(time <= 0)
 			return;
 		
-		r.drawRect(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 50, 200, 100, 0, 0xff9facf1);
-		
+		//r.drawFillRect(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 50, 200, 100, 0, 0xff9facf1);
+		r.drawString(str,100, 200,50,0xff000000);
 	}
 	
 	public void Announce(String str, float time) {

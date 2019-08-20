@@ -12,11 +12,13 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Item;
 import com.ladun.game.Physics;
 import com.ladun.game.Point;
-import com.ladun.game.Util;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.Scene.TeamColor;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
+import com.ladun.game.components.Rigidbody;
 import com.ladun.game.net.Client;
+import com.ladun.game.util.Util;
 
 public class Player extends Entity{
 	
@@ -61,6 +63,7 @@ public class Player extends Entity{
 		this.animSpeed = 12;
 		
 		this.gs = gs;
+		this.gm = gs.getGm();
 		
 		this.localPlayer = localPlayer;
 		this.maxHealth 	= 100;
@@ -77,6 +80,7 @@ public class Player extends Entity{
 		
 		this.addComponent(new NetworkTransform(this,localPlayer));
 		this.addComponent(new RectCollider(this));
+		this.addComponent(new Rigidbody(this));
 		
 		if(localPlayer) {
 			gs.setLocalPlayer(this);
@@ -185,38 +189,44 @@ public class Player extends Entity{
 			
 			
 			// Attack----------------------------------------------------
-			if(actionCoolDownTime[0] <= 0) {
-				if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-					if(!weapon.isAttacking()) {
-						if(weapon.getType() != Weapon.Type.BOW)	{
-							actionCoolDownTime[0] = .5f;
-							attack(gm,angle);
-						}
-						else {
-							readyToShoot = true;
+			if(currentMapIndex > 2) {
+				if(actionCoolDownTime[0] <= 0) {
+					if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+						if(!weapon.isAttacking()) {
+							if(weapon.getType() != Weapon.Type.BOW)	{
+								actionCoolDownTime[0] = .5f;
+								attack(gm,angle);
+							}
+							else {
+								readyToShoot = true;
+							}
 						}
 					}
-				}
-				if(gc.getInput().isButtonDown(MouseEvent.BUTTON1))
-				{
-					if(readyToShoot) {
-	
-						actionCoolDownTime[0] = .5f;
-						readyToShoot = false;
-						int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-						int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
-						
-						angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-						weapon.setDstAngle(angle);
-						attack(gm,angle);					
+					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+						if(readyToShoot) {
+		
+							actionCoolDownTime[0] = .5f;
+							readyToShoot = false;
+							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+							
+							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+							weapon.setDstAngle(angle);
+							attack(gm,angle);					
+						}
 					}
 				}
 			}
 			// Attack End -------------------------------------------------
 			
-			anim += Time.DELTA_TIME * animSpeed;
-			if(anim >= animMaxIndex[animType]) {
-				anim -=animMaxIndex[animType];
+			if(moving) {
+				anim += Time.DELTA_TIME * animSpeed;
+				if(anim >= animMaxIndex[animType]) {
+					anim -=animMaxIndex[animType];
+				}
+			}
+			else {
+				anim = 0;
 			}
 			
 			
@@ -265,7 +275,8 @@ public class Player extends Entity{
 		}
 		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,0);
 		//r.drawText(tag, (int)posX, (int)posZ + height,0xff000000);
-		r.drawFillRect((int)posX , (int)(posZ + posY) - 15 , (int)(64 * (health/maxHealth)), 15, 0, 0xff63c564);
+		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
+		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/maxHealth)), 13, 0, 0xff63c564);
 		
 		
 		weapon.render(gc, r);
@@ -281,24 +292,30 @@ public class Player extends Entity{
 		if(localPlayer) {
 			if(other instanceof HitRange) {
 				HitRange hr = (HitRange)other;
-				if(!hr.getIgnoreTag().equals(tag)) {
-					hit(hr.getDamage());
+				if(!hr.getAttackerTag().equals(tag)) {
+					hit(hr.getDamage(),hr.getAttackerTag());
 					
 				}
 			}
 			else if(other instanceof Projectile) {
-				hit(((Projectile)other).getDamage());
+				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag());
 			}
 		}
 	}
 	@Override
-	public void hit(float damage) {
+	public void hit(float damage,String attackerTag) {
 		if(nextHitTime >= HIT_TIME) {
 			nextHitTime = 0;
 			health -= damage;
 
 			if(localPlayer)
-				gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01});
+				gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01,attackerTag});
+			
+			Player _p = (Player)gm.getObject(attackerTag);
+			if(_p != null) {
+				float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
+				((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
+			}
 			//----------------------------------------------------------------------------------------
 			DisplayNumber displayDamage = (DisplayNumber)gs.getInactiveObject("displayDamage");		
 			if(displayDamage == null) {
@@ -310,6 +327,8 @@ public class Player extends Entity{
 			//----------------------------------------------------------------------------------------
 			
 			if(health <= 0) {
+				gm.getChatBox().addTexts(attackerTag +" kill " + this.tag);
+				
 				active =false;
 			}
 		}
@@ -473,7 +492,18 @@ public class Player extends Entity{
 		super.setPos(tileX, tileY);
 		clickPoints.clear();
 	}
-	
+	public Weapon getWeapon() {
+		return weapon;
+	}
+	@Override 
+	public void addPosX(float _x) {
+		offX += _x;
+	}
+	@Override 
+	public void addPosZ(float _z) {
+		offZ += _z;
+	}
+
 
 	//---------------------------------------------------------------------------------------
 	

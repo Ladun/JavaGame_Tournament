@@ -2,6 +2,7 @@ package com.ladun.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
@@ -19,8 +20,11 @@ public class Window {
 	private BufferStrategy bs;
 	private Graphics g;
 	
+	private GameContainer gc ;
+	
 	public Window(GameContainer gc)
 	{
+		this.gc =gc;
 		
 		image = new BufferedImage(gc.getWidth(),gc.getHeight(),BufferedImage.TYPE_INT_RGB);
 		canvas = new Canvas();
@@ -51,6 +55,7 @@ public class Window {
 	}
 	public void update(){
 		g.drawImage(image,0, 0, canvas.getWidth(), canvas.getHeight(), null);
+		gc.getRenderer().processText();
 		bs.show();
 	}
 	

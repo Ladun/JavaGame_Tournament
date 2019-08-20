@@ -11,7 +11,7 @@ public class HitRange extends GameObject{
 	public enum Type{ RECT,CIRCLE}
 	
 	private GameObject parent;
-	private String ignoreTag;
+	private String attackerTag;
 	private Type type;
 	private float damage;
 	
@@ -32,7 +32,7 @@ public class HitRange extends GameObject{
 	}
 	public HitRange(GameObject parent,Type t,float damage,String ignoreTag) {
 		this(parent,t,damage);
-		this.ignoreTag = ignoreTag;
+		this.attackerTag = ignoreTag;
 		
 	}
 	
@@ -70,11 +70,11 @@ public class HitRange extends GameObject{
 	public GameObject getParent() {
 		return parent;
 	}
-	public String getIgnoreTag() {
-		return ignoreTag;
+	public String getAttackerTag() {
+		return attackerTag;
 	}
-	public void setIgnoreTag(String ignoreTag) {
-		this.ignoreTag = ignoreTag;
+	public void setAttackerTag(String attackerTag) {
+		this.attackerTag = attackerTag;
 	}
 	public float getDamage() {
 		return damage;

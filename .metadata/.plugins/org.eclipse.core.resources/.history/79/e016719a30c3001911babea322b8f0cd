@@ -1,0 +1,5 @@
+package com.ladun.engine.gfx;
+
+public class StringRequest {
+
+}

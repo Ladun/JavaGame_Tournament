@@ -120,6 +120,16 @@ public abstract class GameObject
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
+	
+	public void addPosX(float _x) {
+		this.posX += _x;
+	}
+	public void addPosY(float _y) {
+		this.posY += _y;
+	}
+	public void addPosZ(float _z) {
+		this.posZ += _z;
+	}
 	public float getPosX() {
 		return posX;
 	}

@@ -1,0 +1,36 @@
+package com.ladun.game;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+
+public class ChatBox {
+	
+	private final int MAX_HEIGHT = 5;
+	
+	private String[] texts;
+	private int[] timers;
+	private int head;
+	
+	public ChatBox() {
+		texts = new String[MAX_HEIGHT];
+	}
+	
+	public void update(GameContainer gc, GameManager gm){
+		
+	}
+	
+	public void render(GameContainer gc, Renderer r) {
+		for(int i = 1; i <= MAX_HEIGHT; i++) {
+			int index = (head - i) < 0 ? MAX_HEIGHT + (head - i) : head - i;
+			if(texts[index] != null && texts[index].length() > 0) {
+				r.drawText(texts[index], offX, offY, color);
+			}
+		}
+	}
+	
+	public void addTexts(String text) {
+		texts[head] = text;
+		head = (head + 1) % MAX_HEIGHT;
+		
+	}
+}

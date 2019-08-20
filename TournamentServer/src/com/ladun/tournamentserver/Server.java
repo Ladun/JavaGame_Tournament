@@ -94,18 +94,23 @@ public class Server {
 			// Connection-----------------------------------------------------------
 			// Client -> Server Packet : [header type]
 			case 0x01 : {
+
+				StringBuilder sb = new StringBuilder();
+				bw.clear();
 				
 				if(gaming) {
 					
 					//TODO : 게임이 진행 중이여서 접속을 못한다는 패킷 전달
-					
+					bw.write((byte)0x07);
+					sb.append(":");
+					sb.append((char)0x00);
+					bw.write((sb.toString()).getBytes());
+					send(bw.getBytes(),address,port);
 					return;
 				}
 				
 				clients.add(new Client(address,port,clientID));
 
-				StringBuilder sb = new StringBuilder();
-				bw.clear();
 				bw.write((byte)0x03); //0x03 Value_Change -> 값 변경, clientID를 변경함
 				sb.append(":");
 				sb.append(clientID);
@@ -130,6 +135,17 @@ public class Server {
 
 				if(_clientID < 1000 || !isClientExist(_clientID))
 					return;	
+				
+				if(gaming) {
+					StringBuilder sb = new StringBuilder();
+					bw.write((byte)0x07);
+					sb.append(":");
+					sb.append((char)0x01);
+					sb.append(",");
+					sb.append(_clientID);
+					bw.write((sb.toString()).getBytes());
+					sendToAllClients(bw.getBytes(),_clientID);
+				}
 				
 				for(int i = 0 ; i < clients.size(); i++) {
 					if(clients.get(i).getClientdID() == _clientID) {

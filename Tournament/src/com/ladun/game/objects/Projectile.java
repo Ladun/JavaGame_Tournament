@@ -11,6 +11,8 @@ public class Projectile extends GameObject{
 
 	public enum Type{ ARROW, STONE};
 	
+	private String attackerTag;
+	
 	private Type type;
 	private int anim = 0;
 	
@@ -28,9 +30,9 @@ public class Projectile extends GameObject{
 	
 	private float time;
 	
-	public Projectile(float posX, float posY, float posZ, float angle,float speed, float damage) {
+	public Projectile(float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";		
-		setting(posX,posY,posZ,angle,speed,damage);
+		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
 		
 		this.width = 64;
 		this.height = 64;
@@ -77,8 +79,9 @@ public class Projectile extends GameObject{
 		}
 	}
 	//-------------------------------------------------------------------------------------------------------
-	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage) {
+	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
 		
+		this.attackerTag = attackerTag;
 		this.tileX = (int) (posX / GameManager.TS);
 		this.tileZ = (int) (posZ / GameManager.TS);
 		this.offX = posX - tileX * GameManager.TS;
@@ -149,6 +152,10 @@ public class Projectile extends GameObject{
 
 	public float getDamage() {
 		return damage;
+	}
+
+	public String getAttackerTag() {
+		return attackerTag;
 	}
 
 	
