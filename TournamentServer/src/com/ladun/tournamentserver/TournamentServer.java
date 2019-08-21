@@ -77,6 +77,11 @@ public class TournamentServer {
 				catch(NumberFormatException e) {
 					System.out.println("parameter is not a number");
 				}
+				break;
+			}
+			case "re_setting":{
+				server.getSettingFile();
+				break;				
 			}
 			default:
 				NoneCommand(s);

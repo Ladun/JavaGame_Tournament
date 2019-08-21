@@ -226,10 +226,16 @@ public class Renderer {
 		if(!processing) {
 			stringRequests.add(new StringRequest(str, offX, offY, size, color));
 		}
+		offY += gc.getWindow().getFrame().getInsets().top;
 		
 		Graphics2D g2 = (Graphics2D)gc.getWindow().getG();
 		g2.setFont(g2.getFont().deriveFont(size));
 		g2.setColor(new Color(color));
+		
+		if(offX == -1){
+			offX = gc.getWidth() / 2 - gc.getWindow().getG().getFontMetrics().stringWidth(str) / 2;
+		}
+		
 		g2.drawString(str, offX, offY);
 	}
 	

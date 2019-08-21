@@ -1,0 +1,40 @@
+package com.ladun.tournamentserver;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class SettingClass {
+	
+	private int time_limit;
+	
+	public SettingClass(String jsonPath) {	
+		
+		getSettingFile(jsonPath);
+	}
+	
+	public void getSettingFile(String jsonPath) {
+		JsonParser parser = new JsonParser();
+
+		try {
+			 
+			Object obj = parser.parse(new FileReader(jsonPath));
+	 
+			JsonObject jsonObject = (JsonObject) obj;
+			time_limit = jsonObject.get("TIME_LIMIT").getAsInt();
+	 
+	 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public int getTime_limit() {
+		return time_limit;
+	}
+	
+	
+}

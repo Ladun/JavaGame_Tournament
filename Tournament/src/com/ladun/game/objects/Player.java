@@ -189,7 +189,7 @@ public class Player extends Entity{
 			
 			
 			// Attack----------------------------------------------------
-			if(currentMapIndex > 2) {
+			if(currentMapIndex >= 2) {
 				if(actionCoolDownTime[0] <= 0) {
 					if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
 						if(!weapon.isAttacking()) {
@@ -304,6 +304,9 @@ public class Player extends Entity{
 	}
 	@Override
 	public void hit(float damage,String attackerTag) {
+		if(damage == 0)
+			return;
+		
 		if(nextHitTime >= HIT_TIME) {
 			nextHitTime = 0;
 			health -= damage;
@@ -338,7 +341,7 @@ public class Player extends Entity{
 		this.health = maxHealth;
 
 		if(localPlayer)
-			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00});
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00,null});
 	
 		this.active = true;
 	}

@@ -160,11 +160,16 @@ public class Client {
 
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
-				sb.append(messages[1].trim());			
-
-				gm.getChatBox().addTexts(sb.toString() + " connect");
+				sb.append(messages[1].trim());	
+				
+				try {
+					if(Integer.parseInt(messages[1]) > clientID) {
+						gm.getChatBox().addTexts(sb.toString() + " connect");
+					}
+				}catch(NumberFormatException e) {
+					break;
+				}
 				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),0,0,	false);
-								
 				break;
 			}
 			// Disconnection
@@ -371,8 +376,9 @@ public class Client {
 						((GameScene)gm.getScene("InGame")).setAllClientReady(false);
 					break;
 				case 0x01:
-					// GameState
+					// GameState, maxRound
 					((GameScene)gm.getScene("InGame")).mapLoad(gc,1);
+					((GameScene)gm.getScene("InGame")).setMaxRound(Integer.parseInt(netArgs[1]));
 						
 					break;
 				case 0x02:
@@ -389,13 +395,29 @@ public class Client {
 					
 					break;
 				case 0x03:
-					// GameState
-					((GameScene)gm.getScene("InGame")).setAllClientReady(true);					
+					// GameState, round
+					((GameScene)gm.getScene("InGame")).setAllClientReady(true);		
+					try {
+						((GameScene)gm.getScene("InGame")).setRound(Integer.parseInt(netArgs[1]));
+					}
+					catch(NumberFormatException e) {
+						break;
+					}
 					break;
 				case 0x04:
-					// GameState, winTeamNumber 
-					((GameScene)gm.getScene("InGame")).setAllClientReady(true);	
-					gm.getAnnounce().Announce("Team " + netArgs[1] + "Win");
+					// GameState, winTeamNumber, isfinishedGame,(finallyWinTeamNumber)
+					// isfinishedGame : 0 == no, 1 == yes
+					
+					if(netArgs[2].toCharArray()[0] == 1) {
+						if(netArgs.length == 4) {
+
+							((GameScene)gm.getScene("InGame")).finishGame(gc,netArgs[3]);
+						}
+					}
+					else {
+						((GameScene)gm.getScene("InGame")).setAllClientReady(true);	
+						gm.getAnnounce().Announce("Team " + netArgs[1] + "Win");						
+					}
 				}
 				break;
 			// Other Game Packet--------------------------------------------------------
@@ -410,6 +432,14 @@ public class Client {
 					gm.getAnnounce().Announce("Game is Started!");
 					serverState = ServerState.GAME_START;
 					
+					break;
+				case 0x01:
+					break;
+				case 0x02:
+					//type
+					// All Player Team Number is Same
+					
+					gm.getAnnounce().Announce("모든 플레이어의 팀 색깔이 동일합니다.");
 					break;
 				}
 				break;

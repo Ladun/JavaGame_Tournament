@@ -1,5 +1,8 @@
 package com.ladun.game;
 
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
@@ -22,7 +25,7 @@ public class Announce {
 			return;
 		
 		//r.drawFillRect(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 50, 200, 100, 0, 0xff9facf1);
-		r.drawString(str,100, 200,50,0xff000000);
+		r.drawString(str,-1, 50,50,0xff000000);
 	}
 	
 	public void Announce(String str, float time) {

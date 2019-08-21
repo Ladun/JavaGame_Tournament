@@ -17,19 +17,20 @@ public class Map {
 	private String name;
 	private Image floorImage;
 	private Image ceilImage;
+	private Image collisionImage;
 	
 	private int backgroundColor = 0;
 	private boolean load;
 	private float[] heights;
 	private boolean[] collisions;
 	private int levelW,levelH;
-	private ArrayList<SpawnPoint> spawnPoints = new ArrayList<SpawnPoint>();
 		
 	public Map(String name) {
 		this.name = name;
 		floorImage = new Image("/Map/" + name + "_floor.png");
 		ceilImage = new Image("/Map/" + name + "_ceil.png");
-		loadLevel(new Image("/Map/" + name + "_collision.png"));
+		collisionImage =  new Image("/Map/" + name + "_collision.png");
+		loadLevel();
 	}
 	public Map(String name,GameObject[] objects) {
 		this(name);
@@ -84,7 +85,7 @@ public class Map {
 		}
 	}
 	
-	private void loadLevel(Image collisionImage) {
+	private void loadLevel() {
 		load  		= true;
 		levelW 		= collisionImage.getW();
 		levelH 		= collisionImage.getH();
@@ -97,12 +98,7 @@ public class Map {
 			for (int x = 0; x < levelW; x++) {
 				if(!flag[x + y * levelW]){
 					flag[x + y * levelW] = true;
-					if (collisionImage.getP()[x + y * levelW] == SPAWN_COLOR){
-						spawnPoints.add(new SpawnPoint(x,y));
-						heights[x + y * levelW] = 0;						
-						collisions[x + y * levelW] = false;
-					}
-					else if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
+					if (collisionImage.getP()[x + y * levelW] == 0xff000000) {
 						heights[x + y * levelW] = -GameManager.TS;
 						collisions[x + y * levelW] = true;
 					} else {
@@ -115,11 +111,16 @@ public class Map {
 	}	
 	
 	public int[] randomSpawnPoint() {
-		if(spawnPoints.size() == 0)
-			return new int[] {0,0};
-		int randIndex =new Random().nextInt(spawnPoints.size());
 		
-		return new int[] {spawnPoints.get(randIndex).x,spawnPoints.get(randIndex).y};
+		Random random = new Random();
+		
+		int randomIndex = random.nextInt(levelW * levelH);
+		
+		while(collisions[randomIndex] && collisionImage.getP()[randomIndex] != 0xff7fb5d5) {
+			randomIndex = random.nextInt(levelW * levelH);
+		}
+		
+		return new int[] {randomIndex % levelW, randomIndex / levelW};
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------

@@ -1,5 +1,0 @@
-package com.ladun.engine;
-
-public class Time {
-	private static float deltaTime;
-}

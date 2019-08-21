@@ -27,7 +27,7 @@ public class Rigidbody extends Component{
 			parent.addPosZ((float)(power * s * Time.DELTA_TIME));
 		}
 		if(power > 0) {
-			power -= 128 * Time.DELTA_TIME;
+			power -= 500 * Time.DELTA_TIME;
 			if(power < 0) {
 				power = 0;
 			}

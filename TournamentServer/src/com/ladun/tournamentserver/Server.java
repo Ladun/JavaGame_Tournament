@@ -39,8 +39,19 @@ public class Server {
 	
 	private int[] teamPoint = new int[8];
 	
+	//-----------------------------------------------------
+	private SettingClass settings;
+	private int roundCount = 0;
+	//-----------------------------------------------------
+	
 	public Server(int port) {
 		this.port = port;
+		getSettingFile();
+	}
+	
+	public void getSettingFile() {
+		settings = new SettingClass(".\\setting.json");
+		
 	}
 	
 	public void start() {
@@ -154,6 +165,10 @@ public class Server {
 					}
 				}
 				clientDisconnect(_clientID);
+				
+				if(clients.size() == 0)				{
+					gaming = false;
+				}
 
 				System.out.printf("[%s:%d] ID: %d Disconnect\n",address.getHostAddress() , port, _clientID );		
 				
@@ -244,6 +259,27 @@ public class Server {
 							sb.append((char)0x04);
 							sb.append(",");
 							sb.append(aliveTeamIndex);
+							sb.append(",");
+							if(roundCount == settings.getRoundCount()) {
+								sb.append((char)1);
+								int teamNumber = -1;
+								int maxPoint =0;
+								for(int i =0 ;i < teamPoint.length;i++) {
+									if(teamPoint[i] > maxPoint) {
+										teamNumber = i ;
+										maxPoint = teamPoint[i];
+									}
+								}
+								if(teamNumber != -1) {
+									sb.append(",");
+								
+									sb.append(1);
+								}
+								roundCount = 0;
+							}else {
+								sb.append((char)0);								
+							}			
+							
 							bw.write((sb.toString()).getBytes());			
 							
 							sendToAllClients(bw.getBytes());
@@ -272,12 +308,15 @@ public class Server {
 							}
 						}
 						if(allSame) {
+							roundCount++;
 	
 							sb.setLength(0);
 							bw.clear();
 							bw.write((byte)0x06);
 							sb.append(":");
 							sb.append((char)0x03);
+							sb.append(",");
+							sb.append(roundCount);
 							bw.write((sb.toString()).getBytes());	
 							sendToAllClients(bw.getBytes());
 						}
@@ -294,29 +333,43 @@ public class Server {
 						break;
 					
 					boolean allSame= true;
+					int playerTeamNumberCount = 1;
 					for(Client _c :clients) {
 						if(_c.getClientdID() != _clientID) {
 							if(c.getTargetMapIndex() != _c.getTargetMapIndex()) {
 								allSame = false;
 								break;
 							}
+							if(c.getTeamNumber() == _c.getTeamNumber()) {
+								playerTeamNumberCount++;
+							}
 						}
 					}
-					sb.setLength(0);
-					bw.clear();
-					bw.write((byte)0x06);
-					sb.append(":");
-					sb.append((char)0x00);
-					sb.append(",");
-					if(allSame) {
-						sb.append(1);
-						gaming = true;
+					if(playerTeamNumberCount == clients.size()) {
+						
+						sb.setLength(0);
+						bw.clear();
+						bw.write((byte)0x07);
+						sb.append(":");
+						sb.append((char)0x02);
+						
+					}else {
+						
+						sb.setLength(0);
+						bw.clear();
+						bw.write((byte)0x06);
+						sb.append(":");
+						sb.append((char)0x00);
+						sb.append(",");
+						if(allSame) {
+							sb.append(1);
+							gaming = true;
+						}
+						else {		
+							sb.append(0);	
+							gaming = false;		
+						}
 					}
-					else {		
-						sb.append(0);	
-						gaming = false;		
-					}
-
 
 					bw.write((sb.toString()).getBytes());					
 					sendToAllClients(bw.getBytes());	
@@ -426,6 +479,8 @@ public class Server {
 					bw.write((byte)0x06);
 					sb.append(":");
 					sb.append((char)0x01);
+					sb.append(",");
+					sb.append(settings.getRoundCount());
 					bw.write((sb.toString()).getBytes());			
 					
 					send(bw.getBytes(), address, port);

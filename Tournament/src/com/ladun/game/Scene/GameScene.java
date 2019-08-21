@@ -33,7 +33,7 @@ public class GameScene extends AbstractScene{
 	private Camera 		camera;
 	private Player localPlayer;
 	
-	
+	private int round, maxRound;	
 	// -----------------------------------------
 	private int targetMapIndex;
 	private float readyToStartTime = 0;
@@ -62,7 +62,7 @@ public class GameScene extends AbstractScene{
 		}
 		//this.addObject(new TempObject(this));
 		//Buttons Init---------------------------------------
-		teamChooseButton = new Button(28,gc.getHeight()- 272, 64 ,64,teamColor.getValue());
+		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
 		storeButton = new Button(30, gc.getHeight()/2 - 84,128,128,"store_button");
 		//---------------------------------------------------
 		return true;
@@ -116,7 +116,8 @@ public class GameScene extends AbstractScene{
 		if(currentMap == null)
 			return;
 		
-
+		r.drawString(round + " / " + maxRound, -1 , 0, 13, 0xff207cda);
+		
 		renderOthers(gc,r);
 		
 		//r.drawImage(gc.getImageLoader().getImage("window"), gc.getWidth() / 2 - 192, gc.getHeight() /2- 240, 0);
@@ -164,7 +165,7 @@ public class GameScene extends AbstractScene{
 		switch(currentMapIndex) {
 		case 0:
 			teamChooseButton.render(gc, r);
-			r.drawImage(gc.getImageLoader().getImage("team_select"), 20, gc.getHeight() - 280, 0);
+			r.drawImage(gc.getImageLoader().getImage("team_select"), 200, gc.getHeight() - 100, 0);
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
@@ -201,43 +202,50 @@ public class GameScene extends AbstractScene{
 		
 		new Thread(() ->{ 
 
+			while(gm.isLoading()) {}
+			
+
 			synchronized (gm) {
-				while(gm.isLoading()) {}
-			
-			
 				gm.setLoading(true);
-				switch(currentMapIndex) {
-				case 1:
-					inteamWaitRoom = true;
-					currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
-							new Interior("portal",249,187,80,72,14f,14,false),
-							(new Interior("battle_stone",249,72,80,115,8f,8,true)).setpT(95).setpB(5),
-							(new Interior("stone_bush_1",128,188,64,41,true)).setpT(19).setpB(8),
-							(new Interior("stone_bush_1",398,379,64,41,true)).setpT(19).setpB(8)
-					});
-					currentMap.setBackgroundColor(0xff405947);
+			}
+			switch(currentMapIndex) {
+			case 0:
+				currentMap = new Map(mapNames[currentMapIndex]);
+				localPlayer.revival();
+				break;
+			case 1:
+				localPlayer.revival();
+				inteamWaitRoom = true;
+				currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
+						new Interior("portal",249,187,80,72,14f,14,false),
+						(new Interior("battle_stone",249,72,80,115,8f,8,true)).setpT(95).setpB(5),
+						(new Interior("stone_bush_1",128,188,64,41,true)).setpT(19).setpB(8),
+						(new Interior("stone_bush_1",398,379,64,41,true)).setpT(19).setpB(8)
+				});
+				currentMap.setBackgroundColor(0xff405947);
+				break;
+			default:
+				currentMap = new Map(mapNames[currentMapIndex]);
+			}
+			
+			float t = 0;				
+			while(localPlayer == null) {
+				t += Time.DELTA_TIME;
+				if(t >= 5) {
 					break;
-				default:
-					currentMap = new Map(mapNames[currentMapIndex]);
 				}
-				
-				float t = 0;				
-				while(localPlayer == null) {
-					t += Time.DELTA_TIME;
-					if(t >= 5) {
-						break;
-					}
-				}
-				 
-				if(t < 5) {
-					this.localPlayer.setCurrentMapIndex(currentMapIndex);			
-					int[] _pos = currentMap.randomSpawnPoint();
-					localPlayer.setPos(_pos[0], _pos[1]);
-				}
-				synchronized (gc) {
-					camera.focusTarget(gc, gm);
-				}
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
+			}
+			 
+			if(t < 5) {
+				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
+				int[] _pos = currentMap.randomSpawnPoint();
+				localPlayer.setPos(_pos[0], _pos[1]);
+			}
+			synchronized (gc) {
+				camera.focusTarget(gc, gm);
+			}
+			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x16,currentMapIndex});
+			synchronized (gm) {
 				gm.setLoading(false);
 			}
 		},"Map Load").start();
@@ -329,7 +337,6 @@ public class GameScene extends AbstractScene{
 					if(readyToStartTime <= 0) {
 						readyToStartTime = 0;
 						gameisStart = false;
-						localPlayer.revival();
 						mapLoad(gc,1);
 					}
 				}
@@ -431,4 +438,26 @@ public class GameScene extends AbstractScene{
 			return true;
 		return gameisStart;
 	}
+
+	public int getRound() {
+		return round;
+	}
+
+	public void setRound(int round) {
+		this.round = round;
+	}
+
+	public int getMaxRound() {
+		return maxRound;
+	}
+
+	public void setMaxRound(int maxRound) {
+		this.maxRound = maxRound;
+	}
+	public void finishGame(GameContainer gc,String finallyWin) {
+		gameisStart = false;
+		mapLoad(gc,0);
+		gm.getAnnounce().Announce("Team " + finallyWin + " Win!!!!!",10);
+	}
+
 }
