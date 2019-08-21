@@ -196,7 +196,7 @@ public class Weapon extends GameObject{
 		switch(type) {
 		case SWORD:
 			damage = 18;
-			knockback = 200;
+			knockback = 400;
 			imageName = "sword";
 			width = 64;
 			height = 64;
@@ -206,7 +206,7 @@ public class Weapon extends GameObject{
 			break;
 		case BOW:
 			damage = 15;
-			knockback = 150;
+			knockback = 200;
 			imageName = "bow";
 			width = 64;
 			height = 64;
@@ -217,7 +217,7 @@ public class Weapon extends GameObject{
 
 		case SPEAR:
 			damage = 13;
-			knockback = 200;
+			knockback = 300;
 			imageName = "spear";
 			width = 128;
 			height = 64;

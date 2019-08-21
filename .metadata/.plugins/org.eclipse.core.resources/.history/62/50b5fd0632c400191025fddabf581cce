@@ -93,150 +93,150 @@ public class Player extends Entity{
 		if(currentMapIndex != gs.getCurrentMapIndex())
 			return;
 
-		if(gs.isGameisStart()) {
+		if(!gs.isGameisStart()) 
+			return;
 		
-			nextHitTime += Time.DELTA_TIME;
+		nextHitTime += Time.DELTA_TIME;
+		
+		if(localPlayer){	
+			if(gc.getInput().isKeyDown(KeyEvent.VK_L))
+				System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+			for(int i = 0; i < 4; i ++) {
+				if(actionCoolDownTime[i] > 0 ) {
+					actionCoolDownTime[i] -= Time.DELTA_TIME;
+					if(actionCoolDownTime[i]  < 0)
+						actionCoolDownTime[i]  = 0;
+				}
+			}
 			
-			if(localPlayer){	
-				if(gc.getInput().isKeyDown(KeyEvent.VK_L))
-					System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
-				for(int i = 0; i < 4; i ++) {
-					if(actionCoolDownTime[i] > 0 ) {
-						actionCoolDownTime[i] -= Time.DELTA_TIME;
-						if(actionCoolDownTime[i]  < 0)
-							actionCoolDownTime[i]  = 0;
-					}
-				}
+			// Temporary------------------------------------------------------
+			
+			if(gc.getInput().isKeyDown(KeyEvent.VK_1)) {
+				weapon.setType(Weapon.Type.SWORD);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,0});
+			}
+			else if(gc.getInput().isKeyDown(KeyEvent.VK_2)) {
+				weapon.setType(Weapon.Type.BOW);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,1});
+			}
+			else if(gc.getInput().isKeyDown(KeyEvent.VK_3)) {
+				weapon.setType(Weapon.Type.SPEAR);
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,2});
+			}
+			// Temporary End -------------------------------------------------
+
+			
+			
+			// Moving ------------------------------------------------------
+			if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
+				int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+				int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
 				
-				// Temporary------------------------------------------------------
-				
-				if(gc.getInput().isKeyDown(KeyEvent.VK_1)) {
-					weapon.setType(Weapon.Type.SWORD);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,0});
-				}
-				else if(gc.getInput().isKeyDown(KeyEvent.VK_2)) {
-					weapon.setType(Weapon.Type.BOW);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,1});
-				}
-				else if(gc.getInput().isKeyDown(KeyEvent.VK_3)) {
-					weapon.setType(Weapon.Type.SPEAR);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,2});
-				}
-				// Temporary End -------------------------------------------------
-	
-				
-				
-				// Moving ------------------------------------------------------
-				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
-					int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+				if(clickPoints.size() == 0) {
+					angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
 					
-					if(clickPoints.size() == 0) {
+					fcos = (float)Math.cos(Math.toRadians(angle));
+					fsin = (float)Math.sin(Math.toRadians(angle));
+					clickPoints.add(new Point(_x,_y));
+				}
+				else {					
+					if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
+					{
+						clickPoints.add(new Point(_x,_y));					
+					}
+					else {
 						angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
 						
 						fcos = (float)Math.cos(Math.toRadians(angle));
 						fsin = (float)Math.sin(Math.toRadians(angle));
-						clickPoints.add(new Point(_x,_y));
-					}
-					else {					
-						if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
-						{
-							clickPoints.add(new Point(_x,_y));					
+						if(clickPoints.size() == 1) {
+							clickPoints.get(0).setX(_x);
+							clickPoints.get(0).setY(_y);
 						}
 						else {
-							angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
-							
-							fcos = (float)Math.cos(Math.toRadians(angle));
-							fsin = (float)Math.sin(Math.toRadians(angle));
-							if(clickPoints.size() == 1) {
-								clickPoints.get(0).setX(_x);
-								clickPoints.get(0).setY(_y);
-							}
-							else {
-								clickPoints.clear();
-								clickPoints.add(new Point(_x,_y));
-							}
+							clickPoints.clear();
+							clickPoints.add(new Point(_x,_y));
 						}
 					}
-					
 				}
 				
-				if(clickPoints.size() > 0) {
-					float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
-					if(distance >= speed  * Time.DELTA_TIME) {
-						moving(gc,speed * fcos,speed * fsin);
-					}
-					else {
-						moving(gc,distance * fcos, distance *fsin);
-						clickPoints.remove(0);
-						if(clickPoints.size() > 0) {
-							angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
-							fcos = (float)Math.cos(Math.toRadians(angle));
-							fsin = (float)Math.sin(Math.toRadians(angle));
-							
-						}
-					}
-	
-					moving = true;
-				}
-				else			{
-					moving = false;
-				}
-				// Moving End --------------------------------------------------
-				
-				// jump(gc);
-				
-				
-				// Attack----------------------------------------------------
-				if(currentMapIndex >= 2) {
-					if(actionCoolDownTime[0] <= 0) {
-						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-							if(!weapon.isAttacking()) {
-								if(weapon.getType() != Weapon.Type.BOW)	{
-									actionCoolDownTime[0] = .5f;
-									attack(gm,angle);
-								}
-								else {
-									readyToShoot = true;
-								}
-							}
-						}
-						if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-							if(readyToShoot) {
+			}
 			
-								actionCoolDownTime[0] = .5f;
-								readyToShoot = false;
-								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-								int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
-								
-								angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-								weapon.setDstAngle(angle);
-								attack(gm,angle);					
-							}
-						}
-					}
-				}
-				// Attack End -------------------------------------------------
-				
-				if(moving) {
-					anim += Time.DELTA_TIME * animSpeed;
-					if(anim >= animMaxIndex[animType]) {
-						anim -=animMaxIndex[animType];
-					}
+			if(clickPoints.size() > 0) {
+				float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
+				if(distance >= speed  * Time.DELTA_TIME) {
+					moving(gc,speed * fcos,speed * fsin);
 				}
 				else {
-					anim = 0;
+					moving(gc,distance * fcos, distance *fsin);
+					clickPoints.remove(0);
+					if(clickPoints.size() > 0) {
+						angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
+						fcos = (float)Math.cos(Math.toRadians(angle));
+						fsin = (float)Math.sin(Math.toRadians(angle));
+						
+					}
 				}
-				
-				
-				if((int)fallDistance != 0) {
-					ground = false;
-				}
-				groundLast = ground;				
-				this.AdjustPosition();	
+
+				moving = true;
 			}
-		}
+			else			{
+				moving = false;
+			}
+			// Moving End --------------------------------------------------
+			
+			// jump(gc);
+			
+			
+			// Attack----------------------------------------------------
+			if(currentMapIndex >= 2) {
+				if(actionCoolDownTime[0] <= 0) {
+					if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+						if(!weapon.isAttacking()) {
+							if(weapon.getType() != Weapon.Type.BOW)	{
+								actionCoolDownTime[0] = .5f;
+								attack(gm,angle);
+							}
+							else {
+								readyToShoot = true;
+							}
+						}
+					}
+					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+						if(readyToShoot) {
 		
+							actionCoolDownTime[0] = .5f;
+							readyToShoot = false;
+							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+							
+							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+							weapon.setDstAngle(angle);
+							attack(gm,angle);					
+						}
+					}
+				}
+			}
+			// Attack End -------------------------------------------------
+			
+			if(moving) {
+				anim += Time.DELTA_TIME * animSpeed;
+				if(anim >= animMaxIndex[animType]) {
+					anim -=animMaxIndex[animType];
+				}
+			}
+			else {
+				anim = 0;
+			}
+			
+			
+			if((int)fallDistance != 0) {
+				ground = false;
+			}
+			groundLast = ground;				
+			this.AdjustPosition();	
+		}
+
 		weapon.update(gc, gm);
 		this.updateComponents(gc,gm);
 	}

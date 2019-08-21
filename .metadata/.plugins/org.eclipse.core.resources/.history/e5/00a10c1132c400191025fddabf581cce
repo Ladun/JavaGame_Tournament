@@ -93,7 +93,7 @@ public class Player extends Entity{
 		if(currentMapIndex != gs.getCurrentMapIndex())
 			return;
 
-		if(gs.isGameisStart()) {
+		if(!gs.isGameisStart()) {
 		
 			nextHitTime += Time.DELTA_TIME;
 			
