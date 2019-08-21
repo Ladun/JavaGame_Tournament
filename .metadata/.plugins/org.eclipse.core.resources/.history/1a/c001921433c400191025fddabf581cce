@@ -164,10 +164,10 @@ public class Player extends Entity{
 				if(clickPoints.size() > 0) {
 					float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
 					if(distance >= speed  * Time.DELTA_TIME) {
-						moving(speed * fcos,speed * fsin);
+						moving(gc,speed * fcos,speed * fsin);
 					}
 					else {
-						moving(distance * fcos, distance *fsin);
+						moving(gc,distance * fcos, distance *fsin);
 						clickPoints.remove(0);
 						if(clickPoints.size() > 0) {
 							angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
@@ -376,9 +376,40 @@ public class Player extends Entity{
 	
 	}
 	
-	private void moving( float dX,float dY) {
-		addPosX((float)(dX * Time.DELTA_TIME));
-		addPosZ((float)(dY * Time.DELTA_TIME));
+	private void moving(GameContainer gc, float dX,float dY) {
+		int h = (int)Math.signum(dX);
+		int v = (int)Math.signum(dY);
+					
+		// Moving -------------
+		offX += dX * Time.DELTA_TIME;
+		if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
+		   (gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
+				
+			if(h == 1) {
+				if(offX > pR)
+					offX = pR;
+			}
+			else {
+				if(offX < -pL)
+					offX = -pL;
+			}
+		}	
+		offZ += dY * Time.DELTA_TIME;
+		if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
+		   (gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
+			
+			if(v == 1) {
+				if(offZ > pB)
+					offZ = pB;
+			}
+			else {
+				if(offZ < -pT)
+					offZ = -pT;
+			}
+		}
+
+
+		// Moving End --------------
 
 	}
 	
@@ -470,38 +501,11 @@ public class Player extends Entity{
 	}
 	@Override 
 	public void addPosX(float _x) {
-		int h = (int)Math.signum(_x);
 		offX += _x;
-		if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
-		(gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
-			
-			if(h == 1) {
-				if(offX > pR)
-					offX = pR;
-			}
-			else {
-				if(offX < -pL)
-					offX = -pL;
-			}
-		}		
 	}
 	@Override 
 	public void addPosZ(float _z) {
-		int v = (int)Math.signum(_z);
 		offZ += _z;
-		if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
-		(gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
-					
-			if(v == 1) {
-				if(offZ > pB)
-					offZ = pB;
-			}
-			else {
-				if(offZ < -pT)
-					offZ = -pT;
-			}
-		}
-
 	}
 
 

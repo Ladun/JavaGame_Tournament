@@ -4,7 +4,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
-import com.ladun.game.objects.Entity;
+import com.ladun.game.objects.GameObject;
 
 public class Rigidbody extends Component{
 
@@ -23,8 +23,8 @@ public class Rigidbody extends Component{
 	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
 		if(power != 0) {
-			((Entity)parent).addPosX((float)(power * c * Time.DELTA_TIME));
-			((Entity)parent).addPosZ((float)(power * s * Time.DELTA_TIME));
+			parent.addPosX((float)(power * c * Time.DELTA_TIME));
+			parent.addPosZ((float)(power * s * Time.DELTA_TIME));
 		}
 		if(power > 0) {
 			power -= 500 * Time.DELTA_TIME;

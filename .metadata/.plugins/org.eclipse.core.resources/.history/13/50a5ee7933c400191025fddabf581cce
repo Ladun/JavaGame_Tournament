@@ -377,8 +377,8 @@ public class Player extends Entity{
 	}
 	
 	private void moving( float dX,float dY) {
-		addPosX((float)(dX * Time.DELTA_TIME));
-		addPosZ((float)(dY * Time.DELTA_TIME));
+		addPosX(dX * Time.DELTA_TIME);
+		addPosZ(dY * Time.DELTA_TIME);
 
 	}
 	

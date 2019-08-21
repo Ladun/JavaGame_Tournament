@@ -190,6 +190,7 @@ public abstract class Entity extends GameObject{
 	public int getTileZ() {
 		return tileZ;
 	}
+
 	public void setPos(int tileX,int tileZ) {
 		this.tileX = tileX;
 		this.tileZ =tileZ;
