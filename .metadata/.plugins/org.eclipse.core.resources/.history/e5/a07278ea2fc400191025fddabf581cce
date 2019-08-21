@@ -438,6 +438,7 @@ public class Client {
 				case 0x02:
 					//type
 					// All Player Team Number is Same
+					if()
 					gm.getAnnounce().Announce("모든 플레이어의 팀 색깔이 동일합니다.");
 					break;
 				}

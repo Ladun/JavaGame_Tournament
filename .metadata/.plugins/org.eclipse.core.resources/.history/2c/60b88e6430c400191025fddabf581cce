@@ -365,25 +365,23 @@ public class Server {
 					int playerTeamNumberCount = 1;
 					for(Client _c :clients) {
 						if(_c.getClientdID() != _clientID) {
-							if(c.getTeamNumber() == _c.getTeamNumber()) {
-								playerTeamNumberCount++;
-							}
 							if(c.getTargetMapIndex() != _c.getTargetMapIndex()) {
 								allSame = false;
 								break;
 							}
-						}
-					}
-					if(playerTeamNumberCount == clients.size()) {
-						if(allSame) {
-							if(c.getTargetMapIndex() >= 2) {
-								sb.setLength(0);
-								bw.clear();
-								bw.write((byte)0x07);
-								sb.append(":");
-								sb.append((char)0x02);
+							if(c.getTeamNumber() == _c.getTeamNumber()) {
+								playerTeamNumberCount++;
 							}
 						}
+					}
+					System.out.println(playerTeamNumberCount);
+					if(playerTeamNumberCount == clients.size()) {
+						//if(!allSame)
+						sb.setLength(0);
+						bw.clear();
+						bw.write((byte)0x07);
+						sb.append(":");
+						sb.append((char)0x02);
 						
 					}else {
 						

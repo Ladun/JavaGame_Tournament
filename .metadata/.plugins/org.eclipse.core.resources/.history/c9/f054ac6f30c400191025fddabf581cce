@@ -375,15 +375,12 @@ public class Server {
 						}
 					}
 					if(playerTeamNumberCount == clients.size()) {
-						if(allSame) {
-							if(c.getTargetMapIndex() >= 2) {
-								sb.setLength(0);
-								bw.clear();
-								bw.write((byte)0x07);
-								sb.append(":");
-								sb.append((char)0x02);
-							}
-						}
+						//if(!allSame)
+						sb.setLength(0);
+						bw.clear();
+						bw.write((byte)0x07);
+						sb.append(":");
+						sb.append((char)0x02);
 						
 					}else {
 						
