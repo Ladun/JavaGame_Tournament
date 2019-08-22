@@ -37,12 +37,13 @@ public class Player extends Entity{
 	//--------------------------------------	
 	private boolean localPlayer;
 	private int teamNumber;
+	private String nickname;
 	//--------------------------------------
 	
 
-	public Player(String tag,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
+	public Player(String tag,String nickname,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
 		this.tag = tag;
-		
+		this.nickname = nickname;
 		
 		this.tileX 	= tileX;
 		this.tileZ 	= tileZ;
@@ -331,7 +332,8 @@ public class Player extends Entity{
 			//----------------------------------------------------------------------------------------
 			
 			if(health <= 0) {
-				gm.getChatBox().addTexts(attackerTag +" kill " + this.tag);
+
+				gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname);
 				
 				active =false;
 			}
@@ -456,6 +458,12 @@ public class Player extends Entity{
 	}
 	public int getTeamNumber() {
 		return teamNumber;
+	}
+	public String getNickname() {
+		return nickname;
+	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 	public void setTeamNumber(int teamNumber) {
 		this.teamNumber = teamNumber;

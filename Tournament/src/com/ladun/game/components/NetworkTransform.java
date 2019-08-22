@@ -14,6 +14,7 @@ public class NetworkTransform extends Component{
 	
 	private final static float PACKET_SEND_TIME = 1/10f; 
 	
+	
 	private float srcX, srcY, srcZ;
 	private float srcAngle;
 	private float dstX, dstY ,dstZ;

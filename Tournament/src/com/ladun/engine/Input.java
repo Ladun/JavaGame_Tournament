@@ -20,6 +20,12 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 	private boolean[] buttons = new boolean[NUM_BUTTONS];
 	private boolean[] buttonsLast = new boolean[NUM_BUTTONS];
 	
+	private boolean anykeyPressed = false;
+	
+	private boolean keyPressed = false;
+	private char lastStr;
+	private int lastCode;
+	
 	private int mouseX, mouseY;
 	private int scroll;
 	
@@ -127,19 +133,26 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 	public void keyPressed(KeyEvent e) {
 
 		keys[e.getKeyCode()] = true;
+		anykeyPressed = true;
+		lastCode = e.getKeyCode();
 		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		keys[e.getKeyCode()] = false;
+		anykeyPressed = false;
+		keyPressed = false;
 		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		if(!keyPressed ) {
+			lastStr = e.getKeyChar();
+			keyPressed = true;
+		}
 	}
 
 	public int getMouseX() {
@@ -153,5 +166,25 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
 	public int getScroll() {
 		return scroll;
 	}
+
+	public boolean isAnyKeyPressed() {
+		return anykeyPressed;
+	}
+
+	public char getLastStr() {
+
+		keyPressed = false;
+		return lastStr;
+	}
+
+	public int getLastCode() {
+		return lastCode;
+	}
+
+	public boolean isKeyPressed() {
+		return keyPressed;
+	}
+	
+	
 	
 }

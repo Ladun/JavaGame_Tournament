@@ -8,7 +8,12 @@ import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.objects.GameObject;
 
-public class Button extends GameObject{
+public class Button {
+	
+	private int posX;
+	private int posY;
+	private int width;
+	private int height;
 
 	private boolean over;
 	private boolean pressed;
@@ -17,9 +22,8 @@ public class Button extends GameObject{
 	private int color;
 	private String imageName;
 	
-	public Button(float x, float y,int width, int height, int color)
+	public Button(int x, int y,int width, int height, int color)
 	{
-		this.tag 		= "button";
 		this.width 		= width;
 		this.height 	= height;
 		this.posX		= x;
@@ -28,10 +32,9 @@ public class Button extends GameObject{
 		this.color 		= color;
 	}
 	
-	public Button(float x, float y
+	public Button(int x, int y
 			,int width, int height, String buttonImageName)
 	{
-		this.tag 		= "button";
 		this.width 		= width;
 		this.height 	= height;
 		this.posX		= x;
@@ -39,7 +42,6 @@ public class Button extends GameObject{
 		this.imageName 	= buttonImageName;
 	}
 	
-	@Override
 	public void update(GameContainer gc, GameManager gm) {
 		over 			= isOver(gc.getInput().getMouseX(),gc.getInput().getMouseY());
 		released 		= false;
@@ -57,7 +59,6 @@ public class Button extends GameObject{
 		}
 	}
 
-	@Override
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
 
@@ -96,13 +97,6 @@ public class Button extends GameObject{
 			}
 		}
 	}
-
-	@Override
-	public void collision(GameObject other) {
-
-		
-	}
-
 	
 	boolean isOver(float x, float y)
 	{

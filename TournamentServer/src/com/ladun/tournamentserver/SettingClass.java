@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 public class SettingClass {
 	
 	private int roundCount;
+	private int port;
 	
 	public SettingClass(String jsonPath) {	
 		JsonParser parser = new JsonParser();
@@ -19,6 +20,7 @@ public class SettingClass {
 	 
 			JsonObject jsonObject = (JsonObject) obj;
 			roundCount = jsonObject.get("ROUND_COUNT").getAsInt();
+			port = jsonObject.get("PORT").getAsInt();
 	 
 	 
 		} catch (FileNotFoundException e) {
@@ -29,6 +31,10 @@ public class SettingClass {
 	public int getRoundCount() {
 		return roundCount;
 	}
-	
+
+	public int getPort() {
+		return port;
+	}
+
 	
 }

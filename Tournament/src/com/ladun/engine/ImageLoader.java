@@ -39,7 +39,11 @@ public class ImageLoader {
 		addImage("inv","/UI/Inventory.png");
 		addImage("warrior_skill", "/UI/SlotContents/Warrior_Skill.png",64,64);
 		
+		// Buttons
 		addImage("store_button","/UI/StoreButton.png",128,128);
+		addImage("start_button","/UI/mainScene/StartButton.png",76,76);
+		addImage("option_button","/UI/mainScene/OptionButton.png",76,76);
+		addImage("exit_button","/UI/mainScene/ExitButton.png",76,76);
 		
 		addImage("items","/UI/Items.png",54,54);
 		

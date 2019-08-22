@@ -30,7 +30,7 @@ public class Announce {
 		
 		//r.drawFillRect(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 50, 200, 100, 0, 0xff9facf1);
 		for(int i =0 ;i < contents.size();i++) {
-			r.drawString(contents.get(i).str,-1, 50+ i * (SIZE + 4),SIZE ,contents.get(i).color);
+			r.drawString(contents.get(i).str,Renderer.ALLIGN_CENTER, 50+ i * (SIZE + 4),SIZE ,contents.get(i).color);
 		}
 		
 	}

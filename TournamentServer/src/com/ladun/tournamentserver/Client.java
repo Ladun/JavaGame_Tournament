@@ -3,6 +3,9 @@ package com.ladun.tournamentserver;
 import java.net.InetAddress;
 
 public class Client {
+	
+	private String nickname;
+	
 	private InetAddress address;
 	private int port;
 	private int clientdID;
@@ -21,10 +24,11 @@ public class Client {
 	private int timeSinceCheck;
 	private boolean responed = true;
 	
-	public Client(InetAddress address,int port,int clientID) {
+	public Client(InetAddress address,int port,int clientID,String nickname) {
 		this.address = address;
 		this.port = port;
 		this.clientdID = clientID;
+		this.nickname = nickname;
 	}
 
 	public InetAddress getAddress() {
@@ -129,6 +133,14 @@ public class Client {
 
 	public void setCurrentMapIndex(int currentMapIndex) {
 		this.currentMapIndex = currentMapIndex;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 	
 	

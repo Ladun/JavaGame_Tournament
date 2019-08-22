@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class TournamentServer {
 
 	public static void main(String[] args) {
-		Server server = new Server(8192);		
+		Server server = new Server();		
 		server.start();
 		
 		boolean running = true;

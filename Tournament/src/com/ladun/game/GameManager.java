@@ -19,6 +19,7 @@ public class GameManager extends AbstractGame {
 	public static final int TS = 64;
 	
 	private Client client;
+	private String nickname;
 	
 	private boolean loading;
 	private float loadingAnim;	
@@ -57,13 +58,7 @@ public class GameManager extends AbstractGame {
 		}
 		
 		announce.update(gc, this);
-		chatBox.update(gc, this);
-		
-
-		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
-			chatBox.addTexts("Hello this is Chat Box");
-		}
-		
+		chatBox.update(gc, this);		
 		
 
 		if(loading) {
@@ -166,6 +161,14 @@ public class GameManager extends AbstractGame {
 
 	public boolean isLoading() {
 		return loading;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public void setLoading(boolean loading) {

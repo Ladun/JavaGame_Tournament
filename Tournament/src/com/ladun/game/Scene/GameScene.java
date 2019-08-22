@@ -82,6 +82,10 @@ public class GameScene extends AbstractScene{
 		}
 		
 		mapUpdate(gc,gm);
+
+		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
+			gm.getChatBox().addTexts("Hello this is Chat Box");
+		}
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
 			inventoryView = !inventoryView;
@@ -116,6 +120,7 @@ public class GameScene extends AbstractScene{
 		if(currentMap == null)
 			return;
 		
+		r.drawString(gm.getNickname(), Renderer.ALLIGN_RIGHT, 0, 30, 0xff000000);
 		r.drawString(round + " / " + maxRound, -1 , 0, 13, 0xff207cda);
 		
 		renderOthers(gc,r);
@@ -344,13 +349,13 @@ public class GameScene extends AbstractScene{
 		}
 	}
 	
-	public Player addPlayer(String name,int tileX, int tileY,boolean isLocalPlayer) {
-		Player p = new Player(name,tileX, tileY, this,isLocalPlayer);
+	public Player addPlayer(String name,String nickname,int tileX, int tileY,boolean isLocalPlayer) {
+		Player p = new Player(name,nickname,tileX, tileY, this,isLocalPlayer);
 		this.objects.add(p);
 		return p;
 	}
 	
-	public Player addPlayer(String name,boolean isLocalPlayer) {
+	public Player addPlayer(String name,String nickname,boolean isLocalPlayer) {
 		int[] pos;
 		if(currentMap == null) {
 			pos = new int[] {0,0};
@@ -358,7 +363,7 @@ public class GameScene extends AbstractScene{
 		else{
 			pos = currentMap.randomSpawnPoint();
 		}
-		Player p = new Player(name,pos[0], pos[1], this,isLocalPlayer);
+		Player p = new Player(name,nickname,pos[0], pos[1], this,isLocalPlayer);
 		this.objects.add(p);
 		return p;
 	}

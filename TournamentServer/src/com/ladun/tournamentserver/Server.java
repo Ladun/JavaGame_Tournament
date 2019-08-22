@@ -44,13 +44,12 @@ public class Server {
 	private int roundCount = 0;
 	//-----------------------------------------------------
 	
-	public Server(int port) {
-		this.port = port;
+	public Server() {
 		for(int i = 0 ; i < teamPoint.length;i++) {
 			teamPoint[i] = -1;
-		}
-		
+		}		
 		getSettingFile();
+		this.port = settings.getPort();
 	}
 	
 	public void getSettingFile() {
@@ -107,7 +106,7 @@ public class Server {
 			
 			switch(data[2]) {
 			// Connection-----------------------------------------------------------
-			// Client -> Server Packet : [header type]
+			// Client -> Server Packet : [header type: nickName]
 			case 0x01 : {
 
 				StringBuilder sb = new StringBuilder();
@@ -124,17 +123,19 @@ public class Server {
 					return;
 				}
 				
-				clients.add(new Client(address,port,clientID));
+				clients.add(new Client(address,port,clientID,messages[1].trim()));
 
 				bw.write((byte)0x03); //0x03 Value_Change -> 값 변경, clientID를 변경함
 				sb.append(":");
 				sb.append(clientID);
 				sb.append(":");
-				bw.write((sb.toString()).getBytes()); // ㅁㅁㅁ:clientID:clientID
-				bw.write(PACKET_VALUETYPE_CLIENTID);
+				sb.append((char)PACKET_VALUETYPE_CLIENTID);
+				sb.append(",");
+				sb.append(messages[1].trim());
+				bw.write((sb.toString()).getBytes()); 
 				send(bw.getBytes(),address,port);
 				
-				System.out.printf("[%s:%d] ID: %d Connect\n",address.getHostAddress() , port, clientID );			
+				System.out.printf("[%s:%d] %s(clientID: %d) Connect\n",address.getHostAddress() , port,messages[1], clientID );			
 				clientID++;
 				break;
 			}
@@ -428,10 +429,14 @@ public class Server {
 					if(_clientID < 1000 || !isClientExist(_clientID))
 						return;	
 					
+					Client c = getClient(_clientID);
+					
 					bw.clear();
 					bw.write((byte)0x01);
 					sb.append(":");
 					sb.append(_clientID);
+					sb.append(":");
+					sb.append(c.getNickname());
 					bw.write((sb.toString()).getBytes());
 					// 현재 새로운 플레이어가 스폰 되었다고 접속중인 client에게 정보를 보냄
 					sendToAllClients(bw.getBytes(), _clientID); 
@@ -445,6 +450,8 @@ public class Server {
 							bw.write((byte)0x01);
 							sb.append(":");
 							sb.append(_c.getClientdID());
+							sb.append(":");
+							sb.append(_c.getNickname());
 							bw.write((sb.toString()).getBytes());
 							send(bw.getBytes(),address,port);
 						}

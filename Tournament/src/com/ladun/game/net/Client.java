@@ -98,8 +98,9 @@ public class Client {
 		try {
 			serverAddress = InetAddress.getByName(ipAddress);
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			errorCode = Error.INVALID_HOST;
+			System.out.println(ipAddress);
 			return false;
 		}
 		
@@ -107,15 +108,19 @@ public class Client {
 			socket = new DatagramSocket();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 			errorCode = Error.SOCKET_EXCEPTION;
 			return false;
 		}
 		
 		
 		// Send connection packet to server
+		StringBuilder sb =new StringBuilder();
 		bw.clear();
 		bw.write(PACKET_TYPE_CONNECT);
+		sb.append(":");
+		sb.append(gm.getNickname());
+		bw.write((sb.toString()).getBytes());
 		send(bw.getBytes());
 
 		// Server Timeout
@@ -158,7 +163,7 @@ public class Client {
 			switch(data[2]) {
 			// Connection -> Receive Other Player Connection
 			// ,Or player connect and spawn other Player
-			// Server -> Client Packet : [header type: clientID]
+			// Server -> Client Packet : [header type: clientID : client_nickname]
 			case 0x01 : { //type				
 
 				StringBuilder sb = new StringBuilder();
@@ -167,12 +172,12 @@ public class Client {
 				
 				try {
 					if(Integer.parseInt(messages[1]) > clientID) {
-						gm.getChatBox().addTexts(sb.toString() + " connect");
+						gm.getChatBox().addTexts(messages[2] + " connect");
 					}
 				}catch(NumberFormatException e) {
 					break;
 				}
-				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),0,0,	false);
+				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false);
 				break;
 			}
 			// Disconnection
@@ -183,8 +188,11 @@ public class Client {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
 				sb.append(messages[1].trim());
-
-				gm.getChatBox().addTexts(sb.toString() + " disconnect");
+				Player _p = (Player)gm.getObject(sb.toString());
+				if(_p == null)
+					return;
+				
+				gm.getChatBox().addTexts(_p.getNickname() + " disconnect");
 				((GameScene)gm.getScene("InGame")).removePlayer(sb.toString());
 				
 				break;
@@ -197,12 +205,13 @@ public class Client {
 				
 				switch(netArgs[0].toCharArray()[0]) {
 				case 0x10:{
+					// ValueType, nickname
 					this.clientID = Integer.parseInt(messages[1].trim());
 					
 					sb.append("Player");
 					sb.append(this.clientID);
 		
-					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(), true);		
+					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),netArgs[1], true);		
 					((GameScene)gm.getScene("InGame")).getCamera().setTargetTag(sb.toString());
 					
 					sb.setLength(0);
@@ -593,11 +602,11 @@ public class Client {
 		
 	}
 	//------------------------------------------------------------------
-	public void setHost(String host) {
+	public boolean setHost(String host) {
 		String[] parts = host.split(":");
 		if(parts.length != 2) {
 			errorCode = Error.INVALID_HOST;
-			return;
+			return false;
 		}
 		
 		this.ipAddress = parts[0];
@@ -605,8 +614,9 @@ public class Client {
 			this.port = Integer.parseInt(parts[1]);
 		}catch(NumberFormatException e) {
 			errorCode = Error.INVALID_HOST;
-			return;
+			return false;
 		}
+		return true;
 	}
 	public void setHost(String host, int port) {
 		this.ipAddress= host;

@@ -23,7 +23,9 @@ import com.ladun.engine.gfx.StringRequest;
 public class Renderer {
 	
 	public final static int LAYER_UI = Integer.MAX_VALUE;
-	
+
+	public final static int ALLIGN_CENTER = -1;
+	public final static int ALLIGN_RIGHT = -2;
 	
 	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
@@ -51,7 +53,7 @@ public class Renderer {
 		
 		//gc.getWindow().getG().setFont(new java.awt.Font("家具贾9", java.awt.Font.BOLD, 80));
 		try {
-			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,new File("./res/fonts/家具梆篮10.ttf")));
+			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,new File("./res/fonts/家具倔澜10.ttf")));
 		} catch (FontFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -242,9 +244,13 @@ public class Renderer {
 		g2.setFont(g2.getFont().deriveFont(size));
 		g2.setColor(new Color(color));
 		
-		if(offX == -1){
+		if(offX == ALLIGN_CENTER){
 			offX = gc.getWidth() / 2 - gc.getWindow().getG().getFontMetrics().stringWidth(str) / 2;
 		}
+		else if(offX == ALLIGN_RIGHT) {
+			offX = gc.getWidth()  - gc.getWindow().getG().getFontMetrics().stringWidth(str) ;			
+		}
+		
 		g2.drawString(str, offX, offY);
 	}
 	
