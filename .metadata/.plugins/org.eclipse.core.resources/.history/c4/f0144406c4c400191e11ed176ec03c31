@@ -8,8 +8,8 @@ import com.ladun.engine.Time;
 
 public class Announce {
 
-	public static final int DEFAULT_COLOR = 0xff000000;
-	private final int SIZE = 30;
+	public static final int DEFAULT_COLOR = 0xff92ae6c;
+	private final int SIZE = 20;
 
 	private float time;
 	private ArrayList<Content> contents = new ArrayList<Content>();
@@ -36,7 +36,7 @@ public class Announce {
 	}
 	
 	public void addString(String str,int color) {
-		if(time > 0 ) {
+		if(time >= 0 ) {
 			time = 0;
 			contents.clear();
 		}

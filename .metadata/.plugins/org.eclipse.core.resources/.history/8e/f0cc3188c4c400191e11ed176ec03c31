@@ -36,7 +36,7 @@ public class Announce {
 	}
 	
 	public void addString(String str,int color) {
-		if(time > 0 ) {
+		if(time >= 0 ) {
 			time = 0;
 			contents.clear();
 		}

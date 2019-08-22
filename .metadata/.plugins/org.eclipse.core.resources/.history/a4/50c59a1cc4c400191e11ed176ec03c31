@@ -99,7 +99,6 @@ public class MainMenuScene extends AbstractScene{
 							//TODO 서버가 닫혀있음
 							//System.out.println("Server is Closed");
 							gm.getClient().disconnect();
-							gm.getAnnounce().addString("서버가 닫혔습니다",Announce.DEFAULT_COLOR);
 							gm.getAnnounce().addString("Server is Closed",Announce.DEFAULT_COLOR);
 							gm.getAnnounce().show(5);
 						}

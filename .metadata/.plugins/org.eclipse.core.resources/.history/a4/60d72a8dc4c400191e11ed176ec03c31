@@ -100,7 +100,7 @@ public class MainMenuScene extends AbstractScene{
 							//System.out.println("Server is Closed");
 							gm.getClient().disconnect();
 							gm.getAnnounce().addString("¼­¹ö°¡ ´ÝÇû½À´Ï´Ù",Announce.DEFAULT_COLOR);
-							gm.getAnnounce().addString("Server is Closed",Announce.DEFAULT_COLOR);
+							//gm.getAnnounce().addString("Server is Closed",Announce.DEFAULT_COLOR);
 							gm.getAnnounce().show(5);
 						}
 						else {

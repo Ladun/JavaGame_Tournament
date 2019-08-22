@@ -1,9 +1,0 @@
-package com.ladun.game;
-
-public class Announce {
-
-	
-	public void update(GameContainer, GameManager gm) {
-		
-	}
-}

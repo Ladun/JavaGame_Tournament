@@ -22,7 +22,6 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Button"/>
 <fullyQualifiedTypeName name="javax.crypto.spec.GCMParameterSpec"/>
 <fullyQualifiedTypeName name="javax.swing.Box.Filler"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.RectCollider"/>
 <fullyQualifiedTypeName name="java.awt.AWTException"/>
 <fullyQualifiedTypeName name="java.awt.MouseInfo"/>
@@ -38,12 +37,14 @@
 <fullyQualifiedTypeName name="java.awt.event.KeyEvent"/>
 <fullyQualifiedTypeName name="javax.swing.plaf.SliderUI"/>
 <fullyQualifiedTypeName name="java.lang.Thread"/>
-<fullyQualifiedTypeName name="com.ladun.game.Scene.TeamColor"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
-<fullyQualifiedTypeName name="com.ladun.game.net.Client.ServerState"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="java.lang.NumberFormatException"/>
 <fullyQualifiedTypeName name="java.awt.font.FontRenderContext"/>
 <fullyQualifiedTypeName name="java.awt.geom.AffineTransform"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
+<fullyQualifiedTypeName name="java.lang.StringBuilder"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="com.ladun.game.Scene.TeamColor"/>
+<fullyQualifiedTypeName name="com.ladun.game.net.Client.ServerState"/>
 </qualifiedTypeNameHistroy>
