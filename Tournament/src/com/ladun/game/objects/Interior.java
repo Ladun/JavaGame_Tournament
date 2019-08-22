@@ -71,7 +71,7 @@ public class Interior extends GameObject{
 		this.animSpeed =animSpeed;
 		this.animMaxIndex = animMaxIndex;
 		this.animation = true;
-		System.out.println(collision);
+
 		if(collision) {
 			this.addComponent(new RectCollider(this));
 		}

@@ -119,7 +119,7 @@ public class Map {
 		while(collisions[randomIndex] || collisionImage.getP()[randomIndex] != 0xff7fb5d5) {
 			randomIndex = random.nextInt(levelW * levelH);
 		}
-		System.out.println("RandomIndex:"+randomIndex +", " + (randomIndex % levelW) + ", "+ (randomIndex / levelW) + ": " + levelW + ":" + levelH);
+		//System.out.println("RandomIndex:"+randomIndex +", " + (randomIndex % levelW) + ", "+ (randomIndex / levelW) + ": " + levelW + ":" + levelH);
 		return new int[] {randomIndex % levelW, randomIndex / levelW};
 	}
 

@@ -235,7 +235,6 @@ public class Renderer {
 		if(offX == -1){
 			offX = gc.getWidth() / 2 - gc.getWindow().getG().getFontMetrics().stringWidth(str) / 2;
 		}
-		
 		g2.drawString(str, offX, offY);
 	}
 	

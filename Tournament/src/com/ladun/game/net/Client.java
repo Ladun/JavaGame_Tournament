@@ -6,10 +6,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import com.ladun.engine.GameContainer;
+import com.ladun.game.Announce;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.Scene.TeamColor;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.objects.Player;
 import com.ladun.game.util.BinaryWritter;
@@ -315,7 +318,7 @@ public class Client {
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-					System.out.println("0x03-0x17" +_p.getTag());
+					//System.out.println("0x03-0x17" +_p.getTag());
 	
 					_p.setCurrentMapIndex(Integer.parseInt(netArgs[1]));	
 					
@@ -405,18 +408,18 @@ public class Client {
 					}
 					break;
 				case 0x04:
-					// GameState, winTeamNumber, isfinishedGame,(finallyWinTeamNumber)
+					// GameState, winTeamNumber, isfinishedGame,(teamNuber, teamPoints).....
 					// isfinishedGame : 0 == no, 1 == yes
 					
 					if(netArgs[2].toCharArray()[0] == 1) {
-						if(netArgs.length == 4) {
-
-							((GameScene)gm.getScene("InGame")).finishGame(gc,netArgs[3]);
+						if(netArgs.length >= 4) {
+							((GameScene)gm.getScene("InGame")).finishGame(gc,Arrays.copyOfRange(netArgs, 3, netArgs.length ));
 						}
 					}
 					else {
 						((GameScene)gm.getScene("InGame")).setAllClientReady(true);	
-						gm.getAnnounce().Announce("Team " + netArgs[1] + "Win");						
+						gm.getAnnounce().addString("Team " + netArgs[1] + "Win",TeamColor.values()[Integer.parseInt(netArgs[1])].getValue());	
+						gm.getAnnounce().show(5);
 					}
 				}
 				break;
@@ -429,7 +432,8 @@ public class Client {
 					// type
 					// Game is already Started
 					
-					gm.getAnnounce().Announce("Game is Started!");
+					gm.getAnnounce().addString("Game is Started!",Announce.DEFAULT_COLOR);
+					gm.getAnnounce().show(5);
 					serverState = ServerState.GAME_START;
 					
 					break;
@@ -438,7 +442,8 @@ public class Client {
 				case 0x02:
 					//type
 					// All Player Team Number is Same
-					gm.getAnnounce().Announce("모든 플레이어의 팀 색깔이 동일합니다.");
+					gm.getAnnounce().addString("모든 플레이어의 팀 색깔이 동일합니다.",0xff000000);
+					gm.getAnnounce().show(5);
 					break;
 				}
 				break;

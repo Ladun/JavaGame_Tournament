@@ -211,10 +211,8 @@ public class GameScene extends AbstractScene{
 			switch(currentMapIndex) {
 			case 0:
 				currentMap = new Map(mapNames[currentMapIndex]);
-				localPlayer.revival();
 				break;
 			case 1:
-				localPlayer.revival();
 				inteamWaitRoom = true;
 				currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
 						new Interior("portal",249,187,80,72,14f,14,false),
@@ -240,6 +238,8 @@ public class GameScene extends AbstractScene{
 				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
 				int[] _pos = currentMap.randomSpawnPoint();
 				localPlayer.setPos(_pos[0], _pos[1]);
+
+				localPlayer.revival();
 			}
 			synchronized (gc) {
 				camera.focusTarget(gc, gm);
@@ -454,10 +454,20 @@ public class GameScene extends AbstractScene{
 	public void setMaxRound(int maxRound) {
 		this.maxRound = maxRound;
 	}
-	public void finishGame(GameContainer gc,String finallyWin) {
+	public void finishGame(GameContainer gc,String... finallyWin) {
 		gameisStart = false;
 		mapLoad(gc,0);
-		gm.getAnnounce().Announce("Team " + finallyWin + " Win!!!!!",10);
+		
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < finallyWin.length; i += 2) {
+			sb.setLength(0);
+			sb.append("Team ");
+			sb.append(finallyWin[i]);
+			sb.append(": ");
+			sb.append(finallyWin[i + 1]);
+			gm.getAnnounce().addString(sb.toString(),TeamColor.values()[Integer.parseInt(finallyWin[i])].getValue());
+		}
+		gm.getAnnounce().show(7);
 	}
 
 }

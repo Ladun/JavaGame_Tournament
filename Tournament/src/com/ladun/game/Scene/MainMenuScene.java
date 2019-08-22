@@ -1,10 +1,9 @@
 package com.ladun.game.Scene;
 
-import javax.swing.plaf.SliderUI;
-
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.Image;
+import com.ladun.game.Announce;
 import com.ladun.game.GameManager;
 import com.ladun.game.net.Client.ServerState;
 import com.ladun.game.objects.UI.Button;
@@ -98,9 +97,10 @@ public class MainMenuScene extends AbstractScene{
 					if(gm.getClient().getServerState() != ServerState.GAME_START) {
 						if(nowTime>= 5) {
 							//TODO 서버가 닫혀있음
-							System.out.println("Server is Closed");
+							//System.out.println("Server is Closed");
 							gm.getClient().disconnect();
-							gm.getAnnounce().Announce("Server is Closed");
+							gm.getAnnounce().addString("Server is Closed",Announce.DEFAULT_COLOR);
+							gm.getAnnounce().show(5);
 						}
 						else {
 							gm.changeScene("InGame");

@@ -46,6 +46,10 @@ public class Server {
 	
 	public Server(int port) {
 		this.port = port;
+		for(int i = 0 ; i < teamPoint.length;i++) {
+			teamPoint[i] = -1;
+		}
+		
 		getSettingFile();
 	}
 	
@@ -292,18 +296,13 @@ public class Server {
 							sb.append(",");
 							if(roundCount == settings.getRoundCount()) {
 								sb.append((char)1);
-								int teamNumber = -1;
-								int maxPoint =0;
 								for(int i =0 ;i < teamPoint.length;i++) {
-									if(teamPoint[i] > maxPoint) {
-										teamNumber = i ;
-										maxPoint = teamPoint[i];
+									if(teamPoint[i] != -1) {
+										sb.append(",");									
+										sb.append(i);
+										sb.append(",");									
+										sb.append(teamPoint[i]);
 									}
-								}
-								if(teamNumber != -1) {
-									sb.append(",");
-								
-									sb.append(1);
 								}
 								roundCount = 0;
 							}else {
@@ -515,7 +514,14 @@ public class Server {
 					sb.append(settings.getRoundCount());
 					bw.write((sb.toString()).getBytes());			
 					
+					for(Client c : clients) {
+						teamPoint[c.getTeamNumber()] = 0;
+					}
+					
+					
 					send(bw.getBytes(), address, port);
+					
+					
 					break;
 				}
 				case 0x01:{
