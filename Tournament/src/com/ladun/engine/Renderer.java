@@ -499,8 +499,10 @@ public class Renderer {
 		}  
 	}
 	
-	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)
-	{
+	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)	{
+		drawFillRect( offX, offY, width,  height,0,0,  angle, color);
+	}
+	public void drawFillRect(int offX,int offY,int width, int height,float xPivot, float yPivot, float angle,int color)	{
 		offX -= camX;
 		offY -= camY;
 		
@@ -513,18 +515,24 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int hw = width /2;
-		int hh = height /2;
-		int cx = offX + hw;
-		int cy = offY + hh;
+
+		int dw = (int)(width  * xPivot); // delX
+		int dh = (int)(height * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
 		
-		for(int y = -hh; y <= hh;y++)
+		//int hw = width /2;
+		//int hh = height /2;
+		//int cx = offX + hw;
+		//int cy = offY + hh;		
+
+		for(int y = 0; y <= height;y++)
 		{
-			for(int x = -hw; x <= hw;x++)
+			for(int x = 0; x <= width;x++)
 			{
-				setPixel(cx + (int)(x * c - y * s),
-						cy + (int)(x * s + y * c),
-						color);
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 color);
 			}
 		}
 	}

@@ -8,6 +8,8 @@ public abstract class Collider extends Component{
 		RECT, CIRCLE
 	}
 	
+	protected int hY;
+	protected int y;
 	protected int lastCenterX, lastCenterZ;
 	protected int centerX,centerZ;
 	
@@ -58,6 +60,14 @@ public abstract class Collider extends Component{
 	}
 	public void setLastCenterZ(int lastCenterZ) {
 		this.lastCenterZ = lastCenterZ;
+	}
+
+	public int gethY() {
+		return hY;
+	}
+
+	public int getY() {
+		return y;
 	}
 
 }

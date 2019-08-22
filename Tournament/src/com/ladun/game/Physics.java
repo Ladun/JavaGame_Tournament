@@ -83,25 +83,25 @@ public class Physics {
 		int t = c0.getCenterZ() - c0.getHalfHeight();
 		
 		
-		
-		if((c1.getCenterX() >= l &&c1.getCenterX() <= r) ||(c1.getCenterZ() >= t &&c1.getCenterZ() <= b) ) {
-			if(Math.abs(c0.getCenterX() - c1.getCenterX()) <= c0.getHalfWidth() + c1.getRadius())
-			{
-				if(Math.abs(c0.getCenterZ() - c1.getCenterZ()) <= c0.getHalfHeight() + c1.getRadius())
-				{
-					return true;
+
+		if(Math.abs(c0.getY() - c1.getY()) <= c0.gethY() + c1.gethY()) {
+			if((c1.getCenterX() >= l &&c1.getCenterX() <= r) ||(c1.getCenterZ() >= t &&c1.getCenterZ() <= b) ) {
+				if(Math.abs(c0.getCenterX() - c1.getCenterX()) <= c0.getHalfWidth() + c1.getRadius()){
+					if(Math.abs(c0.getCenterZ() - c1.getCenterZ()) <= c0.getHalfHeight() + c1.getRadius())	{
+							return true;
+					}
 				}
 			}
-		}
-		else {
-			if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),l,b))
-				return true;
-			if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),l,t))
-				return true;
-			if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),r,b))
-				return true;
-			if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),r,t))
-				return true;
+			else {
+				if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),l,b))
+					return true;
+				if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),l,t))
+					return true;
+				if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),r,b))
+					return true;
+				if(InCircle(c1.getCenterX(),c1.getCenterZ(),c1.getRadius(),r,t))
+					return true;
+			}
 		}
 		
 		return false;
@@ -109,11 +109,10 @@ public class Physics {
 	}
 	
 	private static boolean AABBCollision(RectCollider c0, RectCollider c1) {
-		if(Math.abs(c0.getCenterX() -c1.getCenterX()) <= c0.getHalfWidth() + c1.getHalfWidth())
-		{
-			if(Math.abs(c0.getCenterZ() - c1.getCenterZ()) <= c0.getHalfHeight() + c1.getHalfHeight())
-			{
-				return true;
+		if(Math.abs(c0.getCenterX() -c1.getCenterX()) <= c0.getHalfWidth() + c1.getHalfWidth())	{
+			if(Math.abs(c0.getCenterZ() - c1.getCenterZ()) <= c0.getHalfHeight() + c1.getHalfHeight())	{
+				if(Math.abs(c0.getY() - c1.getY()) <= c0.gethY() + c1.gethY())
+					return true;
 			}
 		}
 		return false;

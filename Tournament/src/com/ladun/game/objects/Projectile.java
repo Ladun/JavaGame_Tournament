@@ -63,8 +63,9 @@ public class Projectile extends GameObject{
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xaff385610);
 		//r.drawFillRect((int)(posX ), (int)(posZ ), tileZ, tileX, c, color);
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)(posX ), (int)(posZ ), anim, 0, xPivot, yPivot, angle);
-		
+		r.drawFillRect((int)posX, (int)posZ, tileZ, tileX, 0, 0x55);
+		drawShadow(r);
+		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)(posX ), (int)(posZ + posY ), anim, 0, xPivot, yPivot, angle);
 		//r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 3, 3, 0, 0xffff0000);
 		
 		this.renderComponents(gc, r);
@@ -80,6 +81,9 @@ public class Projectile extends GameObject{
 	}
 	//-------------------------------------------------------------------------------------------------------
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
+		
+		posX -= pL;
+		posY -= pT;
 		
 		this.attackerTag = attackerTag;
 		this.tileX = (int) (posX / GameManager.TS);
@@ -126,8 +130,10 @@ public class Projectile extends GameObject{
 		posZ = tileZ * GameManager.TS + offZ;
 	}
 	private void setType(Type type) {
+		this.type = type;
 		switch(type) {
 		case ARROW:
+			hY = 1;
 			pR = 13;
 			pL = 42;
 			pT = 28;
@@ -135,6 +141,7 @@ public class Projectile extends GameObject{
 			anim = 0;
 			break;
 		case STONE:
+			hY = 3;
 			pR = 14;
 			pL = 14;
 			pT = 14;
@@ -146,6 +153,17 @@ public class Projectile extends GameObject{
 		xPivot = (pL + (width - pL -pR) / 2f)/ width;
 		yPivot = (pT + (height - pT -pB) / 2f)/ height;
 		
+	}
+	
+	private void drawShadow(Renderer r) {
+		switch(type) {
+		case ARROW:
+			r.drawFillRect((int)(posX), (int)(posZ+ pT + 2), width - pR  , height - pT - pB -4,.9f,.5f, angle, 0x55000000);
+			break;
+		case STONE:
+			r.drawFillCircle((int)(posX + pL + (width - pL - pR) / 2), (int)(posZ + pT + (height - pT - pB) / 2), (width - pR - pL) / 2, 0x55000000);
+			break;
+		}
 	}
 	//-------------------------------------------------------------------------------------------------------
 

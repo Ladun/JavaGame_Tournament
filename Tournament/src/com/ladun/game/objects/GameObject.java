@@ -161,6 +161,9 @@ public abstract class GameObject
 	public void setHeight(int height) {
 		this.height = height;
 	}
+	public int gethY() {
+		return hY;
+	}
 	
 	
 }
