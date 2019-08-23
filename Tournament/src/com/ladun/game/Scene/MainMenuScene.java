@@ -8,6 +8,7 @@ import com.ladun.engine.gfx.Image;
 import com.ladun.game.Announce;
 import com.ladun.game.GameManager;
 import com.ladun.game.net.Client.ServerState;
+import com.ladun.game.objects.TempObject;
 import com.ladun.game.objects.UI.Button;
 import com.ladun.game.objects.UI.TextBox;
 
@@ -39,6 +40,7 @@ public class MainMenuScene extends AbstractScene{
 		startButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -340,76,76, "start_button");
 		optionButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -220,76,76, "option_button");
 		exitButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -100,76,76, "exit_button");
+		
 		
 		return true;
 	}
@@ -165,7 +167,7 @@ public class MainMenuScene extends AbstractScene{
 					
 				}
 				try {
-					Thread.sleep(1);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

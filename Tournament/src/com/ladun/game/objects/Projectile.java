@@ -5,6 +5,7 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
+import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.CircleCollider;
 
 public class Projectile extends GameObject{
@@ -29,11 +30,13 @@ public class Projectile extends GameObject{
 	private float offX,offZ;
 	
 	private float time;
+	private GameScene gs;
 	
-	public Projectile(float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
+	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";		
 		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
 		
+		this.gs = gs;
 		this.width = 64;
 		this.height = 64;
 		setType(Type.ARROW);
@@ -76,6 +79,17 @@ public class Projectile extends GameObject{
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
 		if(other instanceof Entity) {
+			this.active = false;
+		}
+		else if (other instanceof HitRange || other instanceof Projectile) {
+			System.out.println("!!");
+			DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
+			if(displayDamage == null) {
+				gs.addObject(new DisplayTextInGame("cut", getCenterX(), posZ + posY));
+			}
+			else {
+				displayDamage.setting("cut",getCenterX(), posZ + posY);
+			}
 			this.active = false;
 		}
 	}
@@ -166,6 +180,13 @@ public class Projectile extends GameObject{
 		}
 	}
 	//-------------------------------------------------------------------------------------------------------
+
+	public float getCenterX() {
+		return posX + pL + (width - pL - pR) / 2;
+	}
+	public float getCenterZ() {
+		return posZ + pT + (height - pT - pB) / 2;		
+	}
 
 
 	public float getDamage() {

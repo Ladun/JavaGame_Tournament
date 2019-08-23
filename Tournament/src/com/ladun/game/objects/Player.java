@@ -322,9 +322,9 @@ public class Player extends Entity{
 				((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
 			}
 			//----------------------------------------------------------------------------------------
-			DisplayNumber displayDamage = (DisplayNumber)gs.getInactiveObject("displayDamage");		
+			DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 			if(displayDamage == null) {
-				gs.addObject(new DisplayNumber((int)-damage, getCenterX(), posZ + posY));
+				gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY));
 			}
 			else {
 				displayDamage.setting((int)-damage,getCenterX(), posZ + posY);

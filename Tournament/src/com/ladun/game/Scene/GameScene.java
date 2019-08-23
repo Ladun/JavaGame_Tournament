@@ -8,7 +8,6 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.Camera;
-import com.ladun.game.ChatBox;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
 import com.ladun.game.Physics;
@@ -16,6 +15,7 @@ import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
+import com.ladun.game.objects.TempObject;
 import com.ladun.game.objects.UI.Button;
 
 public class GameScene extends AbstractScene{
@@ -60,7 +60,14 @@ public class GameScene extends AbstractScene{
 			System.out.println("Camera AWTException");
 			return false;
 		}
-		//this.addObject(new TempObject(this));
+		/*
+		this.addObject(new TempObject(this,true));
+		TempObject a = new TempObject(this,false);
+		a.setPosX(100);
+		a.setPosZ(100);
+		
+		this.addObject(a);*/
+		
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
 		storeButton = new Button(30, gc.getHeight()/2 - 84,128,128,"store_button");

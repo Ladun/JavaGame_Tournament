@@ -48,11 +48,12 @@ public class Camera {
 			mouseLock = !mouseLock;
 		
 		if(mouseLock) {
+			/*
 			System.out.println("Mosue Pos : " + gc.getInput().getMouseDeltaX() + ", " +gc.getInput().getMouseDeltaY() + 
 					" MosueInfo Pos : " + MouseInfo.getPointerInfo().getLocation().x + ", " + MouseInfo.getPointerInfo().getLocation().y+
 					" Window Pos : " + gc.getWindow().getFrame().getLocation().x + ", " + gc.getWindow().getFrame().getLocation().y + 
 					" Other : " + gc.getWindow().getFrame().getInsets().top+", "+ gc.getWindow().getFrame().getInsets().bottom);
-			
+			*/
 			if(MouseInfo.getPointerInfo().getLocation().x  + gc.getInput().getMouseDeltaX()< gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left) {
 				robot.mouseMove(gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left,
 						        MouseInfo.getPointerInfo().getLocation().y);

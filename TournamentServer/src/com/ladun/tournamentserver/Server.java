@@ -172,9 +172,6 @@ public class Server {
 				}
 				clientDisconnect(_clientID);
 				
-				if(clients.size() == 0)				{
-					gaming = false;
-				}
 
 				System.out.printf("[%s:%d] %s (clientID: %d) Disconnect\n",address.getHostAddress() , port,nickname, clientID );			
 				
@@ -626,6 +623,12 @@ public class Server {
 		bw.write((sb.toString()).getBytes());
 		
 		sendToAllClients(bw.getBytes());
+		
+		
+
+		if(clients.size() == 0)				{
+			gaming = false;
+		}
 	}
 	
 	private void dumpPacket(DatagramPacket packet) {

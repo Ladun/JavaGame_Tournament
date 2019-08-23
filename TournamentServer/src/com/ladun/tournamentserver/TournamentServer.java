@@ -72,6 +72,7 @@ public class TournamentServer {
 						}
 					}
 					server.clientDisconnect(_clientID);
+					
 
 				}
 				catch(NumberFormatException e) {

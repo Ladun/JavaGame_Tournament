@@ -12,7 +12,7 @@ public class GameContainer implements Runnable{
 	private boolean running = false;
 	private int width = 320 ,height = 240;
 	private float scale = 1f;
-	private String title = "Tournament";
+	private String title = "Job War";
 	
 
 	public GameContainer(AbstractGame game)

@@ -9,13 +9,15 @@ import com.ladun.game.components.CircleCollider;
 public class TempObject extends GameObject{
 
 	private int color = 0xff374529;
+	private boolean chaseMouse;
 	private GameScene gs;
 	
-	public TempObject(GameScene gs) {
+	public TempObject(GameScene gs,boolean chaseMouse) {
 		this.tag = "temp";
 		this.gs = gs;
 		this.width = 64;
 		this.height = 64;
+		this.chaseMouse = chaseMouse;
 		this.addComponent(new CircleCollider(this));
 		//this.addComponent(new RectCollider(this));
 	}
@@ -23,9 +25,10 @@ public class TempObject extends GameObject{
 	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
 		color = 0xffff0000;
-		
-		this.posX = gc.getInput().getMouseX() + gs.getCamera().getOffX();
-		this.posZ = gc.getInput().getMouseY() + gs.getCamera().getOffY();
+		if(chaseMouse) {
+			this.posX = gc.getInput().getMouseX() + gs.getCamera().getOffX();
+			this.posZ = gc.getInput().getMouseY() + gs.getCamera().getOffY();
+		}
 		this.updateComponents(gc, gm);
 	}
 

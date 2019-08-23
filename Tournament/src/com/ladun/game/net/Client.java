@@ -103,14 +103,15 @@ public class Client {
 			System.out.println(ipAddress);
 			return false;
 		}
-		
-		try {
-			socket = new DatagramSocket();
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-			errorCode = Error.SOCKET_EXCEPTION;
-			return false;
+		if(!listening) {
+			try {
+				socket = new DatagramSocket();
+			} catch (SocketException e) {
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+				errorCode = Error.SOCKET_EXCEPTION;
+				return false;
+			}
 		}
 		
 		
@@ -126,10 +127,12 @@ public class Client {
 		// Server Timeout
 		//RenspondCheck();
 		
-		// Listening Thread Start
-		listening = true;		
-		listenThread = new Thread(() -> listen(), "Server-ListenThread");		
-		listenThread.start();
+		// Listening Thread Start	
+		if(!listening) {
+			listening = true;	
+			listenThread = new Thread(() -> listen(), "Server-ListenThread");		
+			listenThread.start();
+		}
 		
 		return true;
 	}
@@ -466,7 +469,7 @@ public class Client {
 	
 	public void disconnect() {
 		if(socket != null) {
-			listening = false;
+			//listening = false;
 			
 			StringBuilder sb = new StringBuilder();
 			bw.clear();

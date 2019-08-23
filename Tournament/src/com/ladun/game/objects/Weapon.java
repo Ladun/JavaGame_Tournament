@@ -16,8 +16,9 @@ public class Weapon extends GameObject{
 	private Type type;
 	private Entity parent;
 	
-	private float damage;
-	private float knockback;
+	private int damage;
+	private int knockback;
+	private int projectileSpeed;
 	
 	private float deltaAngle;
 	private float deltaX;
@@ -186,10 +187,10 @@ public class Weapon extends GameObject{
 		float _posZ = parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(_angle)));
 		
 		if(bullet == null) {
-			gs.addObject(new Projectile(_posX + dX,posY,_posZ + dZ,_angle,1000,damage,parent.tag));
+			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,damage,parent.tag));
 		}
 		else {
-			bullet.setting(_posX + dX, posY, _posZ + dZ, _angle, 1000, damage,parent.tag);
+			bullet.setting(_posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, damage,parent.tag);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -213,6 +214,7 @@ public class Weapon extends GameObject{
 		case BOW:
 			damage = 15;
 			knockback = 150;
+			projectileSpeed = 100;
 			imageName = "bow";
 			width = 64;
 			height = 64;
@@ -244,11 +246,11 @@ public class Weapon extends GameObject{
 		return attacking;
 	}
 
-	public float getKnockback() {
+	public int getKnockback() {
 		return knockback;
 	}
 
-	public void setKnockback(float knockback) {
+	public void setKnockback(int knockback) {
 		this.knockback = knockback;
 	}
 
