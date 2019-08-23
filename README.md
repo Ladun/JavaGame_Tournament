@@ -1,3 +1,3 @@
 # JavaGame_Tournament
-Copyright 2016. Ladun All Rights Reserved. 
+Copyright 2019. Ladun All Rights Reserved. 
 
