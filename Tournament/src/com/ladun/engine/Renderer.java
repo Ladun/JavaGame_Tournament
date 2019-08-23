@@ -53,7 +53,7 @@ public class Renderer {
 		
 		//gc.getWindow().getG().setFont(new java.awt.Font("家具贾9", java.awt.Font.BOLD, 80));
 		try {
-			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,new File("./res/fonts/家具倔澜10.ttf")));
+			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,getClass().getResourceAsStream("/fonts/家具倔澜10.ttf")));
 		} catch (FontFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,7 +1,12 @@
 package com.ladun.engine;
 
 import java.awt.Color;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,15 +18,19 @@ import com.ladun.engine.gfx.ImageRequest;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.engine.gfx.Light;
 import com.ladun.engine.gfx.LightRequest;
+import com.ladun.engine.gfx.StringRequest;
 
 public class Renderer {
 	
 	public final static int LAYER_UI = Integer.MAX_VALUE;
-	
+
+	public final static int ALLIGN_CENTER = -1;
+	public final static int ALLIGN_RIGHT = -2;
 	
 	private Font font = Font.STANDARD;
 	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
 	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
+	private ArrayList<StringRequest> stringRequests = new ArrayList<StringRequest>();	
 	
 	private int backgroundColor = 0;
 	
@@ -42,8 +51,13 @@ public class Renderer {
 		
 		this.gc = gc;
 		
-		gc.getWindow().getG().setFont(new java.awt.Font("家具贾9", java.awt.Font.BOLD, 50));
-		g.setColor(Color.red);
+		//gc.getWindow().getG().setFont(new java.awt.Font("家具贾9", java.awt.Font.BOLD, 80));
+		try {
+			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,new File("./res/fonts/家具倔澜10.ttf")));
+		} catch (FontFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		pW = gc.getWidth();
 		pH = gc.getHeight();
@@ -115,6 +129,19 @@ public class Renderer {
 		
 		imageRequests.clear();
 		lightRequests.clear();
+		processing = false;
+	}
+	
+	public void processText() {
+		
+		processing = true;
+		for(int i = 0; i < stringRequests.size();i++)
+		{
+			StringRequest sr = stringRequests.get(i);
+			
+			drawString(sr.str,sr.posX,sr.posY,sr.size,sr.color);
+		}
+		stringRequests.clear();
 		processing = false;
 	}
 	
@@ -206,8 +233,25 @@ public class Renderer {
 		}
 	}
 	
-	public void drawString(String str, int offX, int offY) {
-		gc.getWindow().getG().drawString(str, offX, offY);
+	public void drawString(String str, int offX, int offY,float size, int color) {
+		
+		if(!processing) {
+			stringRequests.add(new StringRequest(str, offX, offY, size, color));
+		}
+		offY += gc.getWindow().getFrame().getInsets().top;
+		
+		Graphics2D g2 = (Graphics2D)gc.getWindow().getG();
+		g2.setFont(g2.getFont().deriveFont(size));
+		g2.setColor(new Color(color));
+		
+		if(offX == ALLIGN_CENTER){
+			offX = gc.getWidth() / 2 - gc.getWindow().getG().getFontMetrics().stringWidth(str) / 2;
+		}
+		else if(offX == ALLIGN_RIGHT) {
+			offX = gc.getWidth()  - gc.getWindow().getG().getFontMetrics().stringWidth(str) ;			
+		}
+		
+		g2.drawString(str, offX, offY);
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -461,8 +505,10 @@ public class Renderer {
 		}  
 	}
 	
-	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)
-	{
+	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)	{
+		drawFillRect( offX, offY, width,  height,0,0,  angle, color);
+	}
+	public void drawFillRect(int offX,int offY,int width, int height,float xPivot, float yPivot, float angle,int color)	{
 		offX -= camX;
 		offY -= camY;
 		
@@ -475,18 +521,24 @@ public class Renderer {
 		double c = Math.cos(Math.toRadians(angle)); // 1
 		double s = Math.sin(Math.toRadians(angle)); // 0			
 
-		int hw = width /2;
-		int hh = height /2;
-		int cx = offX + hw;
-		int cy = offY + hh;
+
+		int dw = (int)(width  * xPivot); // delX
+		int dh = (int)(height * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
 		
-		for(int y = -hh; y <= hh;y++)
+		//int hw = width /2;
+		//int hh = height /2;
+		//int cx = offX + hw;
+		//int cy = offY + hh;		
+
+		for(int y = 0; y <= height;y++)
 		{
-			for(int x = -hw; x <= hw;x++)
+			for(int x = 0; x <= width;x++)
 			{
-				setPixel(cx + (int)(x * c - y * s),
-						cy + (int)(x * s + y * c),
-						color);
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 color);
 			}
 		}
 	}

@@ -2,9 +2,9 @@ package com.ladun.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -52,9 +52,6 @@ public class Window {
 		canvas.createBufferStrategy(2);
 		bs= canvas.getBufferStrategy();
 		g = bs.getDrawGraphics();
-		
-
-		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Icon.png")));
 		
 	}
 	public void update(){
