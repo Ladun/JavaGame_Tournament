@@ -15,7 +15,6 @@ import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
-import com.ladun.game.objects.TempObject;
 import com.ladun.game.objects.UI.Button;
 
 public class GameScene extends AbstractScene{
@@ -42,6 +41,7 @@ public class GameScene extends AbstractScene{
 	// Buttons----------------------------------
 	private Button teamChooseButton;
 	private Button storeButton;
+	private Button jobButton;
 	//-----------------------------------------
 	private TeamColor teamColor = TeamColor.TEAM1;
 	
@@ -70,7 +70,8 @@ public class GameScene extends AbstractScene{
 		
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
-		storeButton = new Button(30, gc.getHeight()/2 - 84,128,128,"store_button");
+		storeButton = new Button(30, gc.getHeight()/2 - 200,128,128,"store_button");
+		jobButton = new Button(30, gc.getHeight()/2,128,128,"job_button");
 		//---------------------------------------------------
 		return true;
 	}
@@ -182,6 +183,7 @@ public class GameScene extends AbstractScene{
 			break;
 		case 1:
 			storeButton.render(gc, r);
+			jobButton.render(gc, r);
 			break;
 		case 2:
 			break;
@@ -204,6 +206,103 @@ public class GameScene extends AbstractScene{
 		}
 		
 	}
+	
+
+	private void mapUpdate(GameContainer gc, GameManager gm) {
+		
+		if(currentMapIndex == 0) {
+			teamChooseButton.update(gc, gm);
+			
+			if(readyToStartTime > 0) {
+				readyToStartTime -= Time.DELTA_TIME;
+				if(readyToStartTime <= 0) {
+					readyToStartTime = 0;
+					
+					gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x00});
+				}
+			}
+			
+			// Set targetMapIndex --------------------------------------------------------------------
+			if(localPlayer != null) {
+				if(localPlayer.isMoving()) {
+					int preIndex = targetMapIndex;
+					if(localPlayer.getTileZ() >= 1 && localPlayer.getTileZ() <= 2 ) {
+						if(localPlayer.getTileX() >= 1 && localPlayer.getTileX() <= 2) {
+							targetMapIndex = 2;
+						}
+						else {
+							targetMapIndex = 0;
+						}					
+					}
+					else {
+						targetMapIndex = 0;
+					}
+
+					if(preIndex != targetMapIndex) {
+						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x17,targetMapIndex});
+					}
+				}
+			}
+			
+			// Button ---------------------------------------------------------------------------------
+			if(!gm.isLoading()) {
+				if(teamChooseButton.isReleased()) {
+					teamChange();			
+					
+					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber()});
+					teamColor = TeamColor.values()[localPlayer.getTeamNumber()];
+					teamChooseButton.setColor(teamColor.getValue());
+				}
+			}
+		}
+		else if(currentMapIndex == 1) {
+			storeButton.update(gc, gm);
+			jobButton.update(gc, gm);
+			// Set targetMapIndex --------------------------------------------------------------------
+			if(inteamWaitRoom) {
+				if(localPlayer != null) {
+					if(localPlayer.isMoving()) {
+						targetMapIndex = 0;
+						if(localPlayer.getTileZ() == 3 && localPlayer.getTileX() == 4 ) {
+							gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x01});
+							inteamWaitRoom = false;
+						}
+					}
+				}
+			}
+			if(storeButton.isReleased()) {
+				
+			}
+			if(jobButton.isReleased()) {
+				
+			}
+						
+		}
+		else {
+			if(!gameisStart) {
+				if(readyToStartTime > 0) {
+					readyToStartTime -= Time.DELTA_TIME;
+					if(readyToStartTime <= 0) {
+						readyToStartTime = 0;
+						gameisStart = true;
+						
+						localPlayer.setHiding(false);
+						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+					}
+				}
+			}else {
+				if(readyToStartTime > 0) {
+					readyToStartTime -= Time.DELTA_TIME;
+					if(readyToStartTime <= 0) {
+						readyToStartTime = 0;
+						gameisStart = false;
+						mapLoad(gc,1);
+					}
+				}
+			}
+		}
+	}
+	
 	
 	public void mapLoad(GameContainer gc) {
 		mapLoad(gc,targetMapIndex);
@@ -266,94 +365,6 @@ public class GameScene extends AbstractScene{
 
 	private void teamChange() {
 		localPlayer.setTeamNumber((localPlayer.getTeamNumber() + 1) % 8);
-	}
-	
-	private void mapUpdate(GameContainer gc, GameManager gm) {
-		
-		if(currentMapIndex == 0) {
-			teamChooseButton.update(gc, gm);
-			
-			if(readyToStartTime > 0) {
-				readyToStartTime -= Time.DELTA_TIME;
-				if(readyToStartTime <= 0) {
-					readyToStartTime = 0;
-					
-					gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x00});
-				}
-			}
-			
-			// Set targetMapIndex --------------------------------------------------------------------
-			if(localPlayer != null) {
-				if(localPlayer.isMoving()) {
-					int preIndex = targetMapIndex;
-					if(localPlayer.getTileZ() >= 1 && localPlayer.getTileZ() <= 2 ) {
-						if(localPlayer.getTileX() >= 1 && localPlayer.getTileX() <= 2) {
-							targetMapIndex = 2;
-						}
-						else {
-							targetMapIndex = 0;
-						}					
-					}
-					else {
-						targetMapIndex = 0;
-					}
-
-					if(preIndex != targetMapIndex) {
-						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x17,targetMapIndex});
-					}
-				}
-			}
-			
-			// Button ---------------------------------------------------------------------------------
-			if(!gm.isLoading()) {
-				if(teamChooseButton.isReleased()) {
-					teamChange();			
-					
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x14,localPlayer.getTeamNumber()});
-					teamColor = TeamColor.values()[localPlayer.getTeamNumber()];
-					teamChooseButton.setColor(teamColor.getValue());
-				}
-			}
-		}
-		else if(currentMapIndex == 1) {
-			storeButton.update(gc, gm);
-			// Set targetMapIndex --------------------------------------------------------------------
-			if(inteamWaitRoom) {
-				if(localPlayer != null) {
-					if(localPlayer.isMoving()) {
-						targetMapIndex = 0;
-						if(localPlayer.getTileZ() == 3 && localPlayer.getTileX() == 4 ) {
-							gm.getClient().send(Client.PACKET_TYPE_GAMESTATE,new Object[] {(char)0x01});
-							inteamWaitRoom = false;
-						}
-					}
-				}
-			}
-						
-		}
-		else {
-			if(!gameisStart) {
-				if(readyToStartTime > 0) {
-					readyToStartTime -= Time.DELTA_TIME;
-					if(readyToStartTime <= 0) {
-						readyToStartTime = 0;
-						gameisStart = true;
-						
-						localPlayer.setHiding(false);
-						gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
-					}
-				}
-			}else {
-				if(readyToStartTime > 0) {
-					readyToStartTime -= Time.DELTA_TIME;
-					if(readyToStartTime <= 0) {
-						readyToStartTime = 0;
-						gameisStart = false;
-						mapLoad(gc,1);
-					}
-				}
-			}
-		}
 	}
 	
 	public Player addPlayer(String name,String nickname,int tileX, int tileY,boolean isLocalPlayer) {

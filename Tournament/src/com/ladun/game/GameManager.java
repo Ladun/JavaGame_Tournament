@@ -10,9 +10,11 @@ import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.Scene.LoadingScene;
 import com.ladun.game.Scene.MainMenuScene;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
+
 
 public class GameManager extends AbstractGame {
 
@@ -24,19 +26,24 @@ public class GameManager extends AbstractGame {
 	private boolean loading;
 	private float loadingAnim;	
 	
-	private AbstractScene[] scenes = new AbstractScene[2];
+	private AbstractScene[] scenes = new AbstractScene[3];
 	private int 			sceneInedx = 0;
 	
 	private Announce announce;
 	private ChatBox chatBox;
+	
+	// Fade Value----------------
+	
 	@Override
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
 		gc.getRenderer().setAmbientColor(-1);
-		gc.getImageLoader().ImageLoad();
 		announce = new Announce();
 		
-		if(!addScene(gc,new MainMenuScene(),true)) {
+		if(!addScene(gc,new LoadingScene(),true)) {
+			return false;
+		}
+		if(!addScene(gc,new MainMenuScene())) {
 			return false;
 		}
 		if(!addScene(gc,new GameScene())) {
