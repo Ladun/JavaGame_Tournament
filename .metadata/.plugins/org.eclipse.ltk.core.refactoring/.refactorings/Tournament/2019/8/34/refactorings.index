@@ -3,3 +3,5 @@
 1566310368936	Rename field 'ignoreTag'
 1566310400216	Rename method 'setIgnoreTag'
 1566489861801	Rename field 'textBox'
+1566540297028	Rename method 'getLastMouseX'
+1566540305139	Rename method 'getLastMouseY'

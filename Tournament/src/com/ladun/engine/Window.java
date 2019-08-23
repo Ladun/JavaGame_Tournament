@@ -47,6 +47,7 @@ public class Window {
 				gc.GameExit();
 			}
 		});
+
 		
 		canvas.createBufferStrategy(2);
 		bs= canvas.getBufferStrategy();

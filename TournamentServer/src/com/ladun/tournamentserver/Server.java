@@ -135,7 +135,7 @@ public class Server {
 				bw.write((sb.toString()).getBytes()); 
 				send(bw.getBytes(),address,port);
 				
-				System.out.printf("[%s:%d] %s(clientID: %d) Connect\n",address.getHostAddress() , port,messages[1], clientID );			
+				System.out.printf("[%s:%d] %s (clientID: %d) Connect\n",address.getHostAddress() , port,messages[1], clientID );			
 				clientID++;
 				break;
 			}
@@ -151,6 +151,7 @@ public class Server {
 
 				if(_clientID < 1000 || !isClientExist(_clientID))
 					return;	
+				String nickname = getClient(_clientID).getNickname();
 				
 				if(gaming) {
 					StringBuilder sb = new StringBuilder();
@@ -175,7 +176,7 @@ public class Server {
 					gaming = false;
 				}
 
-				System.out.printf("[%s:%d] ID: %d Disconnect\n",address.getHostAddress() , port, _clientID );		
+				System.out.printf("[%s:%d] %s (clientID: %d) Disconnect\n",address.getHostAddress() , port,nickname, clientID );			
 				
 				break;
 			// Value Change--------------------------------------------------------
@@ -306,6 +307,11 @@ public class Server {
 									}
 								}
 								roundCount = 0;
+								
+								for(Client _c : clients) {
+									_c.setTargetMapIndex(0);
+								}
+								
 							}else {
 								sb.append((char)0);								
 							}			

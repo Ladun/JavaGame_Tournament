@@ -143,14 +143,14 @@ public class Weapon extends GameObject{
 					float co = (float)Math.cos(Math.toRadians(deltaAngle +90 +angle));
 					float si = (float)Math.sin(Math.toRadians(deltaAngle +90 +angle));
 
-					hitRange.active(posX + width * xPivot - 8 + 48 * co , posZ  + height * yPivot  - 8+  48* si , 16, 16);		
+					hitRange.active(posX + width * xPivot - 14 + 36 * co , posZ + posY + height * yPivot  - 14+  36* si , 28, 28);		
 				}
 				else {
 					deltaAngle += Time.DELTA_TIME * 975;
 					float co = (float)Math.cos(Math.toRadians(deltaAngle -90 +angle));
 					float si = (float)Math.sin(Math.toRadians(deltaAngle -90 +angle));
 
-					hitRange.active(posX + width * xPivot - 8 + 48 * co , posZ  + height * yPivot  - 8+  48* si , 16, 16);
+					hitRange.active(posX + width * xPivot - 14 + 36 * co , posZ + posY + height * yPivot  - 14+  36* si , 28, 28);
 				}
 				
 			}
@@ -169,7 +169,7 @@ public class Weapon extends GameObject{
 				deltaX += Time.DELTA_TIME * 500 * co;
 				deltaZ += Time.DELTA_TIME * 500 * si;
 
-				hitRange.active(posX +deltaX + width * xPivot - 8  +64 * co, posZ + deltaZ + height * yPivot  - 8 + 64 * si, 16, 16);
+				hitRange.active(posX +deltaX + width * xPivot - 18  +40* co, posZ + posY + deltaZ + height * yPivot  - 18 + 40 * si, 36, 36);
 			}
 			
 			break;

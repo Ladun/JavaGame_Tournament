@@ -80,6 +80,6 @@ public class TextBox{
 	}
 
 	public String getString() {
-		return sb.toString();
+		return sb.toString().trim();
 	}
 }
