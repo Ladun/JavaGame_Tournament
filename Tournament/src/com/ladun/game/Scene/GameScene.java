@@ -192,7 +192,7 @@ public class GameScene extends AbstractScene{
 	
 	private void renderInven(GameContainer gc,Renderer r) {
 		int ltX = gc.getWidth() / 2 + 180;
-		int ltY = gc.getHeight() - 309;
+		int ltY = gc.getHeight() - 405;
 		
 		r.drawImage(gc.getImageLoader().getImage("inv"),ltX,ltY,0 );
 		
@@ -204,6 +204,9 @@ public class GameScene extends AbstractScene{
 					itemIndex % 5,itemIndex / 5,
 					0);
 		}
+		
+		r.drawString("HP : " + localPlayer.getHealth() + "/" + localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
+		//r.drawString("MP : " + localPlayer.getHealth() + "/" + localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
 		
 	}
 	

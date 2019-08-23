@@ -214,7 +214,7 @@ public class Weapon extends GameObject{
 		case BOW:
 			damage = 15;
 			knockback = 150;
-			projectileSpeed = 100;
+			projectileSpeed = 1000;
 			imageName = "bow";
 			width = 64;
 			height = 64;

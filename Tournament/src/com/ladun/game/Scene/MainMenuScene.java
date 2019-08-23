@@ -89,8 +89,13 @@ public class MainMenuScene extends AbstractScene{
 
 		if(startButton.isReleased()) {
 			if(!textBoxs[0].isChatOn()) {
-				textBoxs[0].setChatOn(!textBoxs[0].isChatOn());
-				textBoxs[1].setChatOn(false);
+				if(textBoxs[1].isChatOn()) {
+					textBoxs[0].setChatOn(false);
+					textBoxs[1].setChatOn(false);					
+				}else {
+					textBoxs[0].setChatOn(!textBoxs[0].isChatOn());
+					textBoxs[1].setChatOn(false);
+				}
 			}else {
 				textBoxs[0].setChatOn(false);
 				textBoxs[1].setChatOn(false);

@@ -28,7 +28,6 @@ public class Server {
 	private final int MAX_PACKET_SIZE = 1024;
 	private byte[] receiveDataBuffer = new byte[MAX_PACKET_SIZE * 10];
 	
-	private BinaryWritter bw = new BinaryWritter();
 	
 	private long stTime;
 	
@@ -97,6 +96,9 @@ public class Server {
 		InetAddress address = packet.getAddress();
 		int port= packet.getPort();
 		
+
+		BinaryWritter bw = new BinaryWritter();
+		
 		if(packingCatching)
 			dumpPacket(packet);
 		
@@ -110,8 +112,8 @@ public class Server {
 			case 0x01 : {
 
 				StringBuilder sb = new StringBuilder();
+
 				bw.clear();
-				
 				if(gaming) {
 					
 					//TODO : 게임이 진행 중이여서 접속을 못한다는 패킷 전달
@@ -155,6 +157,7 @@ public class Server {
 				
 				if(gaming) {
 					StringBuilder sb = new StringBuilder();
+					bw.clear();
 					bw.write((byte)0x07);
 					sb.append(":");
 					sb.append((char)0x01);
@@ -221,6 +224,10 @@ public class Server {
 					// ValueType, teamNumber
 					Client c = getClient(_clientID);
 					c.setTeamNumber(Byte.parseByte(netArgs[1]));
+
+					if(clients.size() == 1)
+						break;
+					
 					int playerTeamNumberCount = 1;
 					for(Client _c :clients) {
 						if(_c.getClientdID() != _clientID) {
@@ -327,6 +334,8 @@ public class Server {
 					Client c = getClient(_clientID);
 					int _currentMapIndex = Integer.parseInt(netArgs[1]);
 					c.setCurrentMapIndex(_currentMapIndex);
+					if(clients.size() == 1)
+						break;
 					
 					//System.out.println(_clientID);
 					
@@ -564,7 +573,8 @@ public class Server {
 	
 	public void send(byte[] _data, InetAddress address, int port) {
 		assert(socket.isConnected());
-		bw.clear();
+
+		BinaryWritter bw = new BinaryWritter();
 		bw.write(PACKET_SERVER_HEADER);
 		bw.write(_data);
 
@@ -616,7 +626,7 @@ public class Server {
 	public void clientDisconnect(int _clientID) {
 
 		StringBuilder sb = new StringBuilder();
-		bw.clear();
+		BinaryWritter bw = new BinaryWritter();
 		bw.write((byte)0x02);
 		sb.append(":");
 		sb.append(_clientID);

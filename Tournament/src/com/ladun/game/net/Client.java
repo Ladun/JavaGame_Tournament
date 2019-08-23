@@ -54,7 +54,6 @@ public class Client {
 	private GameContainer gc;
 	private GameManager gm;
 	
-	private BinaryWritter bw = new BinaryWritter();	
 	
 	//-------------------------------------------------------------------	
 	/**
@@ -117,7 +116,7 @@ public class Client {
 		
 		// Send connection packet to server
 		StringBuilder sb =new StringBuilder();
-		bw.clear();
+		BinaryWritter bw = new BinaryWritter();	
 		bw.write(PACKET_TYPE_CONNECT);
 		sb.append(":");
 		sb.append(gm.getNickname());
@@ -218,7 +217,7 @@ public class Client {
 					((GameScene)gm.getScene("InGame")).getCamera().setTargetTag(sb.toString());
 					
 					sb.setLength(0);
-					bw.clear();
+					BinaryWritter bw = new BinaryWritter();	
 					bw.write(PACKET_TYPE_OBJECTSPAWN);
 					sb.append(":");
 					sb.append(this.clientID);
@@ -364,8 +363,8 @@ public class Client {
 			// Timeout Packet--------------------------------------------------------
 			// Server -> Client Packet : [header type]
 			case 0x05:{
-				
-				bw.clear();
+
+				BinaryWritter bw = new BinaryWritter();	
 				StringBuilder sb = new StringBuilder();
 				bw.write(data[2]);
 				sb.append(":");
@@ -472,7 +471,7 @@ public class Client {
 			//listening = false;
 			
 			StringBuilder sb = new StringBuilder();
-			bw.clear();
+			BinaryWritter bw = new BinaryWritter();	
 			bw.write(PACKET_TYPE_DISCONNECT);
 			sb.append(":");
 			sb.append(clientID);
@@ -519,7 +518,7 @@ public class Client {
 	public void send(byte type, Object[] _data) {
 		
 		StringBuilder sb = new StringBuilder();
-		bw.clear();
+		BinaryWritter bw = new BinaryWritter();	
 		bw.write(type);
 		sb.append(":");
 		sb.append(clientID);
@@ -536,8 +535,8 @@ public class Client {
 	
 	public void send(byte[] _data) {
 		assert(socket.isConnected());
-		
-		bw.clear();
+
+		BinaryWritter bw = new BinaryWritter();	
 		bw.write(PACKET_CLIENT_HEADER);
 		bw.write(_data);
 		

@@ -237,8 +237,8 @@ public class Player extends Entity{
 				this.AdjustPosition();	
 			}
 		}
-		
-		weapon.update(gc, gm);
+		if(currentMapIndex > 0)
+			weapon.update(gc, gm);
 		this.updateComponents(gc,gm);
 	}
 
@@ -280,8 +280,9 @@ public class Player extends Entity{
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/maxHealth)), 13, 0, 0xff63c564);
 		
-		
-		weapon.render(gc, r);
+
+		if(currentMapIndex > 0)
+			weapon.render(gc, r);
 		
 		//RenderRect(r,2);
 		this.renderComponents(gc,r);
@@ -354,14 +355,21 @@ public class Player extends Entity{
 		switch(t){
 			case 0 :
 				weapon.setType(Weapon.Type.SWORD);
+				maxHealth = 180;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
+				maxHealth = 100;
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
+				maxHealth = 135;
 				break;
 		}
+		
+		revival();
+		if(localPlayer)
+			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
 	}
 	
 	public void attack(GameManager gm,float _angle) {
