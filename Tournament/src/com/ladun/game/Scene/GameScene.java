@@ -148,38 +148,39 @@ public class GameScene extends AbstractScene{
 		if(inventoryView)
 			renderInven(gc,r);
 		
-
-		// Bar-----------------------------------------------------------------------
-		int barX = gc.getWidth() / 2 - 334 / 2;
-		int barY = gc.getHeight() - 110;
-		float playerHealthPercent = 1;
-		if(localPlayer != null) {
-			playerHealthPercent  =localPlayer.getHealth() / localPlayer.getMaxHealth();
-		}
-		
-		r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY, 0);
-		r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("hbar")),
-				barX, barY,
-				0,(int)barAnim,
-				0,0,(int)(334 * playerHealthPercent) ,13);
-		r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY+ 15, 0);
-		r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("mbar")),
-				barX, barY+ 15,
-				0,(int)barAnim,
-				0,0,(int)(334 ),13);
-		// --------------------------------------------------------------------------
-		
-		for(int i =0; i < 4 ; i++) {
+		if(currentMapIndex >0) {
+			// Bar-----------------------------------------------------------------------
+			int barX = gc.getWidth() / 2 - 334 / 2;
+			int barY = gc.getHeight() - 110;
+			float playerHealthPercent = 1;
+			if(localPlayer != null) {
+				playerHealthPercent  =localPlayer.getHealth() / localPlayer.getMaxHealth();
+			}
 			
-			int pX = (int)(64 * (i-2) + 29* ( i  - 1.5f));
+			r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY, 0);
+			r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("hbar")),
+					barX, barY,
+					0,(int)barAnim,
+					0,0,(int)(334 * playerHealthPercent) ,13);
+			r.drawImage(gc.getImageLoader().getImage("bar_frame"), barX - 3, barY+ 15, 0);
+			r.drawImageTile(((ImageTile)gc.getImageLoader().getImage("mbar")),
+					barX, barY+ 15,
+					0,(int)barAnim,
+					0,0,(int)(334 ),13);
+			// --------------------------------------------------------------------------
 			
-			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);		
-			
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("skill_icon"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,localPlayer.getWeapon().getType().ordinal(), 0);
-			r.drawImage(gc.getImageLoader().getImage("slot_black"),
-					gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
-					0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
+			for(int i =0; i < 4 ; i++) {
+				
+				int pX = (int)(64 * (i-2) + 29* ( i  - 1.5f));
+				
+				r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);		
+				
+				r.drawImageTile((ImageTile)gc.getImageLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
+				r.drawImageTile((ImageTile)gc.getImageLoader().getImage("skill_icon"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,localPlayer.getWeapon().getType().ordinal(), 0);
+				r.drawImage(gc.getImageLoader().getImage("slot_black"),
+						gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
+						0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
+			}
 		}
 		
 		

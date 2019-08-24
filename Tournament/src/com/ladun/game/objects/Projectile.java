@@ -33,13 +33,13 @@ public class Projectile extends GameObject{
 	private GameScene gs;
 	
 	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
-		this.tag = "projectile";		
+		this.tag = "projectile";	
+		setType(Type.ARROW);	
 		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
 		
 		this.gs = gs;
 		this.width = 64;
 		this.height = 64;
-		setType(Type.ARROW);
 		
 		this.addComponent(new CircleCollider(this));
 	}
@@ -96,8 +96,8 @@ public class Projectile extends GameObject{
 	//-------------------------------------------------------------------------------------------------------
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
 		
-		posX -= pL;
-		posZ -= pT;
+		posX -= pL - (width - pL - pB) / 2;
+		posZ -= pT - (height - pL - pB) / 2;
 		
 		this.attackerTag = attackerTag;
 		this.tileX = (int) (posX / GameManager.TS);

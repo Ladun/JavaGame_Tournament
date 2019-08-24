@@ -72,9 +72,9 @@ public class Weapon extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		
-		r.drawImage(gc.getImageLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0));
+		r.drawImage(gc.getImageLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
 		
-		r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
+		//r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
 		
 		
 		if(hitRange.isActive())
@@ -190,11 +190,11 @@ public class Weapon extends GameObject{
 	}
 	public void Shoot(GameManager gm,GameScene gs, float _angle, float spawnAngle) {
 		Projectile bullet = (Projectile)gs.getInactiveObject("projectile");
-		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(spawnAngle))  - 16;
+		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(spawnAngle));
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(spawnAngle)) ;
 
-		float _posX = parent.getCenterX()- width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
-		float _posZ = parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
+		float _posX = parent.getCenterX() + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
+		float _posZ = parent.getCenterZ() + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
 		
 		if(bullet == null) {
 			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,damage,parent.tag));
