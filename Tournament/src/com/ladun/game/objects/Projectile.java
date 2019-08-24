@@ -97,7 +97,7 @@ public class Projectile extends GameObject{
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
 		
 		posX -= pL;
-		posY -= pT;
+		posZ -= pT;
 		
 		this.attackerTag = attackerTag;
 		this.tileX = (int) (posX / GameManager.TS);

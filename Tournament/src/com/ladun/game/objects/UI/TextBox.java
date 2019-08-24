@@ -5,6 +5,7 @@ import java.awt.event.MouseEvent;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.objects.GameObject;
@@ -18,6 +19,7 @@ public class TextBox{
 	private StringBuilder sb = new StringBuilder();
 	private String defaultStr;
 	
+	private float time;
 	
 	private boolean chatOn;
 	
@@ -46,6 +48,9 @@ public class TextBox{
 				if(sb.length() > 0)
 					sb.setLength(sb.length()-1);
 			}
+			time += Time.DELTA_TIME;
+			if(time >= 0.8f)
+				time -= 0.8f;
 		}
 	}
 
@@ -53,8 +58,13 @@ public class TextBox{
 	public void render(GameContainer gc, Renderer r) {
 
 		if(chatOn) {
-			if(sb.length() > 0)
+			if(sb.length() > 0) {
 				r.drawString(sb.toString(),posX,posY,size,color);
+				if(time >= 0.4f) {
+					r.setzDepth(Renderer.LAYER_UI);
+					r.drawFillRect(gc.getWidth()/2 +gc.getWindow().getG().getFontMetrics(gc.getWindow().getG().getFont().deriveFont((float)size)).stringWidth(sb.toString()) /2 , posY+ 6, 1, size, 0, color);
+				}
+			}
 			else
 				r.drawString(defaultStr,posX,posY,size,color);
 		}

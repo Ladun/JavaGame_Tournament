@@ -1,13 +1,27 @@
 package com.ladun.game.objects;
 
+import java.util.ArrayList;
+
+import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.Collider;
 import com.ladun.game.components.Collider.Type;
-import com.ladun.game.util.Util;
 import com.ladun.game.components.RectCollider;
 
 public abstract class Entity extends GameObject{
+	
+	class AttackObject{
+		public int objectHashCode;
+		public float time;
+		
+		AttackObject(int objectsHashCode){
+			this.objectHashCode = objectsHashCode;
+			time = HIT_TIME;
+		}
+	}
+	
+
 	
 	protected GameScene gs;
 	protected GameManager gm;
@@ -34,12 +48,13 @@ public abstract class Entity extends GameObject{
 
 	protected float[] actionCoolDownTime;
 	
-	protected float nextHitTime = 0;
-	protected static final float HIT_TIME = .3f; 
+	protected static final float HIT_TIME = 0.2f; 
 	
 	protected int currentMapIndex;
+	protected ArrayList<AttackObject> attackObjects = new ArrayList<AttackObject>();
 	
-	public abstract void hit(float damage, String tag);
+	
+	public abstract void hit(float damage, String tag,int hashcode);
 	public abstract void revival();
 	
 	public void collision(GameObject other) {
@@ -126,6 +141,25 @@ public abstract class Entity extends GameObject{
 
 		posX = tileX * GameManager.TS + offX;
 		posZ = tileZ * GameManager.TS + offZ;
+	}
+	
+	protected void timePassAttackObject() {
+		for(int i = 0; i < attackObjects.size();i++) {
+			AttackObject ao = attackObjects.get(i);
+			ao.time -= Time.DELTA_TIME;
+			if(ao.time <= 0) {
+				attackObjects.remove(i);
+				i--;
+			}
+		}
+	}
+	
+	protected boolean isExistAttackObject(int hashcode) {
+		for(AttackObject ao : attackObjects) {
+			if(ao.objectHashCode == hashcode)
+				return true;
+		}
+		return false;
 	}
 
 	public float getCenterX() {

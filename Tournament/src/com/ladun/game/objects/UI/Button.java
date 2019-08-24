@@ -115,6 +115,22 @@ public class Button {
 		return color;
 	}
 
+	public int getCenterX() {
+		return posX + width / 2;
+	}
+
+	public void setCenterX(int posX) {
+		this.posX = posX - width / 2;
+	}
+
+	public int getCenterY() {
+		return posY + height / 2;
+	}
+
+	public void setCenterY(int posY) {
+		this.posY = posY - height / 2;
+	}
+
 	public void setColor(int color) {
 		this.color = color;
 	}

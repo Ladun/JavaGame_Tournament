@@ -30,8 +30,9 @@ public class Player extends Entity{
 	
 	private float fcos,fsin;
 	private boolean readyToShoot = false;
+	private int attackIndex = 0;
 	
-	
+	private float reduceAttack_A_Cool = 1f;
 	
 	private Weapon weapon;
 	//--------------------------------------	
@@ -42,6 +43,8 @@ public class Player extends Entity{
 	
 
 	public Player(String tag,String nickname,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
+		
+		System.out.println(this.hashCode());
 		this.tag = tag;
 		this.nickname = nickname;
 		
@@ -95,12 +98,16 @@ public class Player extends Entity{
 			return;
 
 		if(gs.isGameisStart()) {
-		
-			nextHitTime += Time.DELTA_TIME;
+
+			timePassAttackObject();
 			
 			if(localPlayer){	
-				if(gc.getInput().isKeyDown(KeyEvent.VK_L))
-					System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+				
+				
+				//if(gc.getInput().isKeyDown(KeyEvent.VK_L))
+				//	System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+				
+				
 				for(int i = 0; i < 4; i ++) {
 					if(actionCoolDownTime[i] > 0 ) {
 						actionCoolDownTime[i] -= Time.DELTA_TIME;
@@ -108,24 +115,6 @@ public class Player extends Entity{
 							actionCoolDownTime[i]  = 0;
 					}
 				}
-				
-				// Temporary------------------------------------------------------
-				
-				if(gc.getInput().isKeyDown(KeyEvent.VK_1)) {
-					weapon.setType(Weapon.Type.SWORD);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,0});
-				}
-				else if(gc.getInput().isKeyDown(KeyEvent.VK_2)) {
-					weapon.setType(Weapon.Type.BOW);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,1});
-				}
-				else if(gc.getInput().isKeyDown(KeyEvent.VK_3)) {
-					weapon.setType(Weapon.Type.SPEAR);
-					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,2});
-				}
-				// Temporary End -------------------------------------------------
-	
-				
 				
 				// Moving ------------------------------------------------------
 				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
@@ -190,30 +179,72 @@ public class Player extends Entity{
 				
 				// Attack----------------------------------------------------
 				if(currentMapIndex >= 2) {
-					if(actionCoolDownTime[0] <= 0) {
-						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+					if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+						if(actionCoolDownTime[0] <= 0) {
+							attackIndex = 0;
+							
 							if(!weapon.isAttacking()) {
 								if(weapon.getType() != Weapon.Type.BOW)	{
-									actionCoolDownTime[0] = .5f;
-									attack(gm,angle);
+									actionCoolDownTime[0] = .5f * reduceAttack_A_Cool;
+									attack(gm,angle,0);
 								}
 								else {
 									readyToShoot = true;
 								}
+							}	
+						}
+
+					}
+					else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
+						if(actionCoolDownTime[1] <= 0) {
+							attackIndex = 1;
+							switch(weapon.getType()) {
+							case SWORD:
+								
+								break;
+							case BOW:
+								readyToShoot = true;	
+								break;
+							case SPEAR:
+								
+								break;
 							}
 						}
-						if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-							if(readyToShoot) {
-			
-								actionCoolDownTime[0] = .5f;
-								readyToShoot = false;
-								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-								int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+					}
+					else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
+						if(actionCoolDownTime[2] <= 0) {
+							attackIndex = 2;
+						}
+					}
+					else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
+						if(actionCoolDownTime[3] <= 0) {
+							attackIndex = 3;
+							switch(weapon.getType()) {
+							case SWORD:
 								
-								angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-								weapon.setDstAngle(angle);
-								attack(gm,angle);					
+								break;
+							case BOW:
+								
+								break;
+							case SPEAR:
+								
+								break;
 							}
+						}
+					}
+					
+
+					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+						if(readyToShoot) {
+		
+							actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+							readyToShoot = false;
+							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+							
+							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+							weapon.setDstAngle(angle);
+							attack(gm,angle,attackIndex);					
 						}
 					}
 				}
@@ -296,50 +327,61 @@ public class Player extends Entity{
 			if(other instanceof HitRange) {
 				HitRange hr = (HitRange)other;
 				if(!hr.getAttackerTag().equals(tag)) {
-					hit(hr.getDamage(),hr.getAttackerTag());
+					hit(hr.getDamage(),hr.getAttackerTag(),other.hashCode());
 					
 				}
 			}
 			else if(other instanceof Projectile) {
-				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag());
+				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag(),other.hashCode());
 			}
 		}
 	}
-	@Override
+	
 	public void hit(float damage,String attackerTag) {
 		if(damage == 0)
 			return;
+		hitMain(damage,attackerTag);
+	}
+	@Override
+	public void hit(float damage,String attackerTag,int hashcode) {
+		if(damage == 0)
+			return;
 		
-		if(nextHitTime >= HIT_TIME) {
-			nextHitTime = 0;
-			health -= damage;
-
-			if(localPlayer)
-				gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01,attackerTag});
-			
-			Player _p = (Player)gm.getObject(attackerTag);
-			if(_p != null) {
-				float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
-				((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
-			}
-			//----------------------------------------------------------------------------------------
-			DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
-			if(displayDamage == null) {
-				gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY));
-			}
-			else {
-				displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
-			}
-			//----------------------------------------------------------------------------------------
-			
-			if(health <= 0) {
-
-				gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname);
-				
-				active =false;
-			}
+		if(!isExistAttackObject(hashcode)) {
+			attackObjects.add(new AttackObject(hashcode));
+			hitMain(damage,attackerTag);
 		}
 	}
+	
+	private void hitMain(float damage,String attackerTag) {
+		health -= damage;
+
+		if(localPlayer)
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01,attackerTag});
+		
+		Player _p = (Player)gm.getObject(attackerTag);
+		if(_p != null) {
+			float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
+			((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
+		}
+		//----------------------------------------------------------------------------------------
+		DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
+		if(displayDamage == null) {
+			gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY));
+		}
+		else {
+			displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
+		}
+		//----------------------------------------------------------------------------------------
+		
+		if(health <= 0) {
+
+			gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname);
+			
+			active =false;
+		}
+	}
+	
 	@Override
 	public void revival() {
 		this.health = maxHealth;
@@ -372,14 +414,14 @@ public class Player extends Entity{
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
 	}
 	
-	public void attack(GameManager gm,float _angle) {
+	public void attack(GameManager gm,float _angle,int attackIndex) {
 
-		weapon.attack(gm,gs,_angle);			
+		weapon.attack(gm,gs,_angle,attackIndex);			
 
 		if(localPlayer) {
 			
 			if(gm != null) {
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,angle});
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,angle,attackIndex});
 					
 			}
 		}
@@ -429,6 +471,7 @@ public class Player extends Entity{
 		
 		
 	}
+	
 	private void RenderRect(Renderer r,int type) {
 		switch(type){
 		case 1:
@@ -449,17 +492,7 @@ public class Player extends Entity{
 		if(i >= 4) 
 			return 1;
 		
-		switch(i) {
-		case 0:
-			return actionCoolDownTime[0] / .5f;
-		case 1:
-			return actionCoolDownTime[1] / .5f;
-		case 2:
-			return actionCoolDownTime[2] / .5f;
-		case 3:
-			return actionCoolDownTime[3] / .5f;
-		}
-		return 1;
+		return actionCoolDownTime[i] / weapon.getCoolDown(i);
 	}
 	public boolean isLocalPlayer() {
 		return localPlayer;

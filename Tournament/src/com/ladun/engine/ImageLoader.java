@@ -37,11 +37,16 @@ public class ImageLoader {
 		addImage("slot_black", "/UI/SlotBlack.png");
 		addImage("window", "/UI/Window.png");
 		addImage("inv","/UI/Inventory.png");
-		addImage("warrior_skill", "/UI/SlotContents/Warrior_Skill.png",64,64);
+		addImage("skill_icon", "/UI/SlotContents/SkillIcon.png",64,64);
 		
 		// Buttons
-		addImage("store_button","/UI/StoreButton.png",128,128);
-		addImage("job_button","/UI/JobButton.png",128,128);
+		addImage("store_button","/UI/StoreButton.png",96,96);
+		addImage("job_button","/UI/JobButton.png",96,96);
+		for(int i = 1; i <= 3;i++) {
+			addImage("jobSelect_button" + i,"/UI/JobSelect/JobSelect" + i + ".png",64,64);
+			
+		}
+		
 		addImage("start_button","/UI/mainScene/StartButton.png",76,76);
 		addImage("option_button","/UI/mainScene/OptionButton.png",76,76);
 		addImage("exit_button","/UI/mainScene/ExitButton.png",76,76);

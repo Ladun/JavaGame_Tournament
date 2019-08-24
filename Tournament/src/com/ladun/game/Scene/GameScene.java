@@ -7,6 +7,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.Announce;
 import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
@@ -42,7 +43,11 @@ public class GameScene extends AbstractScene{
 	private Button teamChooseButton;
 	private Button storeButton;
 	private Button jobButton;
+	private Button[] jobSelectButtons;
 	//-----------------------------------------
+	private boolean jobSelectButtonShow;
+	private float jSBMovePercent; // JobSelectButtonMovePercent;
+	
 	private TeamColor teamColor = TeamColor.TEAM1;
 	
 	@Override
@@ -70,8 +75,13 @@ public class GameScene extends AbstractScene{
 		
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
-		storeButton = new Button(30, gc.getHeight()/2 - 200,128,128,"store_button");
-		jobButton = new Button(30, gc.getHeight()/2,128,128,"job_button");
+		storeButton = new Button(30, gc.getHeight()/2 -48,96,96,"store_button");
+		jobButton = new Button(gc.getWidth() - 126, gc.getHeight()/2 -48,96,96,"job_button");
+		
+		jobSelectButtons = new Button[3];
+		for(int i = 0; i < jobSelectButtons.length;i++) {
+			jobSelectButtons[i] =  new Button(gc.getWidth()/2, gc.getHeight()/2 + i * 64,64,64,"jobSelect_button" + (i +1));
+		}
 		//---------------------------------------------------
 		return true;
 	}
@@ -138,7 +148,8 @@ public class GameScene extends AbstractScene{
 		if(inventoryView)
 			renderInven(gc,r);
 		
-		
+
+		// Bar-----------------------------------------------------------------------
 		int barX = gc.getWidth() / 2 - 334 / 2;
 		int barY = gc.getHeight() - 110;
 		float playerHealthPercent = 1;
@@ -156,6 +167,8 @@ public class GameScene extends AbstractScene{
 				barX, barY+ 15,
 				0,(int)barAnim,
 				0,0,(int)(334 ),13);
+		// --------------------------------------------------------------------------
+		
 		for(int i =0; i < 4 ; i++) {
 			
 			int pX = (int)(64 * (i-2) + 29* ( i  - 1.5f));
@@ -163,6 +176,7 @@ public class GameScene extends AbstractScene{
 			r.drawImage(gc.getImageLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);		
 			
 			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
+			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("skill_icon"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,localPlayer.getWeapon().getType().ordinal(), 0);
 			r.drawImage(gc.getImageLoader().getImage("slot_black"),
 					gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
 					0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
@@ -184,6 +198,11 @@ public class GameScene extends AbstractScene{
 		case 1:
 			storeButton.render(gc, r);
 			jobButton.render(gc, r);
+			if(jobSelectButtonShow || jSBMovePercent != 1) {
+				for(int i = 0; i < jobSelectButtons.length;i++) {
+					jobSelectButtons[i].render(gc, r);
+				}
+			}
 			break;
 		case 2:
 			break;
@@ -274,10 +293,60 @@ public class GameScene extends AbstractScene{
 				}
 			}
 			if(storeButton.isReleased()) {
-				
+				gm.getAnnounce().addString("아직 구현되지 않았습니다", Announce.DEFAULT_COLOR);
+				gm.getAnnounce().show(3f);
 			}
 			if(jobButton.isReleased()) {
+				jobSelectButtonShow = !jobSelectButtonShow;
+				jSBMovePercent = 0;
+			}
+
+			if(jobSelectButtonShow) {
+				if(jSBMovePercent < 1) {
+					jSBMovePercent += Time.DELTA_TIME* 5;
+					
+					if(jSBMovePercent > 1) {
+						jSBMovePercent = 1;
+					}
+					
+					float _angle = 180 / (jobSelectButtons.length - 1);
+					float radius = 150 * jSBMovePercent; 
+					for(int i = 0; i < jobSelectButtons.length;i++) {
+						jobSelectButtons[i].setCenterX((int)(jobButton.getCenterX() + radius * Math.cos(Math.toRadians(_angle * i +90)) ));
+						jobSelectButtons[i].setCenterY((int)(jobButton.getCenterY() + radius * Math.sin(Math.toRadians(_angle * i +90)) ));
+					}
+					
+				}else {				
+					for(int i = 0; i < jobSelectButtons.length;i++) {
+						jobSelectButtons[i].update(gc, gm);
+						
+						if(jobSelectButtons[i].isReleased()) {
+							localPlayer.setWeaponType(i);
+
+							jobSelectButtonShow = !jobSelectButtonShow;
+							jSBMovePercent = 0;
+						}
+					}
+				}
 				
+				
+			}
+			else {
+				if(jSBMovePercent < 1) {
+					jSBMovePercent += Time.DELTA_TIME * 5;
+					
+					if(jSBMovePercent > 1) {
+						jSBMovePercent = 1;
+					}
+
+					float _angle = 180 / (jobSelectButtons.length - 1);
+					float radius = 150 * (1-jSBMovePercent); 
+					for(int i = 0; i < jobSelectButtons.length;i++) {
+						jobSelectButtons[i].setCenterX((int)(jobButton.getCenterX() + radius * Math.cos(Math.toRadians(_angle * i +90)) ));
+						jobSelectButtons[i].setCenterY((int)(jobButton.getCenterY() + radius * Math.sin(Math.toRadians(_angle * i +90)) ));
+					}
+					
+				}
 			}
 						
 		}
