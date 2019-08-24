@@ -17,7 +17,7 @@ public class SoundClip {
 	private Clip clip = null;
 	private FloatControl gainControl;
 	
-	public SoundClip(String path)
+	public SoundClip(String path) 
 	{
 		try {
 
@@ -78,9 +78,11 @@ public class SoundClip {
 		play();
 	}
 	
-	public void setVolume(float value)
+	public void setVolume(float parcent)
 	{
-		gainControl.setValue(value);
+		//System.out.println(gainControl.getValue());
+		float range = gainControl.getMaximum() - gainControl.getMinimum();
+		gainControl.setValue(range * parcent + gainControl.getMinimum());
 	}
 
 	public boolean isRunning()

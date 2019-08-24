@@ -115,9 +115,9 @@ public class Interior extends GameObject{
 		
 		r.setzDepth((int)posZ + height - pB);
 		if(!animation) 
-			r.drawImage(gc.getImageLoader().getImage(imageName), (int)posX	, (int)posZ, angle);
+			r.drawImage(gc.getResourceLoader().getImage(imageName), (int)posX	, (int)posZ, angle);
 		else{
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage(imageName), (int)posX, (int)posZ, (int)anim, 0, 0);
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)posX, (int)posZ, (int)anim, 0, 0);
 		}
 		this.renderComponents(gc, r);
 	}

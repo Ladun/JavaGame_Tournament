@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
+import com.ladun.game.Scene.GameScene;
 import com.ladun.game.objects.GameObject;
 
 public class Camera {
@@ -35,7 +36,6 @@ public class Camera {
 	
 	public void update(GameContainer gc,GameManager gm)
 	{
-
 		if(gc.getInput().isKey(KeyEvent.VK_SPACE) || characterLock) {
 			
 			focusTarget(gc,gm);
@@ -44,7 +44,7 @@ public class Camera {
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_Y))
 			characterLock = !characterLock;
-		if(gc.getInput().isKeyDown(KeyEvent.VK_ESCAPE))
+		if(gc.getInput().isKeyDown(KeyEvent.VK_L))
 			mouseLock = !mouseLock;
 		
 		if(mouseLock) {
@@ -152,6 +152,7 @@ public class Camera {
 
 	public void setTargetTag(String targetTag) {
 		this.targetTag = targetTag;
+		this.target = null;
 	}
 
 	public GameObject getTarget() {

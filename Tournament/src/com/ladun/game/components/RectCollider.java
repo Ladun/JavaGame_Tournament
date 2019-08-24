@@ -34,7 +34,7 @@ public class RectCollider extends Collider{
 	public void render(GameContainer gc,  Renderer r) {
 		// TODO Auto-generated method stub
 		//r.setzDepth(Renderer.LAYER_UI - 1);
-		r.drawRect(centerX - halfWidth, centerZ - halfHeight + y, halfWidth * 2, halfHeight * 2,0, 0xffa6ec90);
+		//r.drawRect(centerX - halfWidth, centerZ - halfHeight + y, halfWidth * 2, halfHeight * 2,0, 0xffa6ec90);
 		
 	}
 	//-----------------------------------------------

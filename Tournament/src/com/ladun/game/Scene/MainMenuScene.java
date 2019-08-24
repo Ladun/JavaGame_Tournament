@@ -4,12 +4,13 @@ import java.awt.event.KeyEvent;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
+import com.ladun.engine.audio.SoundClip;
 import com.ladun.engine.gfx.Image;
 import com.ladun.game.Announce;
 import com.ladun.game.GameManager;
 import com.ladun.game.net.Client.ServerState;
-import com.ladun.game.objects.TempObject;
 import com.ladun.game.objects.UI.Button;
+import com.ladun.game.objects.UI.Slider;
 import com.ladun.game.objects.UI.TextBox;
 
 public class MainMenuScene extends AbstractScene{
@@ -18,11 +19,13 @@ public class MainMenuScene extends AbstractScene{
 	private Button optionButton;
 	private Button exitButton;
 	
-	private Image backgroundImage;
-	
+	private Image backgroundImage;	
 	//-------------------------------------------------------------
 	private TextBox[] textBoxs;
 	
+
+	private Slider volumeSlider;
+	private boolean optionWindowShow;
 	
 	
 	@Override
@@ -41,6 +44,7 @@ public class MainMenuScene extends AbstractScene{
 		optionButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -220,76,76, "option_button");
 		exitButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -100,76,76, "exit_button");
 		
+		volumeSlider =new Slider(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 200, 200, 35, 20, 0.9300098f, 0xffcccccc, 0x66ffffff);
 		
 		return true;
 	}
@@ -54,11 +58,25 @@ public class MainMenuScene extends AbstractScene{
 			if(objects.get(i).isActive())
 				objects.get(i).update(gc, gm);
 		}
-		startButton.update(gc, gm);
+
 		optionButton.update(gc, gm);
-		exitButton.update(gc, gm);
-		for(TextBox t : textBoxs)
-			t.update(gc, gm);
+		if(optionWindowShow) {
+			volumeSlider.update(gc, gm);
+			
+			if(volumeSlider.isPressed())
+			{
+				for(String key : gc.getResourceLoader().getSounds().keySet())
+				{
+					SoundClip sc = gc.getResourceLoader().getSounds().get(key);
+					sc.setVolume(volumeSlider.getPercent());
+				}
+			}
+		}else {
+			startButton.update(gc, gm);
+			exitButton.update(gc, gm);
+			for(TextBox t : textBoxs)
+				t.update(gc, gm);
+		}
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
 			if(textBoxs[1].getString().length() == 0) {
@@ -102,7 +120,7 @@ public class MainMenuScene extends AbstractScene{
 			}
 		}
 		if(optionButton.isReleased()) {
-			
+			optionWindowShow = !optionWindowShow;
 		}
 		if(exitButton.isReleased()) {
 			System.exit(0);
@@ -114,7 +132,6 @@ public class MainMenuScene extends AbstractScene{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		
 		r.drawImage(backgroundImage, 0, 0, 0);
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
@@ -134,10 +151,16 @@ public class MainMenuScene extends AbstractScene{
 
 		
 		startButton.render(gc, r);
-		optionButton.render(gc,r);
 		exitButton.render(gc, r);
 		for(TextBox t : textBoxs)
 			t.render(gc, r);
+		if(optionWindowShow) {
+			r.drawFillRect(0, 0, gc.getWidth(), gc.getHeight(), 0, 0xaa000000);
+			
+			r.drawString("SOUND", volumeSlider.getPosX(), volumeSlider.getPosY() - 40, 35, 0xffffffff);
+			volumeSlider.render(gc, r);
+		}
+		optionButton.render(gc,r);
 	}
 
 	//-------------------------------------------------------------------------------

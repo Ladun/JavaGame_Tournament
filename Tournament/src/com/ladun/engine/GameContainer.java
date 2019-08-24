@@ -6,7 +6,7 @@ public class GameContainer implements Runnable{
 	private Window window;
 	private Renderer renderer;
 	private Input input;
-	private ImageLoader imageLoader;
+	private ResourceLoader resourceLoader;
 	private AbstractGame game;
 	
 	private boolean running = false;
@@ -23,7 +23,7 @@ public class GameContainer implements Runnable{
 		
 		window = new Window(this);
 		renderer = new Renderer(this);
-		imageLoader = new ImageLoader() ;
+		resourceLoader = new ResourceLoader() ;
 		input = new Input(this);
 		
 		thread = new Thread(this,"Main Loop");
@@ -82,7 +82,7 @@ public class GameContainer implements Runnable{
 				unprocessedTime -= Time.DELTA_TIME;
 				render = true;
 				
-				game.update(this);
+				game.update();
 				input.update();				
 				ticks++;
 
@@ -101,7 +101,7 @@ public class GameContainer implements Runnable{
 					ticks = 0;
 				}				
 				renderer.clear();
-				game.render(this, renderer);
+				game.render(renderer);
 				renderer.process();
 				renderer.setCamX(0);
 				renderer.setCamY(0);
@@ -131,8 +131,8 @@ public class GameContainer implements Runnable{
 		game.dispose();
 	}
 	
-	public ImageLoader getImageLoader() {
-		return imageLoader;
+	public ResourceLoader getResourceLoader() {
+		return resourceLoader;
 	}
 	public Renderer getRenderer() {
 		return renderer;

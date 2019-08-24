@@ -44,7 +44,6 @@ public class Player extends Entity{
 
 	public Player(String tag,String nickname,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
 		
-		System.out.println(this.hashCode());
 		this.tag = tag;
 		this.nickname = nickname;
 		
@@ -186,7 +185,7 @@ public class Player extends Entity{
 							if(!weapon.isAttacking()) {
 								if(weapon.getType() != Weapon.Type.BOW)	{
 									actionCoolDownTime[0] = .5f * reduceAttack_A_Cool;
-									attack(gm,angle,0);
+									attack(gc,gm,angle,0);
 								}
 								else {
 									readyToShoot = true;
@@ -244,7 +243,7 @@ public class Player extends Entity{
 							
 							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
 							weapon.setDstAngle(angle);
-							attack(gm,angle,attackIndex);					
+							attack(gc,gm,angle,attackIndex);					
 						}
 					}
 				}
@@ -304,9 +303,9 @@ public class Player extends Entity{
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		for(int i = 0; i < clickPoints.size();i++) {
 			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
-			r.drawImage(gc.getImageLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
+			r.drawImage(gc.getResourceLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
 		}
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/maxHealth)), 13, 0, 0xff63c564);
@@ -414,9 +413,9 @@ public class Player extends Entity{
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
 	}
 	
-	public void attack(GameManager gm,float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm,float _angle,int attackIndex) {
 
-		weapon.attack(gm,gs,_angle,attackIndex);			
+		weapon.attack(gc,gm,gs,_angle,attackIndex);			
 
 		if(localPlayer) {
 			

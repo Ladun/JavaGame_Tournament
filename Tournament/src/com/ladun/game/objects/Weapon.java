@@ -72,7 +72,7 @@ public class Weapon extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		
-		r.drawImage(gc.getImageLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
+		r.drawImage(gc.getResourceLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
 		
 		//r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
 		
@@ -112,21 +112,29 @@ public class Weapon extends GameObject{
 			mirror = false;
 		}
 	}
-	public void attack(GameManager gm, GameScene gs,float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm, GameScene gs,float _angle,int attackIndex) {
 		switch(type) {
-		case SPEAR:
 		case SWORD:
 			hitRange.setDamage(damage);
 			attacking = true;
+			gc.getResourceLoader().getSound("sword_attack").play();
+			break;
+		case SPEAR:
+			hitRange.setDamage(damage);
+			attacking = true;
+			gc.getResourceLoader().getSound("spear_attack").play();
 			break;
 		case BOW:
 			switch(attackIndex) {
 			case 0:
 				Shoot(gm,gs,_angle);
+				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			case 1:
 				Shoot(gm,gs,_angle,_angle - 10);
+				gc.getResourceLoader().getSound("bow_attack").play();
 				Shoot(gm,gs,_angle, _angle +10);
+				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			}
 			break;

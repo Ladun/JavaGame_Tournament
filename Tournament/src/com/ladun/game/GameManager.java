@@ -32,11 +32,13 @@ public class GameManager extends AbstractGame {
 	private Announce announce;
 	private ChatBox chatBox;
 	
+	private GameContainer gc;
 	// Fade Value----------------
 	
 	@Override
 	public boolean init(GameContainer gc) {
 		// TODO Auto-generated method stub
+		this.gc =gc;
 		gc.getRenderer().setAmbientColor(-1);
 		announce = new Announce();
 		
@@ -57,7 +59,7 @@ public class GameManager extends AbstractGame {
 	}
 
 	@Override
-	public void update(GameContainer gc) {
+	public void update() {
 		// TODO Auto-generated method stub
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
@@ -75,7 +77,7 @@ public class GameManager extends AbstractGame {
 		}
 	}
 	@Override
-	public void render(GameContainer gc, Renderer r) {
+	public void render(Renderer r) {
 		// TODO Auto-generated method stub
 
 		for(int i = 0 ; i < scenes.length;i++) {
@@ -87,7 +89,7 @@ public class GameManager extends AbstractGame {
 		r.setCamX(0);
 		r.setCamY(0);
 		if(loading) {
-			r.drawImageTile((ImageTile)gc.getImageLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
 		}
 		announce.render(gc, r);
 		chatBox.render(gc, r);
@@ -122,8 +124,13 @@ public class GameManager extends AbstractGame {
 				scenes[i].setActive(false);
 		}
 		for(int i = 0 ; i < scenes.length;i++) {
-			if(scenes[i].getName().equals(name))
+			if(scenes[i].getName().equals(name)) {
 				scenes[i].setActive(true);
+			}
+		}
+		
+		if(name.equalsIgnoreCase("MainMenu")) {
+			gc.getResourceLoader().getSound("bgm").loop();
 		}
 	}
 	

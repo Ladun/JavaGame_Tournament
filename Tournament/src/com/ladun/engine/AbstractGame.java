@@ -2,8 +2,10 @@ package com.ladun.engine;
 
 public abstract class AbstractGame {
 
-	public abstract boolean init(GameContainer gc);
-	public abstract void update(GameContainer gc);
-	public abstract void render(GameContainer gc, Renderer r);
+	private GameContainer gc;
+	
+	public abstract boolean init( GameContainer gc);
+	public abstract void update();
+	public abstract void render( Renderer r);
 	public abstract void dispose();
 }

@@ -34,12 +34,13 @@ public class Projectile extends GameObject{
 	
 	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";	
-		setType(Type.ARROW);	
-		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
-		
+
 		this.gs = gs;
 		this.width = 64;
 		this.height = 64;
+		setType(Type.ARROW);	
+		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
+		
 		
 		this.addComponent(new CircleCollider(this));
 	}
@@ -61,14 +62,13 @@ public class Projectile extends GameObject{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
+		
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xaff385610);
 		//r.drawFillRect((int)(posX ), (int)(posZ ), tileZ, tileX, c, color);
-		r.drawFillRect((int)posX, (int)posZ, tileZ, tileX, 0, 0x55);
 		drawShadow(r);
-		r.drawImageTile((ImageTile)gc.getImageLoader().getImage("projectile"), (int)(posX ), (int)(posZ + posY ), anim, 0, xPivot, yPivot, angle);
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("projectile"), (int)(posX ), (int)(posZ + posY ), anim, 0, xPivot, yPivot, angle);
 		//r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 3, 3, 0, 0xffff0000);
 		
 		this.renderComponents(gc, r);
@@ -82,7 +82,7 @@ public class Projectile extends GameObject{
 			this.active = false;
 		}
 		else if (other instanceof HitRange || other instanceof Projectile) {
-			System.out.println("!!");
+			//System.out.println("!!");
 			DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 			if(displayDamage == null) {
 				gs.addObject(new DisplayTextInGame("cut", getCenterX(), posZ + posY));

@@ -213,7 +213,7 @@ public class Client {
 					sb.append("Player");
 					sb.append(this.clientID);
 		
-					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),netArgs[1], true);		
+					Player _p = ((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),netArgs[1], true);	
 					((GameScene)gm.getScene("InGame")).getCamera().setTargetTag(sb.toString());
 					
 					sb.setLength(0);
@@ -259,7 +259,7 @@ public class Client {
 					if(_p == null)
 						return;
 					
-					_p.attack(null, Float.parseFloat(netArgs[1]), Integer.parseInt(netArgs[2]));
+					_p.attack(gc,null, Float.parseFloat(netArgs[1]), Integer.parseInt(netArgs[2]));
 					
 					break;
 				}
