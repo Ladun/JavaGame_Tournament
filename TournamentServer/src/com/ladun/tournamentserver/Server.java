@@ -566,6 +566,35 @@ public class Server {
 				
 				break;
 			}
+			// Other Game Packet--------------------------------------------------------
+			// Server -> Client Packet : [header type : clientID : type,parameter.......]t		
+			case 0x07:{
+
+				StringBuilder sb = new StringBuilder();
+				String[] netArgs = messages[2].split(",");
+				switch(netArgs[0].toCharArray()[0]) {
+				case 0x03:			
+				// type, nickname, content, teamNumber
+				// chatting Packet	
+					
+					_clientID =Integer.parseInt(messages[1].trim());
+
+					if(_clientID < 1000 || !isClientExist(_clientID))
+						return;	
+					
+					bw.clear();
+					bw.write((byte)0x07);
+					sb.append(":");
+					sb.append(messages[2]);
+					bw.write((sb.toString()).getBytes());
+					
+					sendToAllClients(bw.getBytes(), _clientID);
+					
+					System.out.printf("[%s:%d] %s (clientID: %d) : %s \n",address.getHostAddress() , port,netArgs[1],_clientID,netArgs[2] );		
+				
+				}
+				break;
+			}
 			}
 		}
 		

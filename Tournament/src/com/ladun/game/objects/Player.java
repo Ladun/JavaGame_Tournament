@@ -178,56 +178,58 @@ public class Player extends Entity{
 				
 				// Attack----------------------------------------------------
 				if(currentMapIndex >= 2) {
-					if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-						if(actionCoolDownTime[0] <= 0) {
-							attackIndex = 0;
-							
-							if(!weapon.isAttacking()) {
-								if(weapon.getType() != Weapon.Type.BOW)	{
-									actionCoolDownTime[0] = .5f * reduceAttack_A_Cool;
-									attack(gc,gm,angle,0);
-								}
-								else {
-									readyToShoot = true;
-								}
-							}	
+					if(!gs.isChatting()) {
+						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+							if(actionCoolDownTime[0] <= 0) {
+								attackIndex = 0;
+								
+								if(!weapon.isAttacking()) {
+									if(weapon.getType() != Weapon.Type.BOW)	{
+										actionCoolDownTime[0] = .5f * reduceAttack_A_Cool;
+										attack(gc,gm,angle,0);
+									}
+									else {
+										readyToShoot = true;
+									}
+								}	
+							}
+	
 						}
-
-					}
-					else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
-						if(actionCoolDownTime[1] <= 0) {
-							attackIndex = 1;
-							switch(weapon.getType()) {
-							case SWORD:
-								
-								break;
-							case BOW:
-								readyToShoot = true;	
-								break;
-							case SPEAR:
-								
-								break;
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
+							if(actionCoolDownTime[1] <= 0) {
+								attackIndex = 1;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									readyToShoot = true;	
+									break;
+								case SPEAR:
+									
+									break;
+								}
 							}
 						}
-					}
-					else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
-						if(actionCoolDownTime[2] <= 0) {
-							attackIndex = 2;
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
+							if(actionCoolDownTime[2] <= 0) {
+								attackIndex = 2;
+							}
 						}
-					}
-					else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
-						if(actionCoolDownTime[3] <= 0) {
-							attackIndex = 3;
-							switch(weapon.getType()) {
-							case SWORD:
-								
-								break;
-							case BOW:
-								
-								break;
-							case SPEAR:
-								
-								break;
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
+							if(actionCoolDownTime[3] <= 0) {
+								attackIndex = 3;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									
+									break;
+								case SPEAR:
+									
+									break;
+								}
 							}
 						}
 					}
@@ -375,7 +377,7 @@ public class Player extends Entity{
 		
 		if(health <= 0) {
 
-			gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname);
+			gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname,0xff000000);
 			
 			active =false;
 		}

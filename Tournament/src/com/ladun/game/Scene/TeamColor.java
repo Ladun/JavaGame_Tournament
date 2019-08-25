@@ -11,4 +11,8 @@ public enum TeamColor {
 	public int getValue() {
 		return color;
 	}
+	
+	public static int getColor(int i) {
+		return values()[i].getValue();
+	}
 }

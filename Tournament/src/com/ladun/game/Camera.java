@@ -25,27 +25,31 @@ public class Camera {
 	
 	private float cameraSensitivity = 400;
 	
+	private GameScene gs;
 	private Robot robot;
 	
-	public Camera(GameManager gm,String tag) throws AWTException
+	public Camera(GameManager gm,GameScene gs,String tag) throws AWTException
 	{
 		this.robot = new Robot();
 		this.targetTag = tag;
 		this.target = gm.getObject(targetTag);
+		this.gs =gs;
 	}
 	
 	public void update(GameContainer gc,GameManager gm)
 	{
-		if(gc.getInput().isKey(KeyEvent.VK_SPACE) || characterLock) {
+		if((gc.getInput().isKey(KeyEvent.VK_SPACE) &&!gs.isChatting())|| characterLock) {
 			
 			focusTarget(gc,gm);
 						
 		}
 		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_Y))
-			characterLock = !characterLock;
-		if(gc.getInput().isKeyDown(KeyEvent.VK_L))
-			mouseLock = !mouseLock;
+		if(!gs.isChatting()) {
+			if(gc.getInput().isKeyDown(KeyEvent.VK_Y))
+				characterLock = !characterLock;
+			if(gc.getInput().isKeyDown(KeyEvent.VK_L))
+				mouseLock = !mouseLock;
+		}
 		
 		if(mouseLock) {
 			/*

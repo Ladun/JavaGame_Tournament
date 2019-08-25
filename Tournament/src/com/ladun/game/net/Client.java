@@ -174,7 +174,7 @@ public class Client {
 				
 				try {
 					if(Integer.parseInt(messages[1]) > clientID) {
-						gm.getChatBox().addTexts(messages[2] + " connect");
+						gm.getChatBox().addTexts(messages[2] + " connect",0xff7b7151);
 					}
 				}catch(NumberFormatException e) {
 					break;
@@ -194,8 +194,11 @@ public class Client {
 				if(_p == null)
 					return;
 				
-				gm.getChatBox().addTexts(_p.getNickname() + " disconnect");
+				gm.getChatBox().addTexts(_p.getNickname() + " disconnect",0xff7b7151);
 				((GameScene)gm.getScene("InGame")).removePlayer(sb.toString());
+				
+
+				((GameScene)gm.getScene("InGame")).setAllClientReady(false);
 				
 				break;
 			}
@@ -456,6 +459,16 @@ public class Client {
 					gm.getAnnounce().addString("모든 플레이어의 팀 색깔이 동일합니다.",0xff000000);
 					gm.getAnnounce().show(5);
 					break;
+				case 0x03:
+					// type, nickname, content, teamNumber
+					// chatting Packet			
+					try {
+						gm.getChatBox().addTexts(netArgs[1] + ": "+ netArgs[2],TeamColor.getColor(Integer.parseInt(netArgs[3])));
+					} catch (NumberFormatException e) {
+						System.out.println("Wrong Chatting Packet( 0x07-0x03 )");
+						dumpPacket(packet);
+						break;
+					}
 				}
 				break;
 			}

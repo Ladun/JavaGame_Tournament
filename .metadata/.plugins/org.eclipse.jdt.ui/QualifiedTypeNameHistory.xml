@@ -7,7 +7,6 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.projectile.Bullet"/>
 <fullyQualifiedTypeName name="java.lang.System"/>
 <fullyQualifiedTypeName name="com.ladun.game.net.Client"/>
-<fullyQualifiedTypeName name="java.lang.Runnable"/>
 <fullyQualifiedTypeName name="com.ladun.tournamentserver.Timeout"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.Collider.Type"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.GameScene"/>
@@ -42,13 +41,20 @@
 <fullyQualifiedTypeName name="com.ladun.game.net.Client.ServerState"/>
 <fullyQualifiedTypeName name="java.awt.Font"/>
 <fullyQualifiedTypeName name="java.io.File"/>
-<fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="java.awt.event.KeyEvent"/>
 <fullyQualifiedTypeName name="java.awt.MouseInfo"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.TempObject"/>
 <fullyQualifiedTypeName name="java.lang.FunctionalInterface"/>
-<fullyQualifiedTypeName name="com.ladun.game.Scene.AbstractScene"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.LoadingScene"/>
-<fullyQualifiedTypeName name="com.ladun.engine.Time"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
+<fullyQualifiedTypeName name="com.ladun.game.Announce"/>
+<fullyQualifiedTypeName name="com.ladun.engine.Time"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Entity.AttackObject"/>
+<fullyQualifiedTypeName name="com.ladun.engine.audio.SoundClip"/>
+<fullyQualifiedTypeName name="java.lang.Runnable"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.UI.Slider"/>
+<fullyQualifiedTypeName name="javax.management.openmbean.OpenDataException"/>
+<fullyQualifiedTypeName name="com.ladun.game.Scene.AbstractScene"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.UI.TextBox"/>
+<fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 </qualifiedTypeNameHistroy>

@@ -19,6 +19,7 @@ import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
 import com.ladun.game.objects.UI.Button;
 import com.ladun.game.objects.UI.Slider;
+import com.ladun.game.objects.UI.TextBox;
 
 public class GameScene extends AbstractScene{
 
@@ -50,6 +51,8 @@ public class GameScene extends AbstractScene{
 	private Slider volumeSlider;
 	private Button exitButton;
 	private boolean optionWindowShow;	
+	
+	private TextBox chatTextBox;
 	//-----------------------------------------
 	private boolean jobSelectButtonShow;
 	private float jSBMovePercent; // JobSelectButtonMovePercent;
@@ -64,7 +67,7 @@ public class GameScene extends AbstractScene{
 		this.name = "InGame";		
 		//this.objects.add(new Player(1,1,this));
 		try {
-			this.camera = new Camera(gm,"Player");
+			this.camera = new Camera(gm,this,"Player");
 		}
 		catch(AWTException e0) {
 			System.out.println("Camera AWTException");
@@ -90,6 +93,8 @@ public class GameScene extends AbstractScene{
 		}
 
 		volumeSlider =new Slider(gc.getWidth() / 2 - 100, gc.getHeight() /2 - 200, 200, 35, 20, .7f, 0xffcccccc, 0x66ffffff);
+		
+		chatTextBox = new TextBox(Renderer.ALLIGN_CENTER, gc.getHeight() - 150, 20, 0xff000000, 20, "채팅을 입력해주세요");
 		//---------------------------------------------------
 		return true;
 	}
@@ -110,12 +115,27 @@ public class GameScene extends AbstractScene{
 		mapUpdate(gc,gm);
 
 		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
-			gm.getChatBox().addTexts("Hello this is Chat Box");
+			//gm.getChatBox().addTexts("Hello this is Chat Box");
+			if(chatTextBox.isChatOn()) {
+				if(chatTextBox.getString().length() > 0) {
+					gm.getChatBox().addTexts(gm.getNickname() + ": "+chatTextBox.getString(),TeamColor.getColor(localPlayer.getTeamNumber()));
+					
+					gm.getClient().send((byte)0x07, new Object[] {(char)0x03,gm.getNickname(),chatTextBox.getString(),localPlayer.getTeamNumber()});
+					chatTextBox.lengthSetZero();
+				}
+			}
+			chatTextBox.setChatOn(!chatTextBox.isChatOn());
 		}		
-		else if(gc.getInput().isKeyDown(KeyEvent.VK_C))
-			inventoryView = !inventoryView;
-		else if(gc.getInput().isKeyDown(KeyEvent.VK_ESCAPE))
-			optionWindowShow = !optionWindowShow;
+		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
+			if(!isChatting())
+				inventoryView = !inventoryView;
+		if(gc.getInput().isKeyDown(KeyEvent.VK_ESCAPE)){
+			if(chatTextBox.isChatOn()) {
+				chatTextBox.setChatOn(false);
+			}else {
+				optionWindowShow = !optionWindowShow;
+			}
+		}
 		
 		if(optionWindowShow) {
 			volumeSlider.update(gc, gm);
@@ -139,6 +159,9 @@ public class GameScene extends AbstractScene{
 				objects.clear();
 				gm.changeScene("MainMenu");
 			}
+		}
+		if(chatTextBox.isChatOn()) {
+			chatTextBox.update(gc, gm);
 		}
 		
 
@@ -224,6 +247,9 @@ public class GameScene extends AbstractScene{
 			r.drawString("SOUND", volumeSlider.getPosX(), volumeSlider.getPosY() - 40, 35, 0xffffffff);
 			volumeSlider.render(gc, r);
 			exitButton.render(gc, r);
+		}
+		if(chatTextBox.isChatOn()) {
+			chatTextBox.render(gc, r);
 		}
 		
 		
@@ -525,7 +551,9 @@ public class GameScene extends AbstractScene{
 		
 		return currentMap.getHeight(tileX, tileY);		
 	}
-	
+	public boolean isChatting() {
+		return chatTextBox.isChatOn();
+	}
 	
 	public Player getLocalPlayer() {
 		return localPlayer;

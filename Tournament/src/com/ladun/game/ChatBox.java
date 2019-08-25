@@ -10,6 +10,7 @@ public class ChatBox {
 	
 	private String[] texts;
 	private float[] timers;
+	private int[] colors;
 	private int head;	
 	
 	private boolean chatting;
@@ -17,6 +18,7 @@ public class ChatBox {
 	public ChatBox() {
 		texts = new String[MAX_HEIGHT];
 		timers = new float[MAX_HEIGHT];
+		colors = new int[MAX_HEIGHT];
 	}
 	
 	public void update(GameContainer gc, GameManager gm){
@@ -38,14 +40,15 @@ public class ChatBox {
 			int index = (head - i) < 0 ? MAX_HEIGHT + (head - i) : head - i;
 			if(texts[index] != null && texts[index].length() > 0) {
 				if(timers[index] > 0)
-					r.drawString(texts[index], 20, gc.getHeight() - 220 - 30* (i -  1), 25, 0xff000000);//0xffff9447);
+					r.drawString(texts[index], 20, gc.getHeight() - 220 - 30* (i -  1), 25, colors[index]);//0xffff9447);
 			}
 		}
 	}
 	
-	public void addTexts(String text) {
+	public void addTexts(String text,int color) {
 		texts[head] = text;
 		timers[head] =7;
+		colors[head] = color;
 		head = (head + 1) % MAX_HEIGHT;
 		
 	}
