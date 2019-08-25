@@ -176,7 +176,7 @@ public class Server {
 				clientDisconnect(_clientID);
 				
 
-				System.out.printf("[%s:%d] %s (clientID: %d) Disconnect\n",address.getHostAddress() , port,nickname, _clientID );			
+				System.out.printf("[%s:%d] %s (clientID: %d) Disconnect\n",address.getHostAddress() , port,nickname, clientID );			
 				
 				break;
 			// Value Change--------------------------------------------------------

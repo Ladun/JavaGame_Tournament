@@ -175,6 +175,7 @@ public class MainMenuScene extends AbstractScene{
 
 			@Override
 			public void run() {
+					
 				if(!gm.getClient().connect()) {
 					gm.getAnnounce().addString("잘못된 주소 형식입니다", Announce.DEFAULT_COLOR);
 					gm.getAnnounce().show(5);

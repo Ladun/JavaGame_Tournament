@@ -113,7 +113,7 @@ public class Client {
 			}
 		}
 		
-		serverState = ServerState.CLOSE;
+serverState = ServerState.CLOSE;
 		// Send connection packet to server
 		StringBuilder sb =new StringBuilder();
 		BinaryWritter bw = new BinaryWritter();	
