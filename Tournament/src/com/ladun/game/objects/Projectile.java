@@ -13,9 +13,12 @@ public class Projectile extends GameObject{
 	public enum Type{ ARROW, STONE};
 	
 	private String attackerTag;
+	private String imageName;
 	
 	private Type type;
-	private int anim = 0;
+	private float anim = 0;
+	private int animMax= 0;
+	private float animSpeed;
 	
 	private float xPivot;
 	private float yPivot;
@@ -34,6 +37,7 @@ public class Projectile extends GameObject{
 	
 	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";	
+		this.addComponent(new CircleCollider(this));
 
 		this.gs = gs;
 		this.width = 64;
@@ -41,8 +45,7 @@ public class Projectile extends GameObject{
 		setType(Type.ARROW);	
 		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
 		
-		
-		this.addComponent(new CircleCollider(this));
+
 	}
 
 	@Override
@@ -55,6 +58,14 @@ public class Projectile extends GameObject{
 			this.active = false;
 		}
 		
+		if(anim >= 1) {
+			anim += Time.DELTA_TIME * animSpeed;
+			if(anim >= animMax) {
+				this.active = false;
+				this.anim = 0;
+			}
+		}
+		
 		this.AdjustPosition();
 		
 		this.updateComponents(gc, gm);
@@ -63,12 +74,12 @@ public class Projectile extends GameObject{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		
-		
-		r.setzDepth((int)(posZ + Math.abs(posY) + height));
+		r.setzDepth(Renderer.LAYER_UI);
+		//r.setzDepth((int)(posZ + Math.abs(posY) + height));
 		//r.drawFillRect((int)posX, (int)posZ, width, height, angle, 0xaff385610);
 		//r.drawFillRect((int)(posX ), (int)(posZ ), tileZ, tileX, c, color);
 		drawShadow(r);
-		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("projectile"), (int)(posX ), (int)(posZ + posY ), anim, 0, xPivot, yPivot, angle);
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)(posX ), (int)(posZ + posY ), (int)anim, 0, xPivot, yPivot, angle);
 		//r.drawRect((int)(posX + width * xPivot), (int)(posZ + height * yPivot), 3, 3, 0, 0xffff0000);
 		
 		this.renderComponents(gc, r);
@@ -79,7 +90,7 @@ public class Projectile extends GameObject{
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
 		if(other instanceof Entity) {
-			this.active = false;
+			Disappear();
 		}
 		else if (other instanceof HitRange || other instanceof Projectile) {
 			//System.out.println("!!");
@@ -90,8 +101,14 @@ public class Projectile extends GameObject{
 			else {
 				displayDamage.setting("cut",getCenterX(), posZ + posY);
 			}
-			this.active = false;
+			Disappear();
 		}
+	}
+	
+	public void Disappear() {
+		anim = 1;
+		speed = 0;
+		findComponent("circleCollider").setEnable(false);
 	}
 	//-------------------------------------------------------------------------------------------------------
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
@@ -114,6 +131,8 @@ public class Projectile extends GameObject{
 		this.damage = damage;
 		this.time = 0;
 		this.active = true;
+		if(findComponent("circleCollider") != null)
+		findComponent("circleCollider").setEnable(true);
 	}
 	private void AdjustPosition()	{
 		//Final position
@@ -147,20 +166,26 @@ public class Projectile extends GameObject{
 		this.type = type;
 		switch(type) {
 		case ARROW:
+			imageName = "arrow";
 			hY = 1;
 			pR = 13;
 			pL = 42;
 			pT = 28;
 			pB = 28;
 			anim = 0;
+			animMax = 9;
+			animSpeed = 18;
 			break;
 		case STONE:
+			imageName = "stone";
 			hY = 3;
 			pR = 14;
 			pL = 14;
 			pT = 14;
 			pB = 14;
-			anim = 1;
+			anim = 0;
+			animMax = 6;
+			animSpeed = 12;
 			break;
 		}
 

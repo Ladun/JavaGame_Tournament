@@ -9,8 +9,11 @@ public abstract class Component {
 
 	protected String tag;
 	protected GameObject parent;
+	protected boolean enable = true;
+	
 	public abstract void update(GameContainer gc,GameManager gm);
 	public abstract void render(GameContainer gc,Renderer r);
+		
 	public String getTag() {
 		return tag;
 	}
@@ -23,6 +26,12 @@ public abstract class Component {
 	}
 	public void setParent(GameObject parent) {
 		this.parent = parent;
+	}
+	public boolean isEnable() {
+		return enable;
+	}
+	public void setEnable(boolean enable) {
+		this.enable = enable;
 	}
 
 }

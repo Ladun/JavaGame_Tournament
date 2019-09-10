@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import com.ladun.tournamentserver.item.ItemDatabase;
 import com.ladun.tournamentserver.util.BinaryWritter;
 
 public class Server {
@@ -42,13 +43,16 @@ public class Server {
 	private SettingClass settings;
 	private int roundCount = 0;
 	//-----------------------------------------------------
-	
+	private ItemDatabase itemDatabase;
+		
 	public Server() {
 		for(int i = 0 ; i < teamPoint.length;i++) {
 			teamPoint[i] = -1;
 		}		
 		getSettingFile();
 		this.port = settings.getPort();
+		
+		itemDatabase = new ItemDatabase();
 	}
 	
 	public void getSettingFile() {

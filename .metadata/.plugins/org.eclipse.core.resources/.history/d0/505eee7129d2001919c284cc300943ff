@@ -1,0 +1,16 @@
+package com.ladun.game.Item;
+
+public class Shop {
+	private boolean active;
+	
+	public Shop() {
+		active = true;
+	}
+	
+	public void update() {
+		
+	}
+	public void render() {
+		
+	}
+}

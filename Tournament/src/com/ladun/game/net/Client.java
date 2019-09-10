@@ -254,7 +254,7 @@ public class Client {
 					break;
 				}
 				case 0x12:{
-					// ValueType, angle, attackIndex
+					// ValueType, posX, posZ, angle, attackIndex
 					sb.append("Player");
 					sb.append(messages[1].trim());		
 						
@@ -262,7 +262,7 @@ public class Client {
 					if(_p == null)
 						return;
 					
-					_p.attack(gc,null, Float.parseFloat(netArgs[1]), Integer.parseInt(netArgs[2]));
+					_p.attack(gc,null,Integer.parseInt(netArgs[1]),Integer.parseInt(netArgs[2]), Float.parseFloat(netArgs[3]), Integer.parseInt(netArgs[4]));
 					
 					break;
 				}

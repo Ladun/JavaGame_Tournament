@@ -39,7 +39,7 @@ public class MainMenuScene extends AbstractScene{
 		
 		textBoxs = new TextBox[2];
 		textBoxs[0] = new TextBox(Renderer.ALLIGN_CENTER,297,25,0xffffffff,21,"(xxx.xxx.xxx.xxx:port)");
-		textBoxs[1] = new TextBox(Renderer.ALLIGN_CENTER,332,25,0xffffffff,21,"별명 입력(최대 8자)");
+		textBoxs[1] = new TextBox(Renderer.ALLIGN_CENTER,332,25,0xffffffff,8,"별명 입력(최대 8자)");
 		startButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -340,76,76, "start_button");
 		optionButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -220,76,76, "option_button");
 		exitButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -100,76,76, "exit_button");

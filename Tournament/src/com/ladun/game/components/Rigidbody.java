@@ -29,7 +29,7 @@ public class Rigidbody extends Component{
 			((Entity)parent).addPosZ((float)(power * s * Time.DELTA_TIME));
 		}
 		if(power > 0) {
-			power -= friction * Time.DELTA_TIME;
+			power -= friction * Time.DELTA_TIME * 1000;
 			if(power < 0) {
 				power = 0;
 			}

@@ -1,0 +1,14 @@
+[
+  {
+    "ID": 0,
+    "Types": [ "STAT_HEALTH" ],
+    "Name": "test",
+    "Options": [ 10 ]
+  },
+  {
+    "ID": 1,
+    "Types": [ "STAT_HEALTH" ,"STAT_MANA"],
+    "Name": "test2",
+    "Options": [ 10 ,20]
+  }
+]

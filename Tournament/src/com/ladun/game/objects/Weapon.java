@@ -9,7 +9,7 @@ import com.ladun.game.util.Util;
 
 public class Weapon extends GameObject{
 	public enum Type{
-		SWORD,BOW,SPEAR
+		SWORD,BOW,SPEAR,DAGGER
 	}
 	private final static float LIMIT_TIME = 1/10f; 
 	
@@ -112,7 +112,7 @@ public class Weapon extends GameObject{
 			mirror = false;
 		}
 	}
-	public void attack(GameContainer gc,GameManager gm, GameScene gs,float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex) {
 		switch(type) {
 		case SWORD:
 			hitRange.setDamage(damage);
@@ -124,16 +124,21 @@ public class Weapon extends GameObject{
 			attacking = true;
 			gc.getResourceLoader().getSound("spear_attack").play();
 			break;
+		case DAGGER:
+			hitRange.setDamage(damage);
+			attacking = true;
+			//gc.getResourceLoader().getSound("dagger_attack").play();			
+			break;
 		case BOW:
 			switch(attackIndex) {
 			case 0:
-				Shoot(gm,gs,_angle);
+				Shoot(gm,gs,posX,posZ,_angle);
 				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			case 1:
-				Shoot(gm,gs,_angle,_angle - 10);
-				gc.getResourceLoader().getSound("bow_attack").play();
-				Shoot(gm,gs,_angle, _angle +10);
+				Shoot(gm,gs,posX,posZ,_angle,_angle - 10);
+				//gc.getResourceLoader().getSound("bow_attack").play();
+				Shoot(gm,gs,posX,posZ,_angle, _angle +10);
 				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			}
@@ -190,19 +195,37 @@ public class Weapon extends GameObject{
 			}
 			
 			break;
+			
+		case DAGGER:
+			if(attackTime >= .1f) {
+				deltaX = 0;
+				deltaZ = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+				float co = (float)Math.cos(Math.toRadians(angle));
+				float si = (float)Math.sin(Math.toRadians(angle));
+				
+				deltaX += Time.DELTA_TIME * 200 * co;
+				deltaZ += Time.DELTA_TIME * 200 * si;
+
+				hitRange.active(posX +deltaX + width * xPivot - 9  +10* co, posZ + posY + deltaZ + height * yPivot  - 9 + 10 * si, 18, 18);
+			}
+			break;
 		}
 		
 	}
-	public void Shoot(GameManager gm,GameScene gs, float _angle) {
-		Shoot(gm,gs,_angle,_angle);
+	public void Shoot(GameManager gm,GameScene gs,int posX,int posZ, float _angle) {
+		Shoot(gm,gs,posX,posZ,_angle,_angle);
 	}
-	public void Shoot(GameManager gm,GameScene gs, float _angle, float spawnAngle) {
+	public void Shoot(GameManager gm,GameScene gs,int posX,int posZ, float _angle, float spawnAngle) {
 		Projectile bullet = (Projectile)gs.getInactiveObject("projectile");
 		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(spawnAngle));
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(spawnAngle)) ;
 
-		float _posX = parent.getCenterX() + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
-		float _posZ = parent.getCenterZ() + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
+		float _posX = posX + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
+		float _posZ = posZ + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
 		
 		if(bullet == null) {
 			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,damage,parent.tag));
@@ -220,8 +243,8 @@ public class Weapon extends GameObject{
 		this.type = type;
 		switch(type) {
 		case SWORD:
-			damage = 18;
-			knockback = 200;
+			damage = 16;
+			knockback = 450;
 			imageName = "sword";
 			width = 64;
 			height = 64;
@@ -231,8 +254,8 @@ public class Weapon extends GameObject{
 			break;
 		case BOW:
 			damage = 15;
-			knockback = 150;
-			projectileSpeed = 1000;
+			knockback = 350;
+			projectileSpeed = 750;
 			imageName = "bow";
 			width = 64;
 			height = 64;
@@ -243,13 +266,24 @@ public class Weapon extends GameObject{
 
 		case SPEAR:
 			damage = 13;
-			knockback = 200;
+			knockback = 450;
 			imageName = "spear";
 			width = 128;
 			height = 64;
 			xPivot = .5f;
 			yPivot = .5f;
 			distanceToParent = 24;
+			break;
+			
+		case DAGGER:
+			damage = 18;
+			knockback = 300;
+			imageName = "dagger";
+			width = 48;
+			height = 32;
+			xPivot = .5f;
+			yPivot = .5f;
+			distanceToParent = 30;
 			break;
 		}
 		
@@ -291,11 +325,11 @@ public class Weapon extends GameObject{
 			case 0:
 				return 0.5f;
 			case 1:
-				return 3f;
+				return 6f;
 			case 2:
 				return 0.5f;
 			case 3:
-				return 0.5f;
+				return 13f;
 			}
 			break;
 
@@ -309,6 +343,18 @@ public class Weapon extends GameObject{
 				return 0.5f;
 			case 3:
 				return 0.5f;
+			}
+			break;
+		case DAGGER:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
 			}
 			break;
 		}

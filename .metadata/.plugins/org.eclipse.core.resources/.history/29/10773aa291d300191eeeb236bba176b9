@@ -1,0 +1,33 @@
+package com.ladun.game.Item;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class ItemDatabase {
+
+	private ArrayList<Item> itemList = new ArrayList<Item>();
+	
+	public ItemDatabase() {
+		
+	}
+	public boolean init() {
+		JsonParser parser = new JsonParser();
+
+		try {
+			
+			Object obj = parser.parse(new FileReader(getClass().getResource("/ItemData.json").getFile()));
+	 
+			JsonObject jsonObject = (JsonObject) obj;
+	 
+	 
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
+}

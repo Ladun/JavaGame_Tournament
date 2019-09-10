@@ -1,0 +1,10 @@
+package com.ladun.game.Item;
+
+public class Shop {
+	private boolean active;
+	
+	publci Shop() {
+		active = true;
+	}
+	
+}

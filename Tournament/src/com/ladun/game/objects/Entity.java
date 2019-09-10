@@ -59,7 +59,7 @@ public abstract class Entity extends GameObject{
 	
 	public void collision(GameObject other) {
 		
-		 if(other.getTag().equalsIgnoreCase("interior")) {
+		 if(other.getTag().equalsIgnoreCase("interior") || other instanceof Player) {
 			 Collider myC 		= (Collider) this.getCollider();
 			 Collider otherC 	= (Collider) other.getCollider();
 
@@ -160,13 +160,6 @@ public abstract class Entity extends GameObject{
 				return true;
 		}
 		return false;
-	}
-
-	public float getCenterX() {
-		return posX + pL + (width - pL - pR) / 2;
-	}
-	public float getCenterZ() {
-		return posZ + pT + (height - pT - pB) / 2;		
 	}
 
 	public float getAnim() {

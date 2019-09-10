@@ -9,9 +9,10 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
-import com.ladun.game.Item;
 import com.ladun.game.Physics;
 import com.ladun.game.Point;
+import com.ladun.game.Item.Item;
+import com.ladun.game.Item.Item.Type;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.TeamColor;
 import com.ladun.game.components.NetworkTransform;
@@ -30,9 +31,16 @@ public class Player extends Entity{
 	
 	private float fcos,fsin;
 	private boolean readyToShoot = false;
-	private int attackIndex = 0;
-	
+	private int attackIndex = 0;	
+
+	//--------------------------------------
+	private int maxMana;
+	private int mana;
+	//--------------------------------------
 	private float reduceAttack_A_Cool = 1f;
+	
+	private float skill_hideTime = 0;
+	private float skill_bowTime = 0;
 	
 	private Weapon weapon;
 	//--------------------------------------	
@@ -77,7 +85,7 @@ public class Player extends Entity{
 				
 		
 		for(int i =0;i < 6;i++) {
-			items[i] = new Item(0);
+			items[i] = new Item(Type.EMPTY,0);
 		}
 		
 		
@@ -114,6 +122,7 @@ public class Player extends Entity{
 							actionCoolDownTime[i]  = 0;
 					}
 				}
+				buffTimer();
 				
 				// Moving ------------------------------------------------------
 				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
@@ -180,13 +189,19 @@ public class Player extends Entity{
 				if(currentMapIndex >= 2) {
 					if(!gs.isChatting()) {
 						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-							if(actionCoolDownTime[0] <= 0) {
+							if(actionCoolDownTime[0]  <= 0) {
 								attackIndex = 0;
 								
 								if(!weapon.isAttacking()) {
 									if(weapon.getType() != Weapon.Type.BOW)	{
-										actionCoolDownTime[0] = .5f * reduceAttack_A_Cool;
-										attack(gc,gm,angle,0);
+										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0);
+										
+										if(skill_hideTime > 0) {
+											hiding = false;
+											gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+											actionCoolDownTime[3] = 4;
+										}
 									}
 									else {
 										readyToShoot = true;
@@ -208,6 +223,9 @@ public class Player extends Entity{
 								case SPEAR:
 									
 									break;
+								case DAGGER:
+									
+									break;
 								}
 							}
 						}
@@ -224,10 +242,19 @@ public class Player extends Entity{
 									
 									break;
 								case BOW:
+									skill_bowTime = 5;
+									reduceAttack_A_Cool = .5f;
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 									
 									break;
 								case SPEAR:
 									
+									break;
+								case DAGGER:
+									skill_hideTime= 10;
+									hiding = true;
+									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 									break;
 								}
 							}
@@ -237,15 +264,19 @@ public class Player extends Entity{
 
 					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
 						if(readyToShoot) {
-		
-							actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+							System.out.println(reduceAttack_A_Cool);
+							if(attackIndex == 0)
+								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+							else
+								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+							
 							readyToShoot = false;
 							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
 							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
 							
 							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
 							weapon.setDstAngle(angle);
-							attack(gc,gm,angle,attackIndex);					
+							attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,attackIndex);					
 						}
 					}
 				}
@@ -329,6 +360,7 @@ public class Player extends Entity{
 				HitRange hr = (HitRange)other;
 				if(!hr.getAttackerTag().equals(tag)) {
 					hit(hr.getDamage(),hr.getAttackerTag(),other.hashCode());
+					System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
 					
 				}
 			}
@@ -343,6 +375,7 @@ public class Player extends Entity{
 			return;
 		hitMain(damage,attackerTag);
 	}
+	
 	@Override
 	public void hit(float damage,String attackerTag,int hashcode) {
 		if(damage == 0)
@@ -394,6 +427,27 @@ public class Player extends Entity{
 	}
 
 	//---------------------------------------------------------------------------------------
+	
+	private void buffTimer() {
+
+		if(skill_bowTime > 0) {
+			skill_bowTime -= Time.DELTA_TIME;
+			if(skill_bowTime <= 0) {
+				reduceAttack_A_Cool = 1;
+				skill_bowTime = 0;						
+			}
+		}
+		if(skill_hideTime > 0) {
+			skill_hideTime -= Time.DELTA_TIME;
+			if(skill_hideTime <= 0) {
+				hiding = false;
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+				skill_hideTime = 0;						
+			}
+		}
+		
+	}
+
 	public void setWeaponType(int t) {
 		switch(t){
 			case 0 :
@@ -408,6 +462,10 @@ public class Player extends Entity{
 				weapon.setType(Weapon.Type.SPEAR);
 				maxHealth = 135;
 				break;
+			case 3:
+				weapon.setType(Weapon.Type.DAGGER);
+				maxHealth = 100;
+				break;
 		}
 		
 		revival();
@@ -415,14 +473,14 @@ public class Player extends Entity{
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
 	}
 	
-	public void attack(GameContainer gc,GameManager gm,float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm,int posX,int posZ,float _angle,int attackIndex) {
 
-		weapon.attack(gc,gm,gs,_angle,attackIndex);			
+		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex);			
 
 		if(localPlayer) {
 			
 			if(gm != null) {
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,angle,attackIndex});
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,posX,posZ,angle,attackIndex});
 					
 			}
 		}

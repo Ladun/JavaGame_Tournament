@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move element &apos;Item.java&apos; to &apos;Tournament/src/com.ladun.game.Item&apos;&#x0D;&#x0A;- Original project: &apos;Tournament&apos;&#x0D;&#x0A;- Destination element: &apos;Tournament/src/com.ladun.game.Item&apos;&#x0D;&#x0A;- Original element: &apos;com.ladun.game.Item.java&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move compilation unit" destination="/src&lt;com.ladun.game.Item" element1="/src&lt;com.ladun.game{Item.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.move" patterns="*" policy="org.eclipse.jdt.ui.moveResources" qualified="false" references="true" stamp="1567938800883" units="1" version="1.0"/>
+</session>

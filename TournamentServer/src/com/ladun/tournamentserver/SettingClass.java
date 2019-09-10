@@ -11,6 +11,8 @@ public class SettingClass {
 	private int roundCount;
 	private int port;
 	
+	
+	
 	public SettingClass(String jsonPath) {	
 		JsonParser parser = new JsonParser();
 

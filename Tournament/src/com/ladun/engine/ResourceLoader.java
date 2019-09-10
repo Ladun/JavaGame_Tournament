@@ -29,7 +29,9 @@ public class ResourceLoader {
 		addImage("sword", "/weapon/Sword.png");
 		addImage("bow", "/weapon/Bow.png");
 		addImage("spear", "/weapon/Spear.png");
-		addImage("projectile", "/weapon/Projectile.png",64,64);	
+		addImage("dagger", "/weapon/Dagger.png");
+		addImage("arrow", "/weapon/Projectile/Arrow.png",64,64);	
+		addImage("stone", "/weapon/Projectile/Stone.png",64,64);	
 		
 		//UI Image Load
 		addImage("hbar", "/UI/HBar.png",334,13);
@@ -45,7 +47,7 @@ public class ResourceLoader {
 		// Buttons
 		addImage("store_button","/UI/StoreButton.png",96,96);
 		addImage("job_button","/UI/JobButton.png",96,96);
-		for(int i = 1; i <= 3;i++) {
+		for(int i = 1; i <= 4;i++) {
 			addImage("jobSelect_button" + i,"/UI/JobSelect/JobSelect" + i + ".png",64,64);
 			
 		}

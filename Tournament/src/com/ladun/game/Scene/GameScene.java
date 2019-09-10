@@ -13,6 +13,7 @@ import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
 import com.ladun.game.Physics;
+import com.ladun.game.Item.Shop;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Interior;
@@ -44,6 +45,7 @@ public class GameScene extends AbstractScene{
 	private boolean inteamWaitRoom = false; // 게임 시작 바로 전에 서버로 데이터를 한 번 보내기 위해서
 	// UI Contents----------------------------------
 	private Button teamChooseButton;
+	private Shop shop;
 	private Button storeButton;
 	private Button jobButton;
 	private Button[] jobSelectButtons;
@@ -81,13 +83,14 @@ public class GameScene extends AbstractScene{
 		
 		this.addObject(a);*/
 		
+		shop = new Shop();
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
 		storeButton = new Button(30, gc.getHeight()/2 -48,96,96,"store_button");
 		jobButton = new Button(gc.getWidth() - 126, gc.getHeight()/2 -48,96,96,"job_button");
 
 		exitButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -100,76,76, "exit_button");
-		jobSelectButtons = new Button[3];
+		jobSelectButtons = new Button[4];
 		for(int i = 0; i < jobSelectButtons.length;i++) {
 			jobSelectButtons[i] =  new Button(gc.getWidth()/2, gc.getHeight()/2 + i * 64,64,64,"jobSelect_button" + (i +1));
 		}
@@ -158,6 +161,7 @@ public class GameScene extends AbstractScene{
 				inteamWaitRoom 		= false; 
 				objects.clear();
 				gm.changeScene("MainMenu");
+				optionWindowShow = false;
 			}
 		}
 		if(chatTextBox.isChatOn()) {
@@ -266,6 +270,8 @@ public class GameScene extends AbstractScene{
 			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("map_icon"), 20, gc.getHeight() - 180, targetMapIndex < 2? 0 : targetMapIndex - 1,	0,0);
 			break;
 		case 1:
+			if(shop.isActive())
+				shop.render(gc,r);
 			storeButton.render(gc, r);
 			jobButton.render(gc, r);
 			if(jobSelectButtonShow || jSBMovePercent != 1) {
@@ -350,6 +356,8 @@ public class GameScene extends AbstractScene{
 		}
 		else if(currentMapIndex == 1) {
 			if(!optionWindowShow) {
+				if(shop.isActive())
+					shop.update(gc,gm);
 				storeButton.update(gc, gm);
 				jobButton.update(gc, gm);
 			}
@@ -366,6 +374,7 @@ public class GameScene extends AbstractScene{
 				}
 			}
 			if(storeButton.isReleased()) {
+				shop.setActive(!shop.isActive());
 				gm.getAnnounce().addString("아직 구현되지 않았습니다", Announce.DEFAULT_COLOR);
 				gm.getAnnounce().show(3f);
 			}

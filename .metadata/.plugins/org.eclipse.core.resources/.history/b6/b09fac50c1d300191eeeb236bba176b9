@@ -1,0 +1,38 @@
+package com.ladun.tournamentserver.item;
+
+public class Item {
+	
+	public enum Type{
+		EMPTY( 1), STAT_HEALTH(2), STAT_MANA(4), STAT_DAMAGE(8), CH_SKILL(16);
+		
+		private final int value;
+		private Type(int value) {
+			this.value = value;
+		}
+		private int getValue() {
+			return value;
+		}
+	}
+	
+	private int type;
+	private int index;
+	
+	
+	public Item(int type,int index) {
+		this.type = type;
+		this.index = index;
+	}
+
+	//---------------------------------------------------------------
+	
+	//---------------------------------------------------------------
+	public int getIndex() {
+		return index;
+	}
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
+	public void hasType(Type type)
+	
+}

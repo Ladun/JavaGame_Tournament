@@ -1,8 +1,0 @@
-package com.ladun.tournamentserver;
-
-public class SettingClass {
-	
-	public SettingClass(String jsonPath) {
-		
-	}
-}

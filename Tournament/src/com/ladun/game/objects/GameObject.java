@@ -28,7 +28,8 @@ public abstract class GameObject
 	{
 		for(Component c : components)
 		{
-			c.update(gc, gm);
+			if(c.isEnable())
+				c.update(gc, gm);
 		}
 	}
 	
@@ -36,7 +37,8 @@ public abstract class GameObject
 	{
 		for(Component c : components)
 		{
-			c.render(gc, r);
+			if(c.isEnable())
+				c.render(gc, r);
 		}
 	}
 	
@@ -72,7 +74,14 @@ public abstract class GameObject
 		}
 		return null;
 	}
-	
+
+
+	public float getCenterX() {
+		return posX + pL + (width - pL - pR) / 2;
+	}
+	public float getCenterZ() {
+		return posZ + pT + (height - pT - pB) / 2;		
+	}
 	
 	public float getAngle() {
 		return angle;

@@ -59,8 +59,14 @@ public class Renderer {
 			e.printStackTrace();
 		}
 		
-		pW = gc.getWidth();
-		pH = gc.getHeight();
+		pW = Window.WIDTH;
+		pH = Window.HEIGHT;
+		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
+		zb = new int[p.length];
+		lm = new int[p.length];
+		lb = new int[p.length];
+	}
+	public void init() {
 		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
 		zb = new int[p.length];
 		lm = new int[p.length];

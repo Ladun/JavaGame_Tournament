@@ -36,7 +36,7 @@ public class CircleCollider extends Collider{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		//r.drawCircle(centerX, centerZ + y, radius, 0xffa6ec90);
+		r.drawCircle(centerX, centerZ + y, radius, 0xffa6ec90);
 		
 	}
 	//---------------------------------------------------------------

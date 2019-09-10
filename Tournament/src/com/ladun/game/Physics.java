@@ -23,11 +23,14 @@ public class Physics {
 		for(int i = 0; i < colliders.size();i++)
 		{
 			Collider c0 = colliders.get(i);
-			
+			if(!c0.getParent().isActive())
+				continue;
 			
 			for(int j = i + 1; j < colliders.size();j++)
 			{
 				Collider c1 = colliders.get(j);
+				if(!c1.getParent().isActive())
+					continue;
 
 				
 				switch(c0.getType()) {

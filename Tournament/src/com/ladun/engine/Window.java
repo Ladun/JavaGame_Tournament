@@ -5,6 +5,8 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -13,6 +15,9 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 public class Window {
+
+	public static final int WIDTH = 1280;
+	public static final int HEIGHT = 720;
 	
 	private JFrame frame;
 	private BufferedImage image;
@@ -26,7 +31,7 @@ public class Window {
 	{
 		this.gc =gc;
 		
-		image = new BufferedImage(gc.getWidth(),gc.getHeight(),BufferedImage.TYPE_INT_RGB);
+		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 		canvas = new Canvas();
 		Dimension s = new Dimension((int)(gc.getWidth() * gc.getScale()),(int)(gc.getHeight()* gc.getScale()));
 		canvas.setPreferredSize(s);
@@ -47,20 +52,77 @@ public class Window {
 				gc.GameExit();
 			}
 		});
+		frame.addComponentListener(new ComponentListener() {
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 
 		
 		canvas.createBufferStrategy(2);
 		bs= canvas.getBufferStrategy();
 		g = bs.getDrawGraphics();
-		
 
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Icon.png")));
-		
+		 
 	}
 	public void update(){
 		g.drawImage(image,0, 0, canvas.getWidth(), canvas.getHeight(), null);
 		gc.getRenderer().processText();
 		bs.show();
+	}
+	public void fullScreen() {
+		frame.dispose();
+		frame.setUndecorated(true);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
+		
+		if(screenSize.width / resolution == 16 && screenSize.height / resolution == 9) {
+			//canvas.setPreferredSize(screenSize);
+			//canvas.setMaximumSize(screenSize);
+			//canvas.setMinimumSize(screenSize);
+			//gc.setWidth(screenSize.width);
+			//gc.setHeight(screenSize.height);
+
+			//image = new BufferedImage(gc.getWidth()	,gc.getHeight(),BufferedImage.TYPE_INT_RGB);
+			//gc.getRenderer().init();
+		}
+		
+		frame.setLocation(0, 0);
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
+	public void setScreenSize(int width, int height, float scale) {
+		frame.dispose();
+		frame.setUndecorated(false);
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension d= new Dimension((int)(width * scale), (int)(height * scale));
+		
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	public BufferedImage getImage() {
