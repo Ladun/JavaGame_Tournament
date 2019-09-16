@@ -54,4 +54,9 @@ public class ItemDatabase {
 		}
 		itemList.add(new Item(id, type,name,options));
 	}
+
+	public ArrayList<Item> getItemList() {
+		return itemList;
+	}
+
 }

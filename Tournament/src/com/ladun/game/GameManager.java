@@ -6,6 +6,7 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.Window;
 import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.Item.ItemDatabase;
 import com.ladun.game.Scene.AbstractScene;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.LoadingScene;
@@ -29,6 +30,7 @@ public class GameManager extends AbstractGame {
 	
 	private Announce announce;
 	private ChatBox chatBox;
+	private ItemDatabase itemDatabase;
 	
 	private GameContainer gc;
 	// Fade Value----------------
@@ -53,6 +55,7 @@ public class GameManager extends AbstractGame {
 		client = new Client("localhost",8192,gc,this);
 		//client.connect();
 		chatBox = new ChatBox();
+		itemDatabase = new ItemDatabase();
 		return true;
 	}
 
@@ -185,6 +188,10 @@ public class GameManager extends AbstractGame {
 
 	public void setLoading(boolean loading) {
 		this.loading = loading;
+	}
+
+	public ItemDatabase getItemDatabase() {
+		return itemDatabase;
 	}
 
 	public static void main(String[] args) {

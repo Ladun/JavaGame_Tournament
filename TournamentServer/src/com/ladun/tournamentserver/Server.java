@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import com.ladun.tournamentserver.item.Item;
 import com.ladun.tournamentserver.item.ItemDatabase;
 import com.ladun.tournamentserver.util.BinaryWritter;
 
@@ -599,6 +600,34 @@ public class Server {
 				}
 				break;
 			}
+			// Other Game Packet--------------------------------------------------------
+			// Server -> Client Packet : [header type : clientID :]
+			case 0x08:{
+				
+				StringBuilder sb = new StringBuilder();
+				for(int i = 0; i < itemDatabase.getItemList().size();i++) {
+					Item _item = itemDatabase.getItemList().get(i);
+					
+					bw.clear();
+					sb.setLength(0);
+					bw.write((byte)0x08);
+					sb.append(":");
+					sb.append(_item.getIndex());
+					sb.append(",");
+					sb.append(_item.getTypes());
+					sb.append(",");
+					sb.append(_item.getName());
+					for(int j = 0; j < _item.getOptions().length;j++) {
+						sb.append(",");
+						sb.append(_item.getOptions()[j]);
+					}
+					bw.write(sb.toString().getBytes());
+
+					send(bw.getBytes(), address, port);							
+				}
+				break;
+			}
+			
 			}
 		}
 		

@@ -215,6 +215,8 @@ public class MainMenuScene extends AbstractScene{
 						else {
 							gm.changeScene("InGame");
 							((GameScene)gm.getScene("InGame")).mapLoad(gc,0);
+							
+							gm.getItemDatabase().init(gm);
 						}
 					}
 					gm.setLoading(false);

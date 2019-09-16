@@ -1,0 +1,20 @@
+package com.ladun.game.Item;
+
+import java.util.ArrayList;
+
+import com.ladun.game.GameManager;
+
+public class ItemDatabase {
+
+	private ArrayList<Item> itemList = new ArrayList<Item>();
+
+	public void init(GameManager gm) {
+		
+		gm.getClient()
+	}	
+
+	private void AddItem(int id, int types, String name, int[] options) {
+		
+		itemList.add(new Item(id, types,name,options));
+	}
+}

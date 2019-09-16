@@ -18,7 +18,6 @@ public class Shop {
 		
 	}
 	//---------------------------------------------
-
 	public boolean isActive() {
 		return active;
 	}

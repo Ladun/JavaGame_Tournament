@@ -85,7 +85,7 @@ public class Player extends Entity{
 				
 		
 		for(int i =0;i < 6;i++) {
-			items[i] = new Item(Type.EMPTY,0);
+			//items[i] = new Item(Type.EMPTY,0);
 		}
 		
 		
@@ -165,7 +165,7 @@ public class Player extends Entity{
 						moving(speed * fcos,speed * fsin);
 					}
 					else {
-						moving(distance * fcos, distance *fsin);
+						moving(distance * fcos, distance * fsin);
 						clickPoints.remove(0);
 						if(clickPoints.size() > 0) {
 							angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));

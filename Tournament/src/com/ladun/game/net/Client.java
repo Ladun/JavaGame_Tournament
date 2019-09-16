@@ -24,6 +24,7 @@ public class Client {
 	public final static byte PACKET_TYPE_VALUECHANGE = 0x03; 
 	public final static byte PACKET_TYPE_OBJECTSPAWN = 0x04; 
 	public final static byte PACKET_TYPE_GAMESTATE = 0x06; 
+	public final static byte PACKET_TYPE_ITEM = 0x08; 
 	
 	public enum Error{
 		NONE, INVALID_HOST,SOCKET_EXCEPTION
@@ -471,6 +472,21 @@ public class Client {
 					}
 				}
 				break;
+
+				// Other Game Packet--------------------------------------------------------
+				// Server -> Client Packet : [header type : item_id, item_types, item_name, item_options.....]
+			case 0x08:{
+
+				netArgs = messages[1].split(",");
+				int[] options = new int[netArgs.length - 3];
+				for(int i = 3;i < netArgs.length;i++) {
+					options[i - 3] = Integer.parseInt(netArgs[i]);
+				}
+				
+				gm.getItemDatabase().AddItem(Integer.parseInt(netArgs[0]), Integer.parseInt(netArgs[1]), netArgs[2].trim(), options);
+				break;
+			}
+			
 			}
 			
 			if(serverState != ServerState.GAME_START)
