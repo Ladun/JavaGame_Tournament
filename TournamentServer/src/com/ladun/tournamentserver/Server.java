@@ -612,7 +612,9 @@ public class Server {
 					sb.setLength(0);
 					bw.write((byte)0x08);
 					sb.append(":");
-					sb.append(_item.getIndex());
+					sb.append(_item.getID());
+					sb.append(",");
+					sb.append(_item.getPrice());
 					sb.append(",");
 					sb.append(_item.getTypes());
 					sb.append(",");

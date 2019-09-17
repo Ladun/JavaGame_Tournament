@@ -14,8 +14,12 @@ public class ItemDatabase {
 		gm.getClient().send(Client.PACKET_TYPE_ITEM,new Object[] {});
 	}	
 
-	public void AddItem(int id, int types, String name, int[] options) {
+	public void AddItem(int id,int price, int types, String name, int[] options) {
 		
-		itemList.add(new Item(id, types,name,options));
+		itemList.add(new Item(id, price, types,name,options));
+	}
+
+	public ArrayList<Item> getItemList() {
+		return itemList;
 	}
 }

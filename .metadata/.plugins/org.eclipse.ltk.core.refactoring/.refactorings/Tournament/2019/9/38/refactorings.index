@@ -1,0 +1,8 @@
+1568618051463	Rename type 'ShopSlote'
+1568697774758	Rename field 'index'
+1568697778435	Rename local variable 'index'
+1568697782875	Rename local variable 'index'
+1568697787771	Rename method 'setIndex'
+1568697792764	Rename method 'getIndex'
+1568698746443	Rename type 'AStart'
+1568723780647	Rename method 'show'

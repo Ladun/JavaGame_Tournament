@@ -1,12 +1,14 @@
 [
   {
     "ID": 0,
+    "Price":  10,
     "Types": [ "STAT_HEALTH" ],
     "Name": "test",
     "Options": [ 10 ]
   },
   {
     "ID": 1,
+    "Price":  100,
     "Types": [ "STAT_HEALTH" ,"STAT_MANA"],
     "Name": "test2",
     "Options": [ 10 ,20]

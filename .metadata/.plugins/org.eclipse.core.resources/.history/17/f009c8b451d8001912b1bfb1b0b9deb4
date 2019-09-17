@@ -1,0 +1,13 @@
+package com.ladun.game.Item;
+
+public class ShopSlot {
+	
+	public ShopSlot() {
+		
+	}
+	
+	public void update(GameContainer gc, GameManager gm) {
+		
+	}
+
+}

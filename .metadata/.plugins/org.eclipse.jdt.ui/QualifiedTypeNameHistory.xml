@@ -57,7 +57,7 @@
 <fullyQualifiedTypeName name="com.ladun.engine.Window"/>
 <fullyQualifiedTypeName name="java.awt.image.BufferedImage"/>
 <fullyQualifiedTypeName name="com.ladun.game.Item.Type"/>
-<fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="com.ladun.tournamentserver.item.Item.Type"/>
+<fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 </qualifiedTypeNameHistroy>

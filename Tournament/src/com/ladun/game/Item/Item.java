@@ -13,16 +13,18 @@ public class Item {
 			return value;
 		}
 	}
-	
+
+	private int id;
+	private int price;
 	private int types;
-	private int index;
 	private String name;
 	
 	private int[] options;
 	
 	
-	public Item(int index,int types,String name,int[] options) {
-		this.index = index;
+	public Item(int id, int price,int types,String name,int[] options) {
+		this.id = id;
+		this.price = price;
 		this.types = types;
 		this.name = name;
 		this.options = options;
@@ -31,11 +33,11 @@ public class Item {
 	//---------------------------------------------------------------
 	
 	//---------------------------------------------------------------
-	public int getIndex() {
-		return index;
+	public int getID() {
+		return id;
 	}
-	public void setIndex(int index) {
-		this.index = index;
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 	public int getTypes() {
@@ -60,6 +62,14 @@ public class Item {
 
 	public void setOptions(int[] options) {
 		this.options = options;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
 	}
 
 	public int getOptionValue(Type type) {

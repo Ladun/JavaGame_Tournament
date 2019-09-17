@@ -292,7 +292,7 @@ public class GameScene extends AbstractScene{
 		r.drawImage(gc.getResourceLoader().getImage("inv"),ltX,ltY,0 );
 		
 		for(int i = 0; i < 6;i++) {
-			int itemIndex = localPlayer.getItems()[i].getIndex();
+			int itemIndex = localPlayer.getItems()[i].getID();
 			
 			r.drawImageTile((ImageTile)(gc.getResourceLoader().getImage("items")),
 					ltX + 15 + 70 * (i % 2) , ltY + 15 + 64 * (i / 2),
@@ -375,6 +375,9 @@ public class GameScene extends AbstractScene{
 			}
 			if(storeButton.isReleased()) {
 				shop.setActive(!shop.isActive());
+				if(shop.isActive())
+					shop.settingSlot(gc, gm);
+				
 				gm.getAnnounce().addString("아직 구현되지 않았습니다", Announce.DEFAULT_COLOR);
 				gm.getAnnounce().show(3f);
 			}

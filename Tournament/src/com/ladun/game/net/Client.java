@@ -474,16 +474,16 @@ public class Client {
 				break;
 
 				// Other Game Packet--------------------------------------------------------
-				// Server -> Client Packet : [header type : item_id, item_types, item_name, item_options.....]
+				// Server -> Client Packet : [header type : item_id, item_price, item_types, item_name, item_options.....]
 			case 0x08:{
 
 				netArgs = messages[1].split(",");
 				int[] options = new int[netArgs.length - 3];
-				for(int i = 3;i < netArgs.length;i++) {
-					options[i - 3] = Integer.parseInt(netArgs[i]);
+				for(int i = 4;i < netArgs.length;i++) {
+					options[i - 4] = Integer.parseInt(netArgs[i]);
 				}
 				
-				gm.getItemDatabase().AddItem(Integer.parseInt(netArgs[0]), Integer.parseInt(netArgs[1]), netArgs[2].trim(), options);
+				gm.getItemDatabase().AddItem(Integer.parseInt(netArgs[0]), Integer.parseInt(netArgs[1]), Integer.parseInt(netArgs[2]), netArgs[3].trim(), options);
 				break;
 			}
 			

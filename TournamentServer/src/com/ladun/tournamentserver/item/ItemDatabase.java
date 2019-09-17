@@ -34,14 +34,14 @@ public class ItemDatabase {
 				if(options.length != types.length)
 					continue;
 				
-				AddItem(jsonObj.get("ID").getAsInt(),types,jsonObj.get("Name").getAsString(),options);
+				AddItem(jsonObj.get("ID").getAsInt(),jsonObj.get("Price").getAsInt(),types,jsonObj.get("Name").getAsString(),options);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void AddItem(int id, String[] types, String name, int[] options) {
+	private void AddItem(int id,int price, String[] types, String name, int[] options) {
 		int type = 0;
 		for(int i = 0; i < types.length;i++) {
 			try {
@@ -52,7 +52,7 @@ public class ItemDatabase {
 				return;
 			}
 		}
-		itemList.add(new Item(id, type,name,options));
+		itemList.add(new Item(id,price, type,name,options));
 	}
 
 	public ArrayList<Item> getItemList() {
