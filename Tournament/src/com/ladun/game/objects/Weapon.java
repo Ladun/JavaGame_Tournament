@@ -4,6 +4,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
+import com.ladun.game.Item.Item;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.util.Util;
 
@@ -14,7 +15,7 @@ public class Weapon extends GameObject{
 	private final static float LIMIT_TIME = 1/10f; 
 	
 	private Type type;
-	private Entity parent;
+	private Player parent;
 	
 	private int damage;
 	private int knockback;
@@ -41,7 +42,7 @@ public class Weapon extends GameObject{
 	
 	
 	
-	public Weapon(Entity parent) {
+	public Weapon(Player parent) {
 		
 		this.parent = parent;
 		width = 64;
@@ -49,7 +50,7 @@ public class Weapon extends GameObject{
 		setType(Type.BOW);
 		this.posY = -16;
 		
-		hitRange = new HitRange(this,HitRange.Type.CIRCLE,damage,parent.tag);
+		hitRange = new HitRange(this,HitRange.Type.CIRCLE,getDamage(),parent.tag);
 		srcAngle = parent.angle;
 		dstAngle = parent.angle;
 	}
@@ -115,17 +116,17 @@ public class Weapon extends GameObject{
 	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex) {
 		switch(type) {
 		case SWORD:
-			hitRange.setDamage(damage);
+			hitRange.setDamage(getDamage());
 			attacking = true;
 			gc.getResourceLoader().getSound("sword_attack").play();
 			break;
 		case SPEAR:
-			hitRange.setDamage(damage);
+			hitRange.setDamage(getDamage());
 			attacking = true;
 			gc.getResourceLoader().getSound("spear_attack").play();
 			break;
 		case DAGGER:
-			hitRange.setDamage(damage);
+			hitRange.setDamage(getDamage());
 			attacking = true;
 			//gc.getResourceLoader().getSound("dagger_attack").play();			
 			break;
@@ -228,10 +229,10 @@ public class Weapon extends GameObject{
 		float _posZ = posZ + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
 		
 		if(bullet == null) {
-			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,damage,parent.tag));
+			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(),parent.tag));
 		}
 		else {
-			bullet.setting(_posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, damage,parent.tag);
+			bullet.setting(_posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(),parent.tag);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -288,6 +289,10 @@ public class Weapon extends GameObject{
 		}
 		
 		
+	}
+	
+	public int getDamage() {
+		return parent.getItemStat(Item.Type.STAT_DAMAGE) + damage;
 	}
 	
 	public void setDstAngle(float dstAngle) {

@@ -1,0 +1,10 @@
+package com.ladun.game.Item;
+
+public class Tooltip {
+	
+	
+	public void update(GameContainer gc, GameManager gm) {
+		
+	}
+
+}

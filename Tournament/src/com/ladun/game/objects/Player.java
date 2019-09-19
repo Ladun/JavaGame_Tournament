@@ -69,7 +69,7 @@ public class Player extends Entity{
 		this.pB = 0;
 		this.pT = 30;
 		
-		this.speed 		= 200;
+		this.moveSpeed 		= 200;
 		this.jump		= -7f;		
 		this.animSpeed = 12;
 		
@@ -77,7 +77,6 @@ public class Player extends Entity{
 		this.gm = gs.getGm();
 		
 		this.localPlayer = localPlayer;
-		this.maxHealth 	= 100;
 		
 		this.weapon = new Weapon(this);
 		this.maxHealth 	= 100;
@@ -85,7 +84,7 @@ public class Player extends Entity{
 				
 		
 		for(int i =0;i < 6;i++) {
-			//items[i] = new Item(Type.EMPTY,0);
+			items[i] = new Item();
 		}
 		
 		
@@ -161,8 +160,8 @@ public class Player extends Entity{
 				
 				if(clickPoints.size() > 0) {
 					float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
-					if(distance >= speed  * Time.DELTA_TIME) {
-						moving(speed * fcos,speed * fsin);
+					if(distance >= getMoveSpeed()  * Time.DELTA_TIME) {
+						moving(getMoveSpeed() * fcos,getMoveSpeed() * fsin);
 					}
 					else {
 						moving(distance * fcos, distance * fsin);
@@ -341,7 +340,7 @@ public class Player extends Entity{
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
-		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/maxHealth)), 13, 0, 0xff63c564);
+		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
 		
 
 		if(currentMapIndex > 0)
@@ -418,7 +417,7 @@ public class Player extends Entity{
 	
 	@Override
 	public void revival() {
-		this.health = maxHealth;
+		this.health = getMaxHealth();
 
 		if(localPlayer)
 			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00,null});
@@ -546,7 +545,37 @@ public class Player extends Entity{
 	public Item[] getItems() {
 		return items;
 	}
+	public int emptyItemSlot() {
+		for(int i =0; i < 6; i++) {
+			if(items[i].getID() == -1) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	//---------------------------------------------------------------------------------------
+	
+	public int getItemStat(Item.Type statType) {
+		int itemStat = 0;
+		for(int i = 0; i < 6; i++) {
+			if(items[i] == null || items[i].getID() == -1)
+				continue;
+			if(items[i].hasType(statType)) {
+				itemStat += items[i].getOptionValue(statType);
+				
+			}
+		}
+		return itemStat;
+	}
+	
+	public float getMoveSpeed() {
+		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED);
+	}
+	
+	public float getMaxMana() {
+		return maxMana + getItemStat(Item.Type.STAT_MANA);
+	}
+	
 	public float getCoolDownPercent(int i) {
 		if(i >= 4) 
 			return 1;
@@ -576,6 +605,11 @@ public class Player extends Entity{
 	public Weapon getWeapon() {
 		return weapon;
 	}
+	@Override
+	public float getMaxHealth() {
+		return maxHealth + getItemStat(Item.Type.STAT_HEALTH);
+	}
+	
 	@Override 
 	public void addPosX(float _x) {
 		int h = (int)Math.signum(_x);

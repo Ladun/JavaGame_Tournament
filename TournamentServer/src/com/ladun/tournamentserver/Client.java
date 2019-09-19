@@ -2,6 +2,8 @@ package com.ladun.tournamentserver;
 
 import java.net.InetAddress;
 
+import com.ladun.tournamentserver.item.Item;
+
 public class Client {
 	
 	private String nickname;
@@ -9,6 +11,8 @@ public class Client {
 	private InetAddress address;
 	private int port;
 	private int clientdID;
+	
+	private int money;
 	
 	private int x,y,z,angle;
 	private int anim, animType;	
@@ -19,6 +23,8 @@ public class Client {
 	private int health;
 	
 	private int currentMapIndex;
+	
+	private Item[] items;
 	//------------------------------------
 	private double chekTime;
 	private int timeSinceCheck;
@@ -29,6 +35,7 @@ public class Client {
 		this.port = port;
 		this.clientdID = clientID;
 		this.nickname = nickname;
+		items = new Item[6];
 	}
 
 	public InetAddress getAddress() {
@@ -127,6 +134,14 @@ public class Client {
 	}
 
 
+	public int getMoney() {
+		return money;
+	}
+
+	public void setMoney(int money) {
+		this.money = money;
+	}
+
 	public int getCurrentMapIndex() {
 		return currentMapIndex;
 	}
@@ -142,6 +157,10 @@ public class Client {
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
 	}
-	
+
+	public Item[] getItems() {
+		return items;
+	}
+
 	
 }

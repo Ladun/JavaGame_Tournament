@@ -6,3 +6,7 @@
 1568697792764	Rename method 'getIndex'
 1568698746443	Rename type 'AStart'
 1568723780647	Rename method 'show'
+1568788172840	Rename local variable 'verticalMaxCount'
+1568788177822	Rename local variable 'horizontalCount'
+1568788184401	Rename local variable 'verticalCount'
+1568871515676	Rename local variable 'itemMana'

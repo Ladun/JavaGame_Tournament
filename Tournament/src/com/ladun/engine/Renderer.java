@@ -22,7 +22,7 @@ import com.ladun.engine.gfx.StringRequest;
 
 public class Renderer {
 	
-	public final static int LAYER_UI = Integer.MAX_VALUE;
+	public final static int LAYER_UI = Integer.MAX_VALUE - 10;
 
 	public final static int ALLIGN_CENTER = -1;
 	public final static int ALLIGN_RIGHT = -2;

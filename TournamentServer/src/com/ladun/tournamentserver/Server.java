@@ -220,10 +220,10 @@ public class Server {
 				case 0x12:
 				case 0x13:
 				case 0x18:
-					// 0x11 : ValueType, x, y, z, angle
-					// 0x12 : ValueType, angle
-					// 0x13 : ValueType, type	
-					// 0x18 : ValueType, hiding		
+					// 0x11: ValueType, x, y, z, angle
+					// 0x12: ValueType, angle
+					// 0x13: ValueType, type	
+					// 0x18: ValueType, hiding	
 					break;
 				case 0x14:{
 					// ValueType, teamNumber
@@ -266,13 +266,36 @@ public class Server {
 					break;
 				}
 				case 0x15:{
-					// ValueType, health, changeType
+					// ValueType, health, changeType, tag
 					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
 					// 
+					
+					
 					Client c = getClient(_clientID);
 					c.setHealth(Integer.parseInt(netArgs[1]));	
 
+					if(netArgs[3].equalsIgnoreCase("null") || netArgs[2].charAt(0) == 0)
+						break;
+					
 					if(c.getHealth() <= 0) {
+						if(netArgs[3].contains("Player")) {
+							Client attacker = getClient(Integer.parseInt(netArgs[3].substring(6)));
+							attacker.setMoney(attacker.getMoney() + 70);
+							
+							sb.setLength(0);
+							bw.clear();
+							bw.write((byte)0x03);
+							sb.append(":");
+							sb.append(attacker.getClientdID());
+							sb.append(":");
+							sb.append((char)0x19);
+							sb.append(",");
+							sb.append(attacker.getMoney());
+							bw.write((sb.toString()).getBytes());	
+							
+							send(bw.getBytes(), attacker.getAddress(), attacker.getPort());
+						}
+						
 						
 						int[] alivePopulation = new int[8];
 						
@@ -323,11 +346,30 @@ public class Server {
 								
 							}else {
 								sb.append((char)0);								
-							}			
-							
+							}									
 							bw.write((sb.toString()).getBytes());			
 							
 							sendToAllClients(bw.getBytes());
+							
+							for(Client _c : clients) {
+								if(_c.getTeamNumber() == aliveTeamIndex) {
+
+									_c.setMoney(_c.getMoney() + 150);
+									
+									sb.setLength(0);
+									bw.clear();
+									bw.write((byte)0x03);
+									sb.append(":");
+									sb.append(_c.getClientdID());
+									sb.append(":");
+									sb.append((char)0x19);
+									sb.append(",");
+									sb.append(_c.getMoney());
+									bw.write((sb.toString()).getBytes());	
+									
+									send(bw.getBytes(), _c.getAddress(), _c.getPort());
+								}
+							}
 						}
 						
 					}
@@ -422,7 +464,42 @@ public class Server {
 
 					bw.write((sb.toString()).getBytes());					
 					sendToAllClients(bw.getBytes());	
+					break;
 				}
+				case 0x20:{
+					// ValueType: Item 
+					// ValueType, itemID, slotIndex, type
+					// type : 0 == buy, 1 == sell
+					try {
+						Client _c = getClient(_clientID);
+						Item item = itemDatabase.getItem(Integer.parseInt(netArgs[1]));
+						_c.getItems()[Integer.parseInt(netArgs[2])] = item;
+						
+						if(netArgs[3].charAt(0) == 0)
+							_c.setMoney(_c.getMoney() - item.getPrice());
+						else if(netArgs[3].charAt(0) == 1)
+							_c.setMoney(_c.getMoney() + item.getPrice() / 2);
+						
+
+						sb.setLength(0);
+						bw.clear();
+						bw.write((byte)0x03);
+						sb.append(":");
+						sb.append(_c.getClientdID());
+						sb.append(":");
+						sb.append((char)0x19);
+						sb.append(",");
+						sb.append(_c.getMoney());
+						bw.write((sb.toString()).getBytes());	
+						
+						send(bw.getBytes(), _c.getAddress(), _c.getPort());
+						
+					} catch(NumberFormatException e) {
+						break;
+					}
+					break;
+				}
+				
 				}
 				
 				break;
@@ -604,7 +681,7 @@ public class Server {
 			// Server -> Client Packet : [header type : clientID :]
 			case 0x08:{
 				
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new StringBuilder(); 
 				for(int i = 0; i < itemDatabase.getItemList().size();i++) {
 					Item _item = itemDatabase.getItemList().get(i);
 					

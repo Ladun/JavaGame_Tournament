@@ -3,7 +3,7 @@ package com.ladun.game.Item;
 public class Item {
 	
 	public enum Type{
-		EMPTY( 1), STAT_HEALTH(2), STAT_MANA(4), STAT_DAMAGE(8), CH_SKILL(16);
+		EMPTY( 1), CH_SKILL(2),STAT_HEALTH(4), STAT_MANA(8), STAT_DAMAGE(16), STAT_MOVESPEED(32), STAT_DEFENCE(64);
 		
 		private final int value;
 		private Type(int value) {
@@ -21,6 +21,13 @@ public class Item {
 	
 	private int[] options;
 	
+	public Item() {
+		id = -1;
+		price = 0;
+		types = Type.EMPTY.getValue();
+		name = "EMPTY";
+		options = new int[1];
+	}
 	
 	public Item(int id, int price,int types,String name,int[] options) {
 		this.id = id;
@@ -71,11 +78,22 @@ public class Item {
 	public void setPrice(int price) {
 		this.price = price;
 	}
+	
+	public int typeCount() {
+		int count = 0;
+		for(int i = 1; i <= types; i *= 2) {
+			if((types & i) != 0) {
+				count++;
+			}
+		}
+
+		return count;
+	}
 
 	public int getOptionValue(Type type) {
 		int index = 0;
-		for(int i = 1; i < type.value; i *= 2) {
-			if((types & type.value) == type.value) {
+		for(int i = 2; i < type.value; i *= 2) {
+			if((types & i) != 0) {
 				index++;
 			}
 		}
@@ -85,7 +103,7 @@ public class Item {
 	}
 	
 	public boolean hasType(Type type) {
-		return (types & type.getValue()) == type.getValue();
+		return (types & type.getValue()) != 0;
 	}
 	
 }

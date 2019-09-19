@@ -1,16 +1,72 @@
 [
   {
     "ID": 0,
-    "Price":  10,
+    "Price": 10,
     "Types": [ "STAT_HEALTH" ],
     "Name": "test",
     "Options": [ 10 ]
   },
   {
     "ID": 1,
-    "Price":  100,
-    "Types": [ "STAT_HEALTH" ,"STAT_MANA"],
+    "Price": 100,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
     "Name": "test2",
-    "Options": [ 10 ,20]
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 2,
+    "Price": 100,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 3,
+    "Price": 100,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 4,
+    "Price": 100,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 5,
+    "Price": 100,
+    "Types": [ "STAT_DAMAGE", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 6,
+    "Price": 750,
+    "Types": [ "STAT_MOVESPEED", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 7,
+    "Price": 939,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 8,
+    "Price": 999,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
+  },
+  {
+    "ID": 9,
+    "Price": 1000,
+    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
+    "Name": "test2",
+    "Options": [ 10, 20 ]
   }
 ]

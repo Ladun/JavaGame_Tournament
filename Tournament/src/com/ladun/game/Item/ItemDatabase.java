@@ -19,6 +19,15 @@ public class ItemDatabase {
 		itemList.add(new Item(id, price, types,name,options));
 	}
 
+
+	public Item getItem(int itemID) {
+		for(Item _item : itemList) {
+			if(_item.getID() == itemID)
+				return _item;
+		}
+		return null;
+	}
+	
 	public ArrayList<Item> getItemList() {
 		return itemList;
 	}

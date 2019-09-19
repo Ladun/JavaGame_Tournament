@@ -1,0 +1,117 @@
+package com.ladun.game.Item;
+
+import java.util.ArrayList;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+import com.ladun.game.Scene.GameScene;
+
+public class Shop {
+
+	private static final int TYPE_INTERVAL = 16;	
+	public enum JobType {
+		Public(0) ,Warrior(1),Archer(2) ,Spear(3), Assasin(4);
+		
+		private final int value;
+		private JobType(int value) {
+			this.value = value * TYPE_INTERVAL;
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	private final int SLOT_GAP = 30;
+	private final int SLOT_SIDE_GAP = 100;
+	
+	private JobType jobType;
+	private boolean active;	
+	private Tooltip tooltip;
+	private GameScene gs;
+	
+	private ArrayList<ShopSlot> slots = new ArrayList<ShopSlot>();
+	
+	public Shop(GameScene gs) {
+		this.gs = gs;
+		active = false;
+		jobType = JobType.Public;
+	}
+	
+	public void update(GameContainer gc, GameManager gm) {
+		if(!active)
+			return;
+		
+		for(ShopSlot _slot : slots) {
+			if(_slot.isActive())
+				_slot.update(gc, gm);
+		}
+	}
+	public void render(GameContainer gc, Renderer r) {
+		
+		for(ShopSlot _slot : slots) {
+			if(_slot.isActive())
+				_slot.render(gc, r);
+		}
+	}
+	
+	public void settingSlot(GameContainer gc, GameManager gm) {
+		
+		active = true;
+		
+		int horizontalMaxCount = (gc.getWidth() - SLOT_SIDE_GAP * 4) / (ShopSlot.getWidth() + SLOT_GAP);
+		int horizontalCount = 0;
+		
+		int verticalCount= 0;
+				
+		int slotIndex = 0;
+		for(Item _item : gm.getItemDatabase().getItemList()) {
+			if(_item.getID() / TYPE_INTERVAL == jobType.getValue() / TYPE_INTERVAL) {
+				if(slotIndex < slots.size()){
+					slots.get(slotIndex).setItem(_item,SLOT_SIDE_GAP * 2+ (ShopSlot.getWidth() + SLOT_GAP) * horizontalCount , SLOT_SIDE_GAP + (ShopSlot.getHeight() + SLOT_GAP) * verticalCount);
+					slotIndex++;
+				}else {
+					slots.add(new ShopSlot(this,_item,SLOT_SIDE_GAP * 2+ (ShopSlot.getWidth() + SLOT_GAP) * horizontalCount , SLOT_SIDE_GAP + (ShopSlot.getHeight() + SLOT_GAP) * verticalCount));
+					slotIndex++;
+				}
+				horizontalCount++;
+				
+				if(horizontalCount >= horizontalMaxCount) {
+					verticalCount++;
+					horizontalCount = 0;
+				}
+				
+			}
+		}
+	}
+	public void tooltipSetting(Item item) {
+		tooltip.setActive(true);
+		if(tooltip.isActive()) {
+			
+		}
+	}
+	
+	//---------------------------------------------
+	public boolean isActive() {
+		return active;
+	}
+
+	public JobType getJobType() {
+		return jobType;
+	}
+
+	public void setJobType(JobType jobType) {
+		this.jobType = jobType;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public GameScene getGs() {
+		return gs;
+	}
+	
+	
+}

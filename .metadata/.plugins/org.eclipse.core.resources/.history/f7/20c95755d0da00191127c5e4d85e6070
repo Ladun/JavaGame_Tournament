@@ -1,0 +1,31 @@
+package com.ladun.game.Item;
+
+import java.awt.Color;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+
+public class Tooltip {
+	
+	private String[] content;
+	private int posX,posY;
+	
+	public void update(GameContainer gc, GameManager gm) {
+		
+	}
+	
+	public void render(GameContainer gc, Renderer r) {
+		
+		
+		for(int i = 0; i < content.length; i++) {
+			r.drawText(content[i], posX, posY + i * 16, 0xff000000);
+		}
+	}
+
+	public void setting(String str,int posX,int posY) {
+		content = str.split("\n");
+		this.posX = posX;
+		this.posY = posY;
+	}
+}

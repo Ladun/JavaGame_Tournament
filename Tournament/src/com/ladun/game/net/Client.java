@@ -11,6 +11,7 @@ import java.util.Arrays;
 import com.ladun.engine.GameContainer;
 import com.ladun.game.Announce;
 import com.ladun.game.GameManager;
+import com.ladun.game.Item.Item;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.TeamColor;
 import com.ladun.game.components.NetworkTransform;
@@ -354,6 +355,31 @@ public class Client {
 					
 					break;
 				}
+				case 0x19:{
+					// ValueType, money
+					
+					gm.setMoney(Integer.parseInt(netArgs[1]));
+					
+					break;
+				}
+				case 0x20:{
+					// ValueType: Item Change
+					// ValueType, itemID, slotIndex, money
+					
+					sb.append("Player");
+					sb.append(messages[1].trim());	
+					
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+					try {
+						Item item = gm.getItemDatabase().getItem(Integer.parseInt(netArgs[1]));
+						_p.getItems()[Integer.parseInt(netArgs[2])] = item;
+					}catch(NumberFormatException e) {
+						break;
+					}
+				}
+				
 				}
 
 				break;
