@@ -412,6 +412,10 @@ public class Player extends Entity{
 	}
 	
 	private void hitMain(float damage,String attackerTag) {
+		damage -= getDefence();
+		if(damage <= 0)
+			damage = 1;
+		
 		health -= damage;
 
 		if(localPlayer)
@@ -596,6 +600,10 @@ public class Player extends Entity{
 	
 	public float getMoveSpeed() {
 		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED) * 10;
+	}
+	
+	public float getDefence() {
+		return getItemStat(Item.Type.STAT_DEFENCE) * 10;
 	}
 	
 	public float getMaxMana() {

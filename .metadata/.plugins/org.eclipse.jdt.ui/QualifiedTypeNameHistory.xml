@@ -34,7 +34,6 @@
 <fullyQualifiedTypeName name="java.lang.FunctionalInterface"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.LoadingScene"/>
 <fullyQualifiedTypeName name="com.ladun.game.Announce"/>
-<fullyQualifiedTypeName name="com.ladun.engine.Time"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Entity.AttackObject"/>
 <fullyQualifiedTypeName name="com.ladun.engine.audio.SoundClip"/>
 <fullyQualifiedTypeName name="java.lang.Runnable"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="com.ladun.game.Item.Tooltip"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
+<fullyQualifiedTypeName name="com.ladun.engine.Time"/>
 </qualifiedTypeNameHistroy>

@@ -3,6 +3,7 @@ package com.ladun.game.objects;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -12,9 +13,9 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
 import com.ladun.game.Point;
 import com.ladun.game.Item.Item;
-import com.ladun.game.Item.Item.Type;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.TeamColor;
+import com.ladun.game.components.Collider;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
 import com.ladun.game.components.Rigidbody;
@@ -69,7 +70,7 @@ public class Player extends Entity{
 		this.pB = 0;
 		this.pT = 30;
 		
-		this.speed 		= 200;
+		this.moveSpeed 		= 200;
 		this.jump		= -7f;		
 		this.animSpeed = 12;
 		
@@ -77,7 +78,6 @@ public class Player extends Entity{
 		this.gm = gs.getGm();
 		
 		this.localPlayer = localPlayer;
-		this.maxHealth 	= 100;
 		
 		this.weapon = new Weapon(this);
 		this.maxHealth 	= 100;
@@ -161,8 +161,8 @@ public class Player extends Entity{
 				
 				if(clickPoints.size() > 0) {
 					float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
-					if(distance >= speed  * Time.DELTA_TIME) {
-						moving(speed * fcos,speed * fsin);
+					if(distance >= getMoveSpeed()  * Time.DELTA_TIME) {
+						moving(getMoveSpeed() * fcos,getMoveSpeed() * fsin);
 					}
 					else {
 						moving(distance * fcos, distance * fsin);
@@ -264,7 +264,7 @@ public class Player extends Entity{
 
 					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
 						if(readyToShoot) {
-							System.out.println(reduceAttack_A_Cool);
+							//System.out.println(reduceAttack_A_Cool);
 							if(attackIndex == 0)
 								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
 							else
@@ -341,7 +341,7 @@ public class Player extends Entity{
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
-		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/maxHealth)), 13, 0, 0xff63c564);
+		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
 		
 
 		if(currentMapIndex > 0)
@@ -355,18 +355,42 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
 		super.collision(other);
-		if(localPlayer) {
-			if(other instanceof HitRange) {
-				HitRange hr = (HitRange)other;
-				if(!hr.getAttackerTag().equals(tag)) {
+		if(other instanceof HitRange) {
+			HitRange hr = (HitRange)other;
+			if(!hr.getAttackerTag().equals(tag)) {
+				if(localPlayer) 
 					hit(hr.getDamage(),hr.getAttackerTag(),other.hashCode());
-					System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
-					
-				}
+				//System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
+				
+
+				addHitEffect(other, hr.getParent().angle);
 			}
-			else if(other instanceof Projectile) {
+		}
+		else if(other instanceof Projectile) {
+			if(localPlayer) 
 				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag(),other.hashCode());
-			}
+			addHitEffect(other, other.angle);
+		}
+	
+	}
+	
+	private void addHitEffect(GameObject other, float angle) {
+
+		int animType = (int)(Math.random() * 2);
+		
+		Collider c = (Collider)other.findComponent("circleCollider");
+		if(c == null)
+			c = (Collider)other.findComponent("rectCollider");
+		
+		if(c == null)
+			return;
+		
+		Effect effect = (Effect)gs.getInactiveObject("effect");		
+		if(effect == null) {
+			gs.addObject(new Effect("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180));
+		}
+		else {
+			effect.setting("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180);
 		}
 	}
 	
@@ -388,6 +412,10 @@ public class Player extends Entity{
 	}
 	
 	private void hitMain(float damage,String attackerTag) {
+		damage -= getDefence();
+		if(damage < 0)
+			damage = 1;
+		
 		health -= damage;
 
 		if(localPlayer)
@@ -406,6 +434,7 @@ public class Player extends Entity{
 		else {
 			displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
 		}
+		//----------------------------------------------------------------------------------------hit_effect_32
 		//----------------------------------------------------------------------------------------
 		
 		if(health <= 0) {
@@ -418,7 +447,7 @@ public class Player extends Entity{
 	
 	@Override
 	public void revival() {
-		this.health = maxHealth;
+		this.health = getMaxHealth();
 
 		if(localPlayer)
 			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00,null});
@@ -546,12 +575,41 @@ public class Player extends Entity{
 	public Item[] getItems() {
 		return items;
 	}
-	public boolean itemSlotIsEmpty() {
+	public int emptyItemSlot() {
 		for(int i =0; i < 6; i++) {
-			
+			if(items[i].getID() == -1) {
+				return i;
+			}
 		}
+		return -1;
 	}
 	//---------------------------------------------------------------------------------------
+	
+	public int getItemStat(Item.Type statType) {
+		int itemStat = 0;
+		for(int i = 0; i < 6; i++) {
+			if(items[i] == null || items[i].getID() == -1)
+				continue;
+			if(items[i].hasType(statType)) {
+				itemStat += items[i].getOptionValue(statType);
+				
+			}
+		}
+		return itemStat;
+	}
+	
+	public float getMoveSpeed() {
+		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED) * 10;
+	}
+	
+	public float getDefence() {
+		return getItemStat(Item.Type.STAT_DEFENCE) * 10;
+	}
+	
+	public float getMaxMana() {
+		return maxMana + getItemStat(Item.Type.STAT_MANA);
+	}
+	
 	public float getCoolDownPercent(int i) {
 		if(i >= 4) 
 			return 1;
@@ -581,6 +639,11 @@ public class Player extends Entity{
 	public Weapon getWeapon() {
 		return weapon;
 	}
+	@Override
+	public float getMaxHealth() {
+		return maxHealth + getItemStat(Item.Type.STAT_HEALTH);
+	}
+	
 	@Override 
 	public void addPosX(float _x) {
 		int h = (int)Math.signum(_x);
