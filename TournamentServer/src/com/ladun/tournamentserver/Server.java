@@ -17,6 +17,8 @@ public class Server {
 	private final static byte[] PACKET_SERVER_HEADER = new byte[] { 0x41,0x41};
 	private final static byte PACKET_VALUETYPE_CLIENTID = 0x10;
 	
+	private final int START_MOENY = 1000;
+	
 	private int port;
 	private Thread listenThread;
 	private Thread timeoutThread;
@@ -603,8 +605,15 @@ public class Server {
 				StringBuilder sb = new StringBuilder();
 				String[] netArgs = messages[2].split(",");
 				switch(netArgs[0].toCharArray()[0]) {
-				case 0x00:{				
-
+				case 0x00:{						
+					try {
+						_clientID =Integer.parseInt(messages[1].trim());
+						
+					} catch (NumberFormatException e) {
+						return;	
+					}
+					if(_clientID < 1000 || !isClientExist(_clientID))
+						return;	
 					
 					sb.setLength(0);
 					bw.clear();
@@ -613,14 +622,27 @@ public class Server {
 					sb.append((char)0x01);
 					sb.append(",");
 					sb.append(settings.getRoundCount());
-					bw.write((sb.toString()).getBytes());			
-					
+					bw.write((sb.toString()).getBytes());		
 					for(Client c : clients) {
 						teamPoint[c.getTeamNumber()] = 0;
-					}
-					
-					
+					}		
 					send(bw.getBytes(), address, port);
+					
+					
+					Client _c = getClient(_clientID);	
+					_c.setMoney(START_MOENY);
+					sb.setLength(0);
+					bw.clear();
+					bw.write((byte)0x03);
+					sb.append(":");
+					sb.append(_c.getClientdID());
+					sb.append(":");
+					sb.append((char)0x19);
+					sb.append(",");
+					sb.append(_c.getMoney());
+					bw.write((sb.toString()).getBytes());	
+					
+					send(bw.getBytes(), _c.getAddress(), _c.getPort());
 					
 					
 					break;

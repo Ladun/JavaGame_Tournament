@@ -75,8 +75,8 @@ public class Item {
 
 	public int getOptionValue(Type type) {
 		int index = 0;
-		for(int i = 1; i < type.value; i *= 2) {
-			if((types & type.value) == type.value) {
+		for(int i = 2; i < type.value; i *= 2) {
+			if((types & i) != 0) {
 				index++;
 			}
 		}

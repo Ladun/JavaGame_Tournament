@@ -1,0 +1,41 @@
+package com.ladun.game.objects;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.game.GameManager;
+
+public class Effect extends GameObject{
+	
+	public Effect(int posX,int posY, int posZ) {
+		this.tag = "effect";
+		this.posX = posX;
+		this.posY = posY;
+		this.posZ = posZ;
+	}
+
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//------------------------------------------------------
+	public void setting(int posX,int posY, int posZ) {
+		
+	}
+	//------------------------------------------------------
+	
+
+}

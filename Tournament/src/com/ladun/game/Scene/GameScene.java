@@ -296,12 +296,8 @@ public class GameScene extends AbstractScene{
 			if(localPlayer.getItems()[i] == null || localPlayer.getItems()[i].getID() == -1)
 				continue;
 			
-			int itemIndex = localPlayer.getItems()[i].getID();
+			localPlayer.getItems()[i].render(gc, r,ltX + 15 + 70 * (i % 2) , ltY + 15 + 64 * (i / 2));
 			
-			r.drawImageTile((ImageTile)(gc.getResourceLoader().getImage("items")),
-					ltX + 15 + 70 * (i % 2) , ltY + 15 + 64 * (i / 2),
-					itemIndex % 5,itemIndex / 5,
-					0);
 		}
 		
 		r.drawString("HP : " + localPlayer.getHealth() + "/" + localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);

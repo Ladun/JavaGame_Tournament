@@ -1,0 +1,54 @@
+package com.ladun.game.objects;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
+import com.ladun.game.GameManager;
+
+public class Effect extends GameObject{
+	
+	private float anim;
+	private int animType;
+	private int animMax;
+	private float animTime;
+	
+	private String imageName;
+	
+	public Effect(String imageName, int posX,int posY, int posZ) {
+		this.tag = "effect";
+	}
+
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		// TODO Auto-generated method stub
+		anim += Time.DELTA_TIME * animMax * animTime;
+		if(anim >= animMax) {
+			anim -= animMax;
+		}
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		// TODO Auto-generated method stub
+		r.drawImageTile(gc.getResourceLoader().getImage(imageName), (int)posX, (int)(posY + posZ), (int)anim, animType,0);
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//------------------------------------------------------
+	public void setting(String imageName,int posX,int posY, int posZ) {
+		this.imageName = imageName;
+		this.animMax = 4;
+		this.animTime = 1 / 0.5f;
+		this.posX = posX;
+		this.posY = posY;
+		this.posZ = posZ;
+	}
+	//------------------------------------------------------
+	
+
+}

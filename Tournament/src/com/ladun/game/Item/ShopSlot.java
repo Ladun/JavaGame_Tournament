@@ -7,7 +7,7 @@ import com.ladun.game.net.Client;
 import com.ladun.game.objects.UI.Button;
 
 public class ShopSlot {
-	public static final int IMAGE_SIZE = 64;
+	public static final int IMAGE_SIZE = 54;
 	public static final int GAP = 8;
 	public static final int BUTTON_HEIGHT = 32;
 	public static final int STRING_SIZE = 15;
@@ -59,7 +59,7 @@ public class ShopSlot {
 		// background Render
 		r.drawFillRect(posX , posY, getWidth(), getHeight(), 0,0xffffffff);
 		// item image Render
-		r.drawFillRect(posX  + GAP, posY + GAP, IMAGE_SIZE, IMAGE_SIZE, 0,0xff000000);
+		item.render(gc, r, posX  + GAP, posY + GAP);
 		// Price Render
 		r.drawText(item.getPrice() + "", posX + GAP * 2, posY + GAP+ GAP + IMAGE_SIZE  , 0xff000000);
 		// Buy Button Render

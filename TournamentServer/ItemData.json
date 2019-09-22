@@ -1,72 +1,58 @@
 [
   {
     "ID": 0,
-    "Price": 10,
-    "Types": [ "STAT_HEALTH" ],
-    "Name": "test",
-    "Options": [ 10 ]
+    "Price": 700,
+    "Types": [ "STAT_MOVESPEED", "STAT_DEFENCE" ],
+    "Name": "µŒ≤®øÓ ∞©ø ",
+    "Options": [ -3, 4 ]
   },
   {
     "ID": 1,
-    "Price": 100,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 600,
+    "Types": [ "STAT_DAMAGE" ],
+    "Name": "¿€¿∫ ∞À",
+    "Options": [ 4 ]
   },
   {
     "ID": 2,
-    "Price": 100,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 700,
+    "Types": [ "STAT_DEFENCE" ],
+    "Name": "√µ ∞©ø ",
+    "Options": [ 2 ]
   },
   {
     "ID": 3,
-    "Price": 100,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 700,
+    "Types": [ "STAT_HEALTH", "STAT_DAMAGE" ],
+    "Name": "No Name",
+    "Options": [ -13, 7 ]
   },
   {
     "ID": 4,
-    "Price": 100,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 750,
+    "Types": [ "STAT_HEALTH","STAT_DEFENCE" ],
+    "Name": "No Name",
+    "Options": [ 30, -8 ]
   },
   {
     "ID": 5,
-    "Price": 100,
-    "Types": [ "STAT_DAMAGE", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 700,
+    "Types": [ "STAT_MANA", "STAT_DEFENCE" ],
+    "Name": "No Name",
+    "Options": [ 40, -4 ]
   },
   {
     "ID": 6,
-    "Price": 750,
-    "Types": [ "STAT_MOVESPEED", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Price": 1000,
+    "Types": [ "STAT_HEALTH", "STAT_DAMAGE", "STAT_MOVESPEED"],
+    "Name": "No Name",
+    "Options": [-40, 15 , 6]
   },
   {
     "ID": 7,
-    "Price": 939,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
-  },
-  {
-    "ID": 8,
-    "Price": 999,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
-  },
-  {
-    "ID": 9,
     "Price": 1000,
-    "Types": [ "STAT_HEALTH", "STAT_MANA" ],
-    "Name": "test2",
-    "Options": [ 10, 20 ]
+    "Types": [ "STAT_HEALTH", "STAT_MOVESPEED", "STAT_DEFENCE" ],
+    "Name": "No Name",
+    "Options": [ 25, -7, 7 ]
   }
 ]

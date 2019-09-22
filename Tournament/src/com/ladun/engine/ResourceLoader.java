@@ -65,6 +65,9 @@ public class ResourceLoader {
 		
 		addImage("triangleButton__up", "/UI/TriangleButton_Up.png",52,52);
 		
+
+		addImage("hit_effect_32","/Effect/HitEffect32.png",32,32);
+		
 		// Map Object Image Load
 		addImage("portal","/Map/objects/portal.png",80,72);
 		addImage("battle_stone","/Map/objects/BattleStone.png",80,115);

@@ -1,5 +1,10 @@
 package com.ladun.game.Item;
 
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.gfx.Image;
+import com.ladun.engine.gfx.ImageTile;
+
 public class Item {
 	
 	public enum Type{
@@ -35,6 +40,12 @@ public class Item {
 		this.types = types;
 		this.name = name;
 		this.options = options;
+	}
+	
+	public void render(GameContainer gc, Renderer r, int posX, int posY) {
+		if(id != -1) {
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("items"), posX, posY, id % 16 , id /16 , 0);
+		}
 	}
 
 	//---------------------------------------------------------------

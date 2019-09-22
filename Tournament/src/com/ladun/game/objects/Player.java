@@ -3,6 +3,7 @@ package com.ladun.game.objects;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -12,9 +13,9 @@ import com.ladun.game.GameManager;
 import com.ladun.game.Physics;
 import com.ladun.game.Point;
 import com.ladun.game.Item.Item;
-import com.ladun.game.Item.Item.Type;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.Scene.TeamColor;
+import com.ladun.game.components.Collider;
 import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
 import com.ladun.game.components.Rigidbody;
@@ -263,7 +264,7 @@ public class Player extends Entity{
 
 					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
 						if(readyToShoot) {
-							System.out.println(reduceAttack_A_Cool);
+							//System.out.println(reduceAttack_A_Cool);
 							if(attackIndex == 0)
 								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
 							else
@@ -354,18 +355,42 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		// TODO Auto-generated method stub
 		super.collision(other);
-		if(localPlayer) {
-			if(other instanceof HitRange) {
-				HitRange hr = (HitRange)other;
-				if(!hr.getAttackerTag().equals(tag)) {
+		if(other instanceof HitRange) {
+			HitRange hr = (HitRange)other;
+			if(!hr.getAttackerTag().equals(tag)) {
+				if(localPlayer) 
 					hit(hr.getDamage(),hr.getAttackerTag(),other.hashCode());
-					System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
-					
-				}
+				//System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
+				
+
+				addHitEffect(other, hr.getParent().angle);
 			}
-			else if(other instanceof Projectile) {
+		}
+		else if(other instanceof Projectile) {
+			if(localPlayer) 
 				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag(),other.hashCode());
-			}
+			addHitEffect(other, other.angle);
+		}
+	
+	}
+	
+	private void addHitEffect(GameObject other, float angle) {
+
+		int animType = (int)(Math.random() * 2);
+		
+		Collider c = (Collider)other.findComponent("circleCollider");
+		if(c == null)
+			c = (Collider)other.findComponent("rectCollider");
+		
+		if(c == null)
+			return;
+		
+		Effect effect = (Effect)gs.getInactiveObject("effect");		
+		if(effect == null) {
+			gs.addObject(new Effect("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180));
+		}
+		else {
+			effect.setting("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180);
 		}
 	}
 	
@@ -405,6 +430,7 @@ public class Player extends Entity{
 		else {
 			displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
 		}
+		//----------------------------------------------------------------------------------------hit_effect_32
 		//----------------------------------------------------------------------------------------
 		
 		if(health <= 0) {
@@ -569,7 +595,7 @@ public class Player extends Entity{
 	}
 	
 	public float getMoveSpeed() {
-		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED);
+		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED) * 10;
 	}
 	
 	public float getMaxMana() {

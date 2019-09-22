@@ -1,5 +1,7 @@
 package com.ladun.game;
 
+import java.util.Random;
+
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -205,8 +207,6 @@ public class GameManager extends AbstractGame {
 	}
 
 	public static void main(String[] args) {
-		
-		
 		GameContainer gc = new GameContainer(new GameManager());
 		gc.setWidth(Window.WIDTH);
 		gc.setHeight(Window.HEIGHT);
