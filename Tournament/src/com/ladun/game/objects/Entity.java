@@ -28,6 +28,7 @@ public abstract class Entity extends GameObject{
 	protected float maxHealth;
 	protected float health;
 	protected float moveSpeed;
+	protected float healthRegeneration;
 	protected float jump;
 	protected float fallDistance;
 	
@@ -210,6 +211,12 @@ public abstract class Entity extends GameObject{
 		this.currentMapIndex = currentMapIndex;
 	}
 
+	public float getHealthRegeneration() {
+		return healthRegeneration;
+	}
+	public void setHealthRegeneration(float healthRegeneration) {
+		this.healthRegeneration = healthRegeneration;
+	}
 	public int getTileX() {
 		return tileX;
 	}

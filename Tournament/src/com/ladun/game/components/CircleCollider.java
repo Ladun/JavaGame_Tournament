@@ -20,15 +20,8 @@ public class CircleCollider extends Collider{
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
 		// TODO Auto-generated method stub
-		lastCenterX = centerX;
-		lastCenterZ = centerZ;
-
-		radius = ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2);
-		hY = radius;
-		centerX = (int)(parent.getPosX()) + ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2) + parent.getpL();
-		centerZ = (int)(parent.getPosZ()) + ((parent.getHeight() -parent.getpB() - parent.getpT())/2) + parent.getpT();
-		y = (int)parent.getPosY();
 		
+		positionUpdate(gc, gm);
 
 		Physics.colliderComponent(this);
 	}
@@ -41,6 +34,17 @@ public class CircleCollider extends Collider{
 	}
 	//---------------------------------------------------------------
 
+	public void positionUpdate(GameContainer gc, GameManager gm) {
+		lastCenterX = centerX;
+		lastCenterZ = centerZ;
+
+		radius = ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2);
+		hY = radius;
+		centerX = (int)(parent.getPosX()) + ((parent.getWidth() - parent.getpL() - parent.getpR())/ 2) + parent.getpL();
+		centerZ = (int)(parent.getPosZ()) + ((parent.getHeight() -parent.getpB() - parent.getpT())/2) + parent.getpT();
+		y = (int)parent.getPosY();
+	}
+	
 	public int getRadius() {
 		return radius;
 	}

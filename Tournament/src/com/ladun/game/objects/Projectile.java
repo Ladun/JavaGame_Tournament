@@ -35,6 +35,8 @@ public class Projectile extends GameObject{
 	private float time;
 	private GameScene gs;
 	
+	private CircleCollider cc;
+	
 	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";	
 		this.addComponent(new CircleCollider(this));
@@ -45,7 +47,7 @@ public class Projectile extends GameObject{
 		setType(Type.ARROW);	
 		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
 		
-
+		cc = (CircleCollider)findComponent("circleCollider");
 	}
 
 	@Override
@@ -65,9 +67,13 @@ public class Projectile extends GameObject{
 				this.anim = 0;
 			}
 		}
-		
+				
 		this.AdjustPosition();
 		
+
+		if(-gs.getHeight((int)getCenterX() / GameManager.TS, (int)getCenterZ() / GameManager.TS) >= 	-posY) {
+			Disappear();
+		}
 		this.updateComponents(gc, gm);
 	}
 
@@ -106,13 +112,14 @@ public class Projectile extends GameObject{
 	}
 	
 	public void Disappear() {
+		if(!cc.isEnable())
+			return;
 		anim = 1;
 		speed = 0;
-		findComponent("circleCollider").setEnable(false);
+		cc.setEnable(false);
 	}
 	//-------------------------------------------------------------------------------------------------------
 	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
-		
 		posX -= pL - (width - pL - pB) / 2;
 		posZ -= pT - (height - pL - pB) / 2;
 		
@@ -131,8 +138,9 @@ public class Projectile extends GameObject{
 		this.damage = damage;
 		this.time = 0;
 		this.active = true;
-		if(findComponent("circleCollider") != null)
-		findComponent("circleCollider").setEnable(true);
+		if(cc != null) {
+			cc.setEnable(true);
+		}
 	}
 	private void AdjustPosition()	{
 		//Final position

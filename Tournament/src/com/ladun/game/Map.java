@@ -125,15 +125,15 @@ public class Map {
 
 	//------------------------------------------------------------------------------------------------------------------------
 	
-	public boolean currentMap(int x, int y) {
-		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+	public boolean currentMap(int tileX, int tileY) {
+		if (tileX < 0 || tileX >= levelW || tileY < 0 || tileY >= levelH)
 			return true;
-		return collisions[y * levelW + x];
+		return collisions[tileY * levelW + tileX];
 	}
-	public float getHeight(int x,int y) {
-		if (x < 0 || x >= levelW || y < 0 || y >= levelH)
+	public float getHeight(int tileX,int tileY) {
+		if (tileX < 0 || tileX >= levelW || tileY < 0 || tileY >= levelH)
 			return Physics.MAX_HEIGHT;
-		return heights[y * levelW + x];
+		return heights[tileY * levelW + tileX];
 	}
 
 	public int getLevelW() {
@@ -150,32 +150,4 @@ public class Map {
 		this.backgroundColor = backgroundColor;
 	}
 
-	class SpawnPoint{
-		private boolean spawned;
-		private int x,y;
-		
-		public SpawnPoint(int x, int y) {
-			this.spawned = false;
-			this.x = x;
-			this.y = y;
-		}
-
-		public boolean isSpawned() {
-			return spawned;
-		}
-
-		public void setSpawned(boolean spawned) {
-			this.spawned = spawned;
-		}
-
-		public int getX() {
-			return x;
-		}
-
-		public int getY() {
-			return y;
-		}
-	}
-	
-	
 }

@@ -36,7 +36,8 @@ public class Player extends Entity{
 
 	//--------------------------------------
 	private int maxMana;
-	private int mana;
+	private float mana;
+	private float manaRegeneration;
 	//--------------------------------------
 	private float reduceAttack_A_Cool = 1f;
 	
@@ -109,6 +110,17 @@ public class Player extends Entity{
 			timePassAttackObject();
 			
 			if(localPlayer){	
+				
+				if(mana < maxMana) {
+					mana += Time.DELTA_TIME * manaRegeneration;
+					if(mana > maxMana)
+						mana = maxMana;
+				}
+				if(health < maxHealth) {
+					health += Time.DELTA_TIME * healthRegeneration;
+					if(health > maxHealth)
+						health = maxHealth;
+				}
 				
 				
 				//if(gc.getInput().isKeyDown(KeyEvent.VK_L))
@@ -411,6 +423,7 @@ public class Player extends Entity{
 		}
 	}
 	
+	
 	private void hitMain(float damage,String attackerTag) {
 		damage -= getDefence();
 		if(damage <= 0)
@@ -596,6 +609,15 @@ public class Player extends Entity{
 			}
 		}
 		return itemStat;
+	}
+	
+	public float getManaRegeneration() {
+		return manaRegeneration + getItemStat(Item.Type.STAT_MANAREGE);
+	}
+	
+	@Override
+	public float getHealthRegeneration() {
+		return healthRegeneration + getItemStat(Item.Type.STAT_HEALTHREGE);
 	}
 	
 	public float getMoveSpeed() {
