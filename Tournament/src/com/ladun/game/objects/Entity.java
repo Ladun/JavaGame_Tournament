@@ -55,7 +55,7 @@ public abstract class Entity extends GameObject{
 	protected ArrayList<AttackObject> attackObjects = new ArrayList<AttackObject>();
 	
 	
-	public abstract void hit(float damage, String tag,int hashcode);
+	public abstract void hit(float damage,boolean crit, String tag,int hashcode);
 	public abstract void revival();
 	
 	public void collision(GameObject other) {

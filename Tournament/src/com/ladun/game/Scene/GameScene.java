@@ -481,6 +481,7 @@ public class GameScene extends AbstractScene{
 			synchronized (gm) {
 				gm.setLoading(true);
 			}
+			
 			switch(currentMapIndex) {
 			case 0:
 				currentMap = new Map(mapNames[currentMapIndex]);
@@ -538,13 +539,9 @@ public class GameScene extends AbstractScene{
 	
 	public Player addPlayer(String name,String nickname,boolean isLocalPlayer) {
 		int[] pos = new int[] {0,0};
-		
-		long currentTime = System.currentTimeMillis();
-		while(currentMap == null) {
-			if((System.currentTimeMillis() - currentTime) / 1000 > 4)
-				break;
-		}
-		pos = currentMap.randomSpawnPoint();
+
+		if(currentMap != null)
+			pos = currentMap.randomSpawnPoint();
 		
 		Player p = new Player(name,nickname,pos[0], pos[1], this,isLocalPlayer);
 		this.objects.add(p);

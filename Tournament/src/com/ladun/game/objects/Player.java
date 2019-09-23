@@ -38,6 +38,8 @@ public class Player extends Entity{
 	private int maxMana;
 	private float mana;
 	private float manaRegeneration;
+	
+	private float backAttackRange = 120;
 	//--------------------------------------
 	private float reduceAttack_A_Cool = 1f;
 	
@@ -362,7 +364,7 @@ public class Player extends Entity{
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
-		
+
 
 		if(currentMapIndex > 0)
 			weapon.render(gc, r);
@@ -378,9 +380,8 @@ public class Player extends Entity{
 		if(other instanceof HitRange) {
 			HitRange hr = (HitRange)other;
 			if(!hr.getAttackerTag().equals(tag)) {
-				if(localPlayer) 
-					hit(hr.getDamage(),hr.getAttackerTag(),other.hashCode());
-				//System.out.println(Math.toDegrees(Math.atan2(hr.getParent().getCenterZ() - getCenterZ() ,hr.getParent().getCenterX() - getCenterX() ) )- angle % 360);
+				if(localPlayer)
+					hit(hr.getDamage(),isBackAttack(gm.getObject(hr.getAttackerTag())),hr.getAttackerTag(),other.hashCode());
 				
 
 				addHitEffect(other, hr.getParent().angle);
@@ -388,7 +389,7 @@ public class Player extends Entity{
 		}
 		else if(other instanceof Projectile) {
 			if(localPlayer) 
-				hit(((Projectile)other).getDamage(),((Projectile)other).getAttackerTag(),other.hashCode());
+				hit(((Projectile)other).getDamage(),isBackAttack(other),((Projectile)other).getAttackerTag(),other.hashCode());
 			addHitEffect(other, other.angle);
 		}
 	
@@ -400,8 +401,7 @@ public class Player extends Entity{
 		
 		Collider c = (Collider)other.findComponent("circleCollider");
 		if(c == null)
-			c = (Collider)other.findComponent("rectCollider");
-		
+			c = (Collider)other.findComponent("rectCollider");		
 		if(c == null)
 			return;
 		
@@ -413,43 +413,39 @@ public class Player extends Entity{
 			effect.setting("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180);
 		}
 	}
-	
-	private boolean useMana(float usingMana) {
-		if(usingMana <= mana) {
-			mana -= usingMana;
-			
-			return true;
-		}
-		return false;
-	}
-	
-	public void hit(float damage,String attackerTag) {
+	public void hit(float damage, boolean crit,String attackerTag) {
 		if(damage == 0)
 			return;
-		hitMain(damage,attackerTag);
+		hitMain(damage,crit,attackerTag);
 	}
 	
 	@Override
-	public void hit(float damage,String attackerTag,int hashcode) {
+	public void hit(float damage,boolean crit,String attackerTag,int hashcode) {
 		if(damage == 0)
 			return;
 		
 		if(!isExistAttackObject(hashcode)) {
-			attackObjects.add(new AttackObject(hashcode));
-			hitMain(damage,attackerTag);
+			attackObjects.add(new AttackObject(hashcode));			
+
+			if(crit)
+				damage *= 1.5f;
+			
+			damage -= getDefence();
+			if(damage <= 0)
+				damage = 1;
+			
+			hitMain(damage,crit,attackerTag);
 		}
 	}
 	
 	
-	private void hitMain(float damage,String attackerTag) {
-		damage -= getDefence();
-		if(damage <= 0)
-			damage = 1;
-		
+	private void hitMain(float damage,boolean crit,String attackerTag) {
+
+		damage = (int)damage;
 		health -= damage;
 
 		if(localPlayer)
-			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x01,attackerTag});
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)damage,(char)(crit? 0x02 : 0x01),attackerTag});
 		
 		Player _p = (Player)gm.getObject(attackerTag);
 		if(_p != null) {
@@ -459,10 +455,10 @@ public class Player extends Entity{
 		//----------------------------------------------------------------------------------------
 		DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 		if(displayDamage == null) {
-			gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY));
+			gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY,crit?DisplayTextInGame.CRIT_COLOR : DisplayTextInGame.HIT_COLOR));
 		}
 		else {
-			displayDamage.setting((int)-damage,getCenterX(), posZ + posY);
+			displayDamage.setting((int)-damage,getCenterX(), posZ + posY,crit?DisplayTextInGame.CRIT_COLOR : DisplayTextInGame.HIT_COLOR);
 		}
 		//----------------------------------------------------------------------------------------hit_effect_32
 		//----------------------------------------------------------------------------------------
@@ -480,13 +476,36 @@ public class Player extends Entity{
 		this.health = getMaxHealth();
 
 		if(localPlayer)
-			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)health,(char)0x00,null});
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health});
 	
 		this.active = true;
 	}
 
 	//---------------------------------------------------------------------------------------
 	
+	private boolean useMana(float usingMana) {
+		if(usingMana <= mana) {
+			mana -= usingMana;
+			
+			return true;
+		}
+		return false;
+	}
+	
+	
+	private boolean isBackAttack(GameObject g) {
+		boolean crit = false;
+		if(g != null) {
+			float angleByOther = Util.angle360((float)Math.toDegrees(Math.atan2(g.getCenterZ() - getCenterZ() ,g.getCenterX() - getCenterX()) ));
+			float tempAngle = Util.angle360(angle);
+			angleByOther = ((angleByOther - tempAngle < 0) ? 360 + (angleByOther - tempAngle) : angleByOther - tempAngle) % 360;
+			
+			if(angleByOther >= 180 - backAttackRange / 2 && angleByOther <= 180 + backAttackRange / 2) {
+				crit = true;
+			}
+		}
+		return crit;
+	}
 	private void buffTimer() {
 
 		if(skill_bowTime > 0) {
@@ -655,7 +674,7 @@ public class Player extends Entity{
 	}
 	
 	public float getDefence() {
-		return getItemStat(Item.Type.STAT_DEFENCE) * 10;
+		return getItemStat(Item.Type.STAT_DEFENCE);
 	}
 	
 	public float getMaxMana() {

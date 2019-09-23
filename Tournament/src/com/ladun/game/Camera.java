@@ -52,59 +52,12 @@ public class Camera {
 		}
 		
 		if(mouseLock) {
-			/*
-			System.out.println("Mosue Pos : " + gc.getInput().getMouseDeltaX() + ", " +gc.getInput().getMouseDeltaY() + 
-					" MosueInfo Pos : " + MouseInfo.getPointerInfo().getLocation().x + ", " + MouseInfo.getPointerInfo().getLocation().y+
-					" Window Pos : " + gc.getWindow().getFrame().getLocation().x + ", " + gc.getWindow().getFrame().getLocation().y + 
-					" Other : " + gc.getWindow().getFrame().getInsets().top+", "+ gc.getWindow().getFrame().getInsets().bottom);
-			*/
-			if(MouseInfo.getPointerInfo().getLocation().x  + gc.getInput().getMouseDeltaX()< gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left) {
-				robot.mouseMove(gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left,
-						        MouseInfo.getPointerInfo().getLocation().y);
-			}
-			else if(MouseInfo.getPointerInfo().getLocation().x + gc.getInput().getMouseDeltaX() > gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left + gc.getWidth()) {
-				robot.mouseMove(gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left + gc.getWidth(), 
-								MouseInfo.getPointerInfo().getLocation().y);
-			}
-			if(MouseInfo.getPointerInfo().getLocation().y + gc.getInput().getMouseDeltaY()< gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top) {
-				robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x ,
-								gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top);
-			}
-			else if(MouseInfo.getPointerInfo().getLocation().y  + gc.getInput().getMouseDeltaY()>gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top + gc.getHeight()) {
-				robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x ,
-						gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top + gc.getHeight());
-			}
-			// Camera Move by Mouse
-			if(!characterLock) {
-				if(gc.getInput().getMouseX() < SCREEN_MOVE_GAP) {
-					offX -= Time.DELTA_TIME * cameraSensitivity;
-				}
-				else if(gc.getInput().getMouseX() > gc.getWidth()- SCREEN_MOVE_GAP) {
-					offX += Time.DELTA_TIME * cameraSensitivity;
-				}
-				if(gc.getInput().getMouseY() < SCREEN_MOVE_GAP) {
-					offZ -= Time.DELTA_TIME * cameraSensitivity;
-				}
-				else if(gc.getInput().getMouseY() > gc.getHeight()- SCREEN_MOVE_GAP) {
-					offZ += Time.DELTA_TIME * cameraSensitivity;
-				}
-			}			
+			lockTheMouse(gc,gm);
 		}	
 		
 
 		// Camera Position Setting
-		if(gm.getActiveScene().getLevelW() * GameManager.TS < gc.getWidth()) {
-			offX =-( gc.getWidth() - gm.getActiveScene().getLevelW() * GameManager.TS )/2;
-		}else {
-			if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
-			if(offX < 0) offX = 0;
-		}
-		if(gm.getActiveScene().getLevelH() * GameManager.TS < gc.getHeight()) {
-			offZ =-( gc.getHeight() - gm.getActiveScene().getLevelH() * GameManager.TS )/2;		
-		}else {
-			if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
-			if(offZ < 0) offZ = 0;
-		}
+		positionClamp(gc,gm);
 		
 
 		
@@ -132,7 +85,61 @@ public class Camera {
 		//offY -= dt * (int)(offY - targetY) * cameraSensitivity;
 	}
 	//---------------------------------------------------------------------
-
+	
+	private void positionClamp(GameContainer gc, GameManager gm) {
+		if(gm.getActiveScene().getLevelW() * GameManager.TS < gc.getWidth()) {
+			offX =-( gc.getWidth() - gm.getActiveScene().getLevelW() * GameManager.TS )/2;
+		}else {
+			if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
+			if(offX < 0) offX = 0;
+		}
+		if(gm.getActiveScene().getLevelH() * GameManager.TS < gc.getHeight()) {
+			offZ =-( gc.getHeight() - gm.getActiveScene().getLevelH() * GameManager.TS )/2;		
+		}else {
+			if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
+			if(offZ < 0) offZ = 0;
+		}
+	}
+	private void lockTheMouse(GameContainer gc,GameManager gm) {
+		/*
+		System.out.println("Mosue Pos : " + gc.getInput().getMouseDeltaX() + ", " +gc.getInput().getMouseDeltaY() + 
+				" MosueInfo Pos : " + MouseInfo.getPointerInfo().getLocation().x + ", " + MouseInfo.getPointerInfo().getLocation().y+
+				" Window Pos : " + gc.getWindow().getFrame().getLocation().x + ", " + gc.getWindow().getFrame().getLocation().y + 
+				" Other : " + gc.getWindow().getFrame().getInsets().top+", "+ gc.getWindow().getFrame().getInsets().bottom);
+		*/
+		if(MouseInfo.getPointerInfo().getLocation().x  + gc.getInput().getMouseDeltaX()< gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left) {
+			robot.mouseMove(gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left,
+					        MouseInfo.getPointerInfo().getLocation().y);
+		}
+		else if(MouseInfo.getPointerInfo().getLocation().x + gc.getInput().getMouseDeltaX() > gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left + gc.getWidth()) {
+			robot.mouseMove(gc.getWindow().getFrame().getLocation().x + gc.getWindow().getFrame().getInsets().left + gc.getWidth(), 
+							MouseInfo.getPointerInfo().getLocation().y);
+		}
+		if(MouseInfo.getPointerInfo().getLocation().y + gc.getInput().getMouseDeltaY()< gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top) {
+			robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x ,
+							gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top);
+		}
+		else if(MouseInfo.getPointerInfo().getLocation().y  + gc.getInput().getMouseDeltaY()>gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top + gc.getHeight()) {
+			robot.mouseMove(MouseInfo.getPointerInfo().getLocation().x ,
+					gc.getWindow().getFrame().getLocation().y + gc.getWindow().getFrame().getInsets().top + gc.getHeight());
+		}
+		// Camera Move by Mouse
+		if(!characterLock) {
+			if(gc.getInput().getMouseX() < SCREEN_MOVE_GAP) {
+				offX -= Time.DELTA_TIME * cameraSensitivity;
+			}
+			else if(gc.getInput().getMouseX() > gc.getWidth()- SCREEN_MOVE_GAP) {
+				offX += Time.DELTA_TIME * cameraSensitivity;
+			}
+			if(gc.getInput().getMouseY() < SCREEN_MOVE_GAP) {
+				offZ -= Time.DELTA_TIME * cameraSensitivity;
+			}
+			else if(gc.getInput().getMouseY() > gc.getHeight()- SCREEN_MOVE_GAP) {
+				offZ += Time.DELTA_TIME * cameraSensitivity;
+			}
+		}	
+	}
+    //---------------------------------------------------------------------
 	
 	public float getOffX() {
 		return offX;

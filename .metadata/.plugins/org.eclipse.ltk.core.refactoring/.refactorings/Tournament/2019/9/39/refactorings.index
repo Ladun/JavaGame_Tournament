@@ -2,3 +2,5 @@
 1569209566642	Rename local variable 'y'
 1569209575406	Rename local variable 'x'
 1569209585783	Rename local variable 'y'
+1569241192775	Rename local variable '_angle'
+1569243307106	Rename method 'mouseLock'

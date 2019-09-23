@@ -102,10 +102,10 @@ public class Projectile extends GameObject{
 			//System.out.println("!!");
 			DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 			if(displayDamage == null) {
-				gs.addObject(new DisplayTextInGame("cut", getCenterX(), posZ + posY));
+				gs.addObject(new DisplayTextInGame("cut", getCenterX(), posZ + posY,DisplayTextInGame.HIT_COLOR));
 			}
 			else {
-				displayDamage.setting("cut",getCenterX(), posZ + posY);
+				displayDamage.setting("cut",getCenterX(), posZ + posY,DisplayTextInGame.HIT_COLOR);
 			}
 			Disappear();
 		}

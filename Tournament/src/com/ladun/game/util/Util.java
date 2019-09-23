@@ -15,4 +15,8 @@ public class Util {
 		float dy = edY - stY;
 		return (float)Math.sqrt(dx * dx  + dy * dy);
 	}
+	
+	public static float angle360(float angle) {
+		return Math.abs(angle  - 360) % 360;
+	}
 }

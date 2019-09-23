@@ -180,7 +180,7 @@ public class Client {
 					if(Integer.parseInt(messages[1]) > clientID) {
 						gm.getChatBox().addTexts(netArgs[0] + " connect",0xff7b7151);
 					}
-					((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false, Integer.parseInt(netArgs[1]));
+					((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),netArgs[0],0,0,	false, Integer.parseInt(netArgs[1]));
 				}catch(NumberFormatException e) {
 					break;
 				}
@@ -302,7 +302,7 @@ public class Client {
 				}
 				case 0x15:{
 					// ValueType, health, changeType, tag
-					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
+					// changeType : 체력이 바뀐 타입 1 == hit, 2 == crit
 					// 
 					if(netArgs.length <4){
 						System.out.println("0x03-0x15 : netArgs Error");
@@ -315,13 +315,13 @@ public class Client {
 					if(_p == null)
 						return;
 	
-					int _health = Integer.parseInt(netArgs[1]);
+					int _damage = Integer.parseInt(netArgs[1]);
 					switch(netArgs[2].charAt(0)) {
-					case 0x00:
-						_p.setHealth(_health);
-						_p.setActive(true);
 					case 0x01:
-						_p.hit(_p.getHealth() - _health,netArgs[3]);
+						_p.hit(_damage,false,netArgs[3]);
+						break;
+					case 0x02:
+						_p.hit(_damage,true,netArgs[3]);
 						break;
 					}
 					
@@ -417,6 +417,8 @@ public class Client {
 	
 					int _health = Integer.parseInt(netArgs[1]);
 					_p.setHealth(_health);
+					if(_p.getHealth() == _p.getMaxHealth())
+						_p.setActive(true);
 					
 					break;
 				}
