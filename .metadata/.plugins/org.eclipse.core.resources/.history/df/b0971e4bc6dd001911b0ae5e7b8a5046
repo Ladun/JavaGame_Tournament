@@ -8,6 +8,7 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.audio.SoundClip;
 import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.Announce;
 import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
@@ -539,10 +540,9 @@ public class GameScene extends AbstractScene{
 	public Player addPlayer(String name,String nickname,boolean isLocalPlayer) {
 		int[] pos = new int[] {0,0};
 		
-		long currentTime = System.currentTimeMillis();
+		int currentTime = System.currentTimeMillis();
 		while(currentMap == null) {
-			if((System.currentTimeMillis() - currentTime) / 1000 > 4)
-				break;
+			
 		}
 		pos = currentMap.randomSpawnPoint();
 		

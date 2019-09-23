@@ -2,7 +2,6 @@ package com.ladun.game.objects;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
 import java.util.Queue;
 
 import com.ladun.engine.GameContainer;
@@ -25,7 +24,7 @@ import com.ladun.game.util.Util;
 public class Player extends Entity{
 	
 	
-	private Queue<Point>	clickPoints = new LinkedList<Point>(); // 차후에 큐로 바꾸기
+	private Queue<Point>	clickPoints = new Queue<Point>(); // 차후에 큐로 바꾸기
 	private Item[] items = new Item[6];
 	
 	private int[] animMaxIndex = {6,1,1};
@@ -154,12 +153,12 @@ public class Player extends Entity{
 						
 						fcos = (float)Math.cos(Math.toRadians(angle));
 						fsin = (float)Math.sin(Math.toRadians(angle));
-						clickPoints.offer(new Point(_x,_y));
+						clickPoints.add(new Point(_x,_y));
 					}
 					else {					
 						if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
 						{
-							clickPoints.offer(new Point(_x,_y));					
+							clickPoints.add(new Point(_x,_y));					
 						}
 						else {
 							angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
@@ -167,12 +166,12 @@ public class Player extends Entity{
 							fcos = (float)Math.cos(Math.toRadians(angle));
 							fsin = (float)Math.sin(Math.toRadians(angle));
 							if(clickPoints.size() == 1) {
-								clickPoints.peek().setX(_x);
-								clickPoints.peek().setY(_y);
+								clickPoints.get(0).setX(_x);
+								clickPoints.get(0).setY(_y);
 							}
 							else {
 								clickPoints.clear();
-								clickPoints.offer(new Point(_x,_y));
+								clickPoints.add(new Point(_x,_y));
 							}
 						}
 					}
@@ -180,15 +179,15 @@ public class Player extends Entity{
 				}
 				
 				if(clickPoints.size() > 0) {
-					float distance = Util.distance(clickPoints.peek().getX() ,clickPoints.peek().getY(),getCenterX()	,getCenterZ());
+					float distance = Util.distance(clickPoints.get(0).getX() ,clickPoints.get(0).getY(),getCenterX()	,getCenterZ());
 					if(distance >= getMoveSpeed()  * Time.DELTA_TIME) {
 						moving(getMoveSpeed() * fcos,getMoveSpeed() * fsin);
 					}
 					else {
 						moving(distance * fcos, distance * fsin);
-						clickPoints.poll();
+						clickPoints.remove(0);
 						if(clickPoints.size() > 0) {
-							angle =(float) Math.toDegrees(Math.atan2(clickPoints.peek().getY() - getCenterZ(),  clickPoints.peek().getX() - getCenterX()));
+							angle =(float) Math.toDegrees(Math.atan2(clickPoints.get(0).getY() - getCenterZ(),  clickPoints.get(0).getX() - getCenterX()));
 							fcos = (float)Math.cos(Math.toRadians(angle));
 							fsin = (float)Math.sin(Math.toRadians(angle));
 							
@@ -354,9 +353,9 @@ public class Player extends Entity{
 		 */
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
-		for(Point _p : clickPoints) {
+		for(int i = 0; i < clickPoints.size();i++) {
 			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
-			r.drawImage(gc.getResourceLoader().getImage("point"), (int)_p.getX() - 16, (int)_p.getY() - 16 , 0);
+			r.drawImage(gc.getResourceLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
 		}
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
 		// HP Bar

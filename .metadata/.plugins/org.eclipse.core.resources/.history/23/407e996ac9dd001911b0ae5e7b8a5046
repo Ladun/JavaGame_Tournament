@@ -154,12 +154,12 @@ public class Player extends Entity{
 						
 						fcos = (float)Math.cos(Math.toRadians(angle));
 						fsin = (float)Math.sin(Math.toRadians(angle));
-						clickPoints.offer(new Point(_x,_y));
+						clickPoints.add(new Point(_x,_y));
 					}
 					else {					
 						if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
 						{
-							clickPoints.offer(new Point(_x,_y));					
+							clickPoints.add(new Point(_x,_y));					
 						}
 						else {
 							angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
@@ -172,7 +172,7 @@ public class Player extends Entity{
 							}
 							else {
 								clickPoints.clear();
-								clickPoints.offer(new Point(_x,_y));
+								clickPoints.add(new Point(_x,_y));
 							}
 						}
 					}
@@ -354,9 +354,9 @@ public class Player extends Entity{
 		 */
 		
 		r.setzDepth((int)(posZ + Math.abs(posY) + height));
-		for(Point _p : clickPoints) {
+		for(int i = 0; i < clickPoints.size();i++) {
 			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
-			r.drawImage(gc.getResourceLoader().getImage("point"), (int)_p.getX() - 16, (int)_p.getY() - 16 , 0);
+			r.drawImage(gc.getResourceLoader().getImage("point"), (int)clickPoints.get(i).getX() - 16, (int)clickPoints.get(i).getY() - 16 , 0);
 		}
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
 		// HP Bar

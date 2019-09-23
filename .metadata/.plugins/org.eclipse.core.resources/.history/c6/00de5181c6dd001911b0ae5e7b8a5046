@@ -541,8 +541,7 @@ public class GameScene extends AbstractScene{
 		
 		long currentTime = System.currentTimeMillis();
 		while(currentMap == null) {
-			if((System.currentTimeMillis() - currentTime) / 1000 > 4)
-				break;
+			
 		}
 		pos = currentMap.randomSpawnPoint();
 		
