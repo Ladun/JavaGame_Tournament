@@ -555,7 +555,7 @@ public class Server {
 							sb.append(":");
 							sb.append(_c.getNickname());
 							sb.append(",");
-							sb.append(_c.getTeamNumber());
+							sb.append(c.getTeamNumber());
 							bw.write((sb.toString()).getBytes());
 							send(bw.getBytes(),address,port);
 						}

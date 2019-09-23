@@ -167,22 +167,21 @@ public class Client {
 			switch(data[2]) {
 			// Connection -> Receive Other Player Connection
 			// ,Or player connect and spawn other Player
-			// Server -> Client Packet : [header type: clientID : client_nickname, teamColor]
+			// Server -> Client Packet : [header type: clientID : client_nickname]
 			case 0x01 : { //type				
-				netArgs = messages[2].split(",");
-				
+
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
 				sb.append(messages[1].trim());	
 				
 				try {
 					if(Integer.parseInt(messages[1]) > clientID) {
-						gm.getChatBox().addTexts(netArgs[0] + " connect",0xff7b7151);
+						gm.getChatBox().addTexts(messages[2] + " connect",0xff7b7151);
 					}
-					((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false, Integer.parseInt(netArgs[1]));
 				}catch(NumberFormatException e) {
 					break;
 				}
+				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false);
 				break;
 			}
 			// Disconnection

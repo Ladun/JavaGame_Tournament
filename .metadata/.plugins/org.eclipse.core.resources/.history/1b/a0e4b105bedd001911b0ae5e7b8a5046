@@ -177,12 +177,12 @@ public class Client {
 				
 				try {
 					if(Integer.parseInt(messages[1]) > clientID) {
-						gm.getChatBox().addTexts(netArgs[0] + " connect",0xff7b7151);
+						gm.getChatBox().addTexts(messages[2] + " connect",0xff7b7151);
 					}
-					((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false, Integer.parseInt(netArgs[1]));
 				}catch(NumberFormatException e) {
 					break;
 				}
+				((GameScene)gm.getScene("InGame")).addPlayer(sb.toString(),messages[2],0,0,	false, net);
 				break;
 			}
 			// Disconnection

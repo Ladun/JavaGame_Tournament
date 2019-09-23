@@ -554,8 +554,6 @@ public class Server {
 							sb.append(_c.getClientdID());
 							sb.append(":");
 							sb.append(_c.getNickname());
-							sb.append(",");
-							sb.append(_c.getTeamNumber());
 							bw.write((sb.toString()).getBytes());
 							send(bw.getBytes(),address,port);
 						}

@@ -530,9 +530,8 @@ public class GameScene extends AbstractScene{
 		localPlayer.setTeamNumber((localPlayer.getTeamNumber() + 1) % 8);
 	}
 	
-	public Player addPlayer(String name,String nickname,int tileX, int tileY,boolean isLocalPlayer, int teamNumber) {
+	public Player addPlayer(String name,String nickname,int tileX, int tileY,boolean isLocalPlayer) {
 		Player p = new Player(name,nickname,tileX, tileY, this,isLocalPlayer);
-		p.setTeamNumber(teamNumber);
 		this.objects.add(p);
 		return p;
 	}

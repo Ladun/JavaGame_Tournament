@@ -537,8 +537,6 @@ public class Server {
 					sb.append(_clientID);
 					sb.append(":");
 					sb.append(c.getNickname());
-					sb.append(",");
-					sb.append(c.getTeamNumber());
 					bw.write((sb.toString()).getBytes());
 					// 현재 새로운 플레이어가 스폰 되었다고 접속중인 client에게 정보를 보냄
 					sendToAllClients(bw.getBytes(), _clientID); 
@@ -554,8 +552,6 @@ public class Server {
 							sb.append(_c.getClientdID());
 							sb.append(":");
 							sb.append(_c.getNickname());
-							sb.append(",");
-							sb.append(_c.getTeamNumber());
 							bw.write((sb.toString()).getBytes());
 							send(bw.getBytes(),address,port);
 						}
