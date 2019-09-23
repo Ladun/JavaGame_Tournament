@@ -222,10 +222,12 @@ public class Server {
 				case 0x12:
 				case 0x13:
 				case 0x18:
+				case 0x21:
 					// 0x11: ValueType, x, y, z, angle
 					// 0x12: ValueType, angle
 					// 0x13: ValueType, type	
 					// 0x18: ValueType, hiding	
+					// 0x21: ValueType, mana
 					break;
 				case 0x14:{
 					// ValueType, teamNumber

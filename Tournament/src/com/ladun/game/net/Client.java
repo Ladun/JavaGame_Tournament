@@ -379,6 +379,46 @@ public class Client {
 						break;
 					}
 				}
+				case 0x21:{
+					// ValueType, mana
+					// changeType : 체력이 바뀐 타입 0 == init
+					// 
+					if(netArgs.length <3){
+						System.out.println("0x03-0x21 : netArgs Error");
+						break;
+					}
+
+					sb.append("Player");
+					sb.append(messages[1].trim());		
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+	
+					int _mana = Integer.parseInt(netArgs[1]);
+					_p.setMana(_mana);
+					
+					break;
+				}
+				case 0x22:{
+					// ValueType, health
+					// 
+					if(netArgs.length <3){
+						System.out.println("0x03-0x22 : netArgs Error");
+						break;
+					}
+
+					sb.append("Player");
+					sb.append(messages[1].trim());		
+					Player _p = (Player)gm.getObject(sb.toString());
+					if(_p == null)
+						return;
+	
+					int _health = Integer.parseInt(netArgs[1]);
+					_p.setHealth(_health);
+					
+					break;
+				}
+				
 				
 				}
 

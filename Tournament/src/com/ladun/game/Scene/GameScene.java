@@ -218,6 +218,10 @@ public class GameScene extends AbstractScene{
 			if(localPlayer != null) {
 				playerHealthPercent  =localPlayer.getHealth() / localPlayer.getMaxHealth();
 			}
+			float playerManaPercent = 1;
+			if(localPlayer != null) {
+				playerManaPercent  =localPlayer.getMana() / localPlayer.getMaxMana();
+			}
 			
 			r.drawImage(gc.getResourceLoader().getImage("bar_frame"), barX - 3, barY, 0);
 			r.drawImageTile(((ImageTile)gc.getResourceLoader().getImage("hbar")),
@@ -228,7 +232,7 @@ public class GameScene extends AbstractScene{
 			r.drawImageTile(((ImageTile)gc.getResourceLoader().getImage("mbar")),
 					barX, barY+ 15,
 					0,(int)barAnim,
-					0,0,(int)(334 ),13);
+					0,0,(int)(334 *playerManaPercent),13);
 			// --------------------------------------------------------------------------
 			
 			for(int i =0; i < 4 ; i++) {
@@ -300,8 +304,8 @@ public class GameScene extends AbstractScene{
 			
 		}
 		
-		r.drawString("HP : " + localPlayer.getHealth() + "/" + localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
-		//r.drawString("MP : " + localPlayer.getHealth() + "/" + localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
+		r.drawString("HP : " + (int)localPlayer.getHealth() + "/" + (int)localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
+		r.drawString("HP : " + (int)localPlayer.getMana() + "/" + (int)localPlayer.getMaxMana(), ltX + 30,  ltY +230, 16, 0xff7a6a3b);
 		
 	}
 	

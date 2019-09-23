@@ -82,8 +82,7 @@ public class Player extends Entity{
 		
 		this.weapon = new Weapon(this);
 		this.maxHealth 	= 100;
-		revival();
-				
+		setWeaponType(0);
 		
 		for(int i =0;i < 6;i++) {
 			items[i] = new Item();
@@ -111,15 +110,24 @@ public class Player extends Entity{
 			
 			if(localPlayer){	
 				
-				if(mana < maxMana) {
-					mana += Time.DELTA_TIME * manaRegeneration;
-					if(mana > maxMana)
-						mana = maxMana;
+				if(mana < getMaxMana()) {
+					int lastMana = (int)mana;
+					mana += Time.DELTA_TIME * getManaRegeneration();
+					if(mana > getMaxMana())
+						mana = getMaxMana();
+					
+					if((int)mana != lastMana)
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x21,(int)mana,(char)0x01});
+						
 				}
-				if(health < maxHealth) {
-					health += Time.DELTA_TIME * healthRegeneration;
-					if(health > maxHealth)
-						health = maxHealth;
+				if(health < getMaxHealth()) {
+					int lastHealth = (int)health;
+					health += Time.DELTA_TIME * getHealthRegeneration();
+					if(health > getMaxHealth())
+						health = getMaxHealth();
+
+					if((int)health != lastHealth)
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health,(char)0x01});
 				}
 				
 				
@@ -223,7 +231,7 @@ public class Player extends Entity{
 	
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
-							if(actionCoolDownTime[1] <= 0) {
+							if(actionCoolDownTime[1] <= 0 && useMana(10)) {
 								attackIndex = 1;
 								switch(weapon.getType()) {
 								case SWORD:
@@ -242,12 +250,12 @@ public class Player extends Entity{
 							}
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
-							if(actionCoolDownTime[2] <= 0) {
+							if(actionCoolDownTime[2] <= 0&& useMana(20)) {
 								attackIndex = 2;
 							}
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
-							if(actionCoolDownTime[3] <= 0) {
+							if(actionCoolDownTime[3] <= 0&& useMana(40)) {
 								attackIndex = 3;
 								switch(weapon.getType()) {
 								case SWORD:
@@ -406,6 +414,15 @@ public class Player extends Entity{
 		}
 	}
 	
+	private boolean useMana(float usingMana) {
+		if(usingMana <= mana) {
+			mana -= usingMana;
+			
+			return true;
+		}
+		return false;
+	}
+	
 	public void hit(float damage,String attackerTag) {
 		if(damage == 0)
 			return;
@@ -494,22 +511,35 @@ public class Player extends Entity{
 		switch(t){
 			case 0 :
 				weapon.setType(Weapon.Type.SWORD);
+				healthRegeneration = 1;
+				manaRegeneration = 1;
 				maxHealth = 180;
+				maxMana = 100;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
+				healthRegeneration = .3f;
+				manaRegeneration = 1;
 				maxHealth = 100;
+				maxMana = 100;
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
+				healthRegeneration = 1;
+				manaRegeneration = 1;
 				maxHealth = 135;
+				maxMana = 100;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
 				maxHealth = 100;
+				maxMana = 100;
 				break;
 		}
 		
+		mana = maxMana;
 		revival();
 		if(localPlayer)
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
@@ -666,6 +696,12 @@ public class Player extends Entity{
 		return maxHealth + getItemStat(Item.Type.STAT_HEALTH);
 	}
 	
+	public float getMana() {
+		return mana;
+	}
+	public void setMana(float mana) {
+		this.mana = mana;
+	}
 	@Override 
 	public void addPosX(float _x) {
 		int h = (int)Math.signum(_x);
