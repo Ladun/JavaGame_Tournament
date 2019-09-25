@@ -427,8 +427,10 @@ public class Player extends Entity{
 		if(!isExistAttackObject(hashcode)) {
 			attackObjects.add(new AttackObject(hashcode));			
 
-			if(crit)
+			if(crit) {
 				damage *= 1.5f;
+				gs.getCamera().cameraShake();
+			}
 			
 			damage -= getDefence();
 			if(damage <= 0)

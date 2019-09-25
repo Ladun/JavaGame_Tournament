@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.ladun.game.components.Collider.Type"/>
-<fullyQualifiedTypeName name="com.ladun.game.Scene.GameScene"/>
-<fullyQualifiedTypeName name="com.ladun.game.Physics"/>
-<fullyQualifiedTypeName name="com.ladun.game.components.CircleCollider"/>
-<fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
-<fullyQualifiedTypeName name="com.ladun.game.Point"/>
-<fullyQualifiedTypeName name="com.ladun.game.objects.DisplayDamage"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.UI.Util"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
 <fullyQualifiedTypeName name="javax.crypto.spec.GCMParameterSpec"/>
@@ -54,10 +47,17 @@
 <fullyQualifiedTypeName name="com.ladun.game.net.Client"/>
 <fullyQualifiedTypeName name="com.ladun.game.Item.Item"/>
 <fullyQualifiedTypeName name="java.awt.Color"/>
-<fullyQualifiedTypeName name="com.ladun.game.Item.Item.Type"/>
 <fullyQualifiedTypeName name="com.ladun.game.Item.Tooltip.Content"/>
 <fullyQualifiedTypeName name="com.ladun.game.Item.Tooltip"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Renderer"/>
 <fullyQualifiedTypeName name="com.ladun.engine.gfx.Image"/>
 <fullyQualifiedTypeName name="com.ladun.engine.Time"/>
+<fullyQualifiedTypeName name="com.ladun.game.Item.Item.Type"/>
+<fullyQualifiedTypeName name="java.util.Queue"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.DisplayTextInGame"/>
+<fullyQualifiedTypeName name="com.ladun.game.Point"/>
+<fullyQualifiedTypeName name="java.util.PriorityQueue"/>
+<fullyQualifiedTypeName name="java.lang.Comparable"/>
+<fullyQualifiedTypeName name="java.util.LinkedList"/>
+<fullyQualifiedTypeName name="java.util.Stack"/>
 </qualifiedTypeNameHistroy>

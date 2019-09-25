@@ -4,16 +4,19 @@ import java.awt.AWTException;
 import java.awt.MouseInfo;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.objects.GameObject;
+import com.ladun.game.util.Util;
 
 public class Camera {
 	
 	private final int SCREEN_MOVE_GAP = 15;
+	private final int SHAKE_DISTANCE = 30;
 	
 	private float offX,offZ;
 	
@@ -22,6 +25,14 @@ public class Camera {
 	private boolean characterLock = false;
 	private boolean mouseLock = false;
 	
+	private boolean cameraShaking;	
+	private float shakeX, shakeY;
+	private float targetShakeX, targetShakeY;
+	private float lastShakeX, lastShakeY;
+	private float shakePercent = 0;	
+	private float shakeAngle = 0;
+	private float moveDistance = SHAKE_DISTANCE;
+	private float shakeTime = .3f;
 	
 	private float cameraSensitivity = 400;
 	
@@ -33,15 +44,13 @@ public class Camera {
 		this.robot = new Robot();
 		this.targetTag = tag;
 		this.target = gm.getObject(targetTag);
-		this.gs =gs;
+		this.gs = gs;
 	}
 	
 	public void update(GameContainer gc,GameManager gm)
 	{
-		if((gc.getInput().isKey(KeyEvent.VK_SPACE) &&!gs.isChatting())|| characterLock) {
-			
-			focusTarget(gc,gm);
-						
+		if((gc.getInput().isKey(KeyEvent.VK_SPACE) &&!gs.isChatting())|| characterLock) {			
+			focusTarget(gc,gm);						
 		}
 		
 		if(!gs.isChatting()) {
@@ -49,24 +58,39 @@ public class Camera {
 				characterLock = !characterLock;
 			if(gc.getInput().isKeyDown(KeyEvent.VK_L))
 				mouseLock = !mouseLock;
-		}
-		
+		}		
 		if(mouseLock) {
 			lockTheMouse(gc,gm);
 		}	
-		
 
 		// Camera Position Setting
 		positionClamp(gc,gm);
 		
+		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE))
+			cameraShake();
 
-		
+		if(cameraShaking) {
+			shakePercent += Time.DELTA_TIME * 25;
+			if(shakePercent >= 1) {
+				lastShakeX = targetShakeX;
+				lastShakeY = targetShakeY;
+				shakePercent = 0;
+				setShakePos();
+			}			
+			shakeX = Util.lerp(lastShakeX, targetShakeX, shakePercent);
+			shakeY = Util.lerp(lastShakeY, targetShakeY, shakePercent);
+			if(moveDistance <= 1) {
+				cameraShaking = false;
+				shakeX = 0;
+				shakeY = 0;
+			}
+		}
 	}
 	
 	public void render(Renderer r)
 	{
-		r.setCamX((int)offX);
-		r.setCamY((int)offZ);
+		r.setCamX((int)(offX + shakeX));
+		r.setCamY((int)(offZ + shakeY));
 	}
 	
 	public void focusTarget(GameContainer gc,GameManager gm) {
@@ -85,6 +109,13 @@ public class Camera {
 		//offY -= dt * (int)(offY - targetY) * cameraSensitivity;
 	}
 	//---------------------------------------------------------------------
+	private void setShakePos() {
+		shakeAngle = shakeAngle + 180 + new Random().nextInt(91) - 45;
+		targetShakeX = moveDistance * (float)Math.cos(shakeAngle * Math.toRadians(shakeAngle));
+		targetShakeY = moveDistance * (float)Math.sin(shakeAngle * Math.toRadians(shakeAngle));
+		
+		moveDistance *= 0.5f;
+	}
 	
 	private void positionClamp(GameContainer gc, GameManager gm) {
 		if(gm.getActiveScene().getLevelW() * GameManager.TS < gc.getWidth()) {
@@ -138,6 +169,13 @@ public class Camera {
 				offZ += Time.DELTA_TIME * cameraSensitivity;
 			}
 		}	
+	}
+	
+	public void cameraShake() {
+		cameraShaking = true;
+		moveDistance = SHAKE_DISTANCE;
+		shakePercent = 0;
+		setShakePos();
 	}
     //---------------------------------------------------------------------
 	

@@ -1,0 +1,59 @@
+package com.ladun.game.util;
+
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import com.ladun.game.Point;
+
+public class PathFind {
+	
+	public static class Node implements Comparable<Node>{
+		public Node parent;
+		public Point p;
+		public int g, h;
+		public Node(Node parent, Point p,int g, int h) {
+			this.parent = parent;
+			this.p = p;
+			this.g = g;
+			this.h = h;
+		}
+		@Override
+		public int compareTo(Node o) {
+			// TODO Auto-generated method stub
+			return this.g + this.h <= o.g +o.h? 1:-1;
+		}
+	}
+
+	public static Queue<Point> AStar(int[][] map, Point st, Point ed){
+		PriorityQueue<Node> openList = new PriorityQueue<Node>();
+		PriorityQueue<Node> closeList = new PriorityQueue<Node>();
+		Queue<Point> path = null;
+		if(!isInMap(map,st) || !isInMap(map,ed))
+			return null; 
+		
+		openList.offer(new Node(null,st,0,0));
+		while(openList.size() > 0) {
+			Node currentNode = openList.poll();
+			if(currentNode.p.equalPos(ed)) {
+				path = new LinkedList<>();
+				Node temp = currentNode;
+				while(temp.parent != null) {
+					path.offer(temp.p);
+				}
+			}
+
+			closeList.offer(currentNode);
+			
+		}
+		
+		
+		return path;
+	}
+	
+	private static boolean isInMap(int[][] map, Point p) {
+		if(p.getY() >= 0 && p.getY() < map.length && p.getY() >= 0 && p.getY() < map[i].length)
+			return true;
+		return false;
+	}
+}

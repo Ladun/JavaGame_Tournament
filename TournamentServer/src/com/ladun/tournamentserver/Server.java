@@ -272,13 +272,13 @@ public class Server {
 					break;
 				}
 				case 0x15:{
-					// ValueType, health, changeType, tag
-					// changeType : 체력이 바뀐 타입 0 == init, 1 == hit
+					// ValueType, damage, changeType, tag
+					// changeType : 체력이 바뀐 타입 1 == hit, 2 == crit
 					// 
 					
 					
 					Client c = getClient(_clientID);
-					c.setHealth(Integer.parseInt(netArgs[1]));	
+					c.setHealth(c.getHealth() - Integer.parseInt(netArgs[1]));	
 
 					if(netArgs[3].equalsIgnoreCase("null") || netArgs[2].charAt(0) == 0)
 						break;

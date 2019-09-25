@@ -19,4 +19,7 @@ public class Point {
 		this.y = y;
 	}
 	
+	public boolean equalPos(Point _p) {
+		return x == _p.x && y == _p.y;
+	}
 }
