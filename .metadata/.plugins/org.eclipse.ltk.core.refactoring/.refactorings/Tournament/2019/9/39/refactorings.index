@@ -7,3 +7,6 @@
 1569301080387	Rename compilation unit 'AStar.java'
 1569389382033	Rename field 'cameraShake'
 1569390893512	Rename field 'moveSpeed'
+1569394556195	Rename method 'InSlider'
+1569396850851	Rename field 'lastPressed'
+1569396883340	Rename field 'lastSteelPressed'

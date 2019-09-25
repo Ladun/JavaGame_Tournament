@@ -98,7 +98,6 @@ public class GameManager extends AbstractGame {
 		}
 		announce.render(gc, r);
 		chatBox.render(gc, r);
-		
 	}
 
 	@Override

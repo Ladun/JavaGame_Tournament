@@ -301,7 +301,7 @@ public class Client {
 					break;
 				}
 				case 0x15:{
-					// ValueType, health, changeType, tag
+					// ValueType, damage, changeType, tag
 					// changeType : 체력이 바뀐 타입 1 == hit, 2 == crit
 					// 
 					if(netArgs.length <4){

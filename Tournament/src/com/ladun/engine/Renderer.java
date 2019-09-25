@@ -244,7 +244,7 @@ public class Renderer {
 		if(!processing) {
 			stringRequests.add(new StringRequest(str, offX, offY, size, color));
 		}
-		offY += gc.getWindow().getFrame().getInsets().top;
+		offY += size - (gc.getWindow().getFrame().isUndecorated()? 5 : 0);//gc.getWindow().getFrame().getInsets().top ;
 		
 		Graphics2D g2 = (Graphics2D)gc.getWindow().getG();
 		g2.setFont(g2.getFont().deriveFont(size));
@@ -256,6 +256,7 @@ public class Renderer {
 		else if(offX == ALLIGN_RIGHT) {
 			offX = gc.getWidth()  - gc.getWindow().getG().getFontMetrics().stringWidth(str) ;			
 		}
+		offX += gc.getWindow().getFrame().getInsets().left;
 		
 		g2.drawString(str, offX, offY);
 	}

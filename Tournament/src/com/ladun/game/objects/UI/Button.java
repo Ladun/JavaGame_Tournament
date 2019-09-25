@@ -47,6 +47,7 @@ public class Button {
 		released 		= false;
 		if(over)
 		{
+			//System.out.println(posX + ", " + posY + ", " + (width) + ", " + (height) + ", "+ gc.getInput().getMouseX()+", "+gc.getInput().getMouseY());
 			if(gc.getInput().isButtonDown(MouseEvent.BUTTON1))
 				pressed 	= true;
 			else if(pressed && gc.getInput().isButtonUp(MouseEvent.BUTTON1)){
@@ -61,7 +62,6 @@ public class Button {
 
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
-
 		if(imageName == null) {
 			if(pressed)
 			{

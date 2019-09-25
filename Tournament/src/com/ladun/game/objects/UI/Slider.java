@@ -1,5 +1,7 @@
 package com.ladun.game.objects.UI;
 
+import java.awt.event.MouseEvent;
+
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.game.GameManager;
@@ -35,7 +37,7 @@ public class Slider{
 		if(slider.isPressed())
 		{
 			int p = (gc.getInput().getMouseX() - preMousePosX);
-			if(InSlider(slider.getPosX() + p))
+			if(inSlider(slider.getPosX() + p))
 			{
 				slider.setPosX(slider.getPosX() + p);
 			}
@@ -48,6 +50,11 @@ public class Slider{
 				{
 					slider.setPosX(posX + width - slider.getWidth());
 				}
+			}
+		}
+		if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+			if(inSlider(gc.getInput().getMouseX()- slider.getWidth() / 2)){
+				slider.setPosX(gc.getInput().getMouseX() - slider.getWidth() / 2);
 			}
 		}
 		preMousePosX = gc.getInput().getMouseX();
@@ -77,7 +84,7 @@ public class Slider{
 		return slider.isPressed();
 	}
 
-	boolean InSlider(float x)
+	boolean inSlider(float x)
 	{
 		return x >= posX & x <= posX + width - slider.getWidth(); 
 	}

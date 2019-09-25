@@ -32,9 +32,9 @@ public class Tooltip {
 			return;
 		r.drawFillRect(posX, posY,  200, 20 * content.length  + 30, 0, 0xffaaaaaa);
 
-		r.drawString(content[0].str, posX+ 10, posY -5, 20, content[0].color);
+		r.drawString(content[0].str, posX + 5, posY + 5, 20, content[0].color);
 		for(int i = 1; i < content.length; i++) {
-			r.drawString(content[i].str, posX+ 10, posY + i * 18 +15,20, content[i].color);
+			r.drawString(content[i].str, posX+ 15, posY + i * 20 +15,20, content[i].color);
 		}
 	}
 

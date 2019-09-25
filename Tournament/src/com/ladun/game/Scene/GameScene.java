@@ -66,7 +66,6 @@ public class GameScene extends AbstractScene{
 		this.gm = gm;
 		this.active = active;
 		this.name = "InGame";		
-		//this.objects.add(new Player(1,1,this));
 		try {
 			this.camera = new Camera(gm,this,"Player");
 		}
@@ -75,7 +74,6 @@ public class GameScene extends AbstractScene{
 			return false;
 		}
 		/*
-		this.addObject(new TempObject(this,true));
 		TempObject a = new TempObject(this,false);
 		a.setPosX(100);
 		a.setPosZ(100);
@@ -175,6 +173,7 @@ public class GameScene extends AbstractScene{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		camera.render(r);
+		//r.drawString(gc.getInput().getMouseX() + ", " + gc.getInput().getMouseY(), gc.getInput().getMouseX(), gc.getInput().getMouseY(), 60, 0xff000000);
 		if(currentMap != null)
 			currentMap.render(gc, r);
 		
