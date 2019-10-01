@@ -52,6 +52,7 @@ public class Player extends Entity{
 	private int teamNumber;
 	private String nickname;
 	//--------------------------------------
+	private boolean mouseOver;
 	
 
 	public Player(String tag,String nickname,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
@@ -105,7 +106,7 @@ public class Player extends Entity{
 	public void update(GameContainer gc, GameManager gm) {
 		if(currentMapIndex != gs.getCurrentMapIndex())
 			return;
-
+		
 		if(gs.isGameisStart()) {
 
 			timePassAttackObject();
@@ -119,7 +120,7 @@ public class Player extends Entity{
 						mana = getMaxMana();
 					
 					if((int)mana != lastMana)
-						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x21,(int)mana,(char)0x01});
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x21,(int)mana});
 						
 				}
 				if(health < getMaxHealth()) {
@@ -129,7 +130,7 @@ public class Player extends Entity{
 						health = getMaxHealth();
 
 					if((int)health != lastHealth)
-						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health,(char)0x01});
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health});
 				}
 				
 				
@@ -365,6 +366,8 @@ public class Player extends Entity{
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
 
+		if(mouseOver)
+			r.drawString(nickname, (int)posX,  (int)(posZ + posY) - 35, 20, 0xff000000);
 
 		if(currentMapIndex > 0)
 			weapon.render(gc, r);
@@ -722,6 +725,20 @@ public class Player extends Entity{
 	}
 	public void setMana(float mana) {
 		this.mana = mana;
+	}
+	
+	
+	public boolean isMouseOver(float mouseX,float mouseY) {
+		if(mouseX >= posX && mouseX <= posX + width &&
+		   mouseY >= posZ && mouseY <= posZ + height) {
+			mouseOver = true;
+		}
+		else
+			mouseOver =false;
+		return mouseOver;
+	}
+	public void setMouseOver(boolean mouseOver) {
+		this.mouseOver = mouseOver;
 	}
 	@Override 
 	public void addPosX(float _x) {

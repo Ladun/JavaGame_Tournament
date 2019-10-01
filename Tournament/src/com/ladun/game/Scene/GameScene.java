@@ -2,6 +2,7 @@ package com.ladun.game.Scene;
 
 import java.awt.AWTException;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -12,7 +13,9 @@ import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
 import com.ladun.game.Physics;
+import com.ladun.game.Item.Item;
 import com.ladun.game.Item.Shop;
+import com.ladun.game.Item.Tooltip;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
 import com.ladun.game.objects.Interior;
@@ -24,6 +27,8 @@ import com.ladun.game.objects.UI.TextBox;
 public class GameScene extends AbstractScene{
 
 
+	private static final int STATE_GAP = 26;
+	
 	private String[] mapNames = new String[] {"waitingroom","teamwait","map1"};
 	private Map currentMap;
 	private int currentMapIndex = -1;
@@ -31,7 +36,6 @@ public class GameScene extends AbstractScene{
 	
 	private float barAnim = 0;
 	
-	private boolean inventoryView;
 	
 	private Camera 		camera;
 	private Player localPlayer;
@@ -42,6 +46,10 @@ public class GameScene extends AbstractScene{
 	private float readyToStartTime = 0;
 	private boolean gameisStart = false;// 게임 중임 표시
 	private boolean inteamWaitRoom = false; // 게임 시작 바로 전에 서버로 데이터를 한 번 보내기 위해서
+	//-------------------------------------------
+	private Player stateViewPlayer;
+	private boolean lastStateTargetChanged;
+	private Tooltip tooltip;
 	// UI Contents----------------------------------
 	private Button teamChooseButton;
 	private Shop shop;
@@ -79,7 +87,8 @@ public class GameScene extends AbstractScene{
 		a.setPosZ(100);
 		
 		this.addObject(a);*/
-		
+
+		tooltip = new Tooltip();
 		shop = new Shop(this);
 		//Buttons Init---------------------------------------
 		teamChooseButton = new Button(208,gc.getHeight()- 92, 64 ,64,teamColor.getValue());
@@ -87,7 +96,7 @@ public class GameScene extends AbstractScene{
 		jobButton = new Button(gc.getWidth() - 126, gc.getHeight()/2 -48,96,96,"job_button");
 
 		exitButton = new Button(gc.getWidth() /2 - 38, gc.getHeight() -100,76,76, "exit_button");
-		jobSelectButtons = new Button[4];
+		jobSelectButtons = new Button[6];
 		for(int i = 0; i < jobSelectButtons.length;i++) {
 			jobSelectButtons[i] =  new Button(gc.getWidth()/2, gc.getHeight()/2 + i * 64,64,64,"jobSelect_button" + (i +1));
 		}
@@ -107,13 +116,54 @@ public class GameScene extends AbstractScene{
 			if(currentMap != null)
 				currentMap.update(gc, gm);
 			for(int i = 0; i < objects.size();i++) {
-				if(objects.get(i).isActive())
-					objects.get(i).update(gc, gm);
-			}		
+				GameObject g = objects.get(i);
+				if(g.isActive()) {
+					g.update(gc, gm);
+					if(g instanceof Player) {
+						if( ((Player) g).isMouseOver(gc.getInput().getMouseX() + camera.getOffX(), gc.getInput().getMouseY()+ camera.getOffY()) ) {
+							if(currentMapIndex > 0) {
+								if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+									setStateViewPlayer((Player)g);
+								}
+							}
+						}
+						else {
+							if(!lastStateTargetChanged)
+								if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) 
+									setStateViewPlayer(null);								
+						}
+					}
+					
+				}		
+			}
 		}
 		
+		// Tooltip Setting ----------------------------------------
+
+		if(stateViewPlayer != null) {
+
+			System.out.println(gc.getInput().getMouseX() + ":" + (STATE_GAP + 60 ) + ":" +gc.getInput().getMouseY() + ":" + (STATE_GAP + 89 )  );
+			for(int i = 0; i < 6;i++) {
+				if(stateViewPlayer.getItems()[i] == null || stateViewPlayer.getItems()[i].getID() == -1)
+					continue;
+				
+				if(gc.getInput().getMouseX() >= STATE_GAP + 60 * (i /2)  && gc.getInput().getMouseX() <= STATE_GAP + 60 * (i /2) + Item.IMAGE_SIZE &&
+						gc.getInput().getMouseY() >= STATE_GAP + 29 + 60 * (i % 2)  && gc.getInput().getMouseY() <= STATE_GAP + 29 + 60 * (i % 2) + Item.IMAGE_SIZE) {
+					tooltipSetting(stateViewPlayer.getItems()[i],i,Tooltip.Type.State);
+				}
+				else {
+					if(tooltip.getType() == Tooltip.Type.State)
+						if(tooltip.getContentID() == i)
+							tooltip.setActive(false);
+				}
+				
+			}
+		}
+		//---------------------------------------------------------
+
 		mapUpdate(gc,gm);
 
+		// Chatting -------------------------------------------------------
 		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
 			//gm.getChatBox().addTexts("Hello this is Chat Box");
 			if(chatTextBox.isChatOn()) {
@@ -125,10 +175,10 @@ public class GameScene extends AbstractScene{
 				}
 			}
 			chatTextBox.setChatOn(!chatTextBox.isChatOn());
+			chatTextBox.lengthSetZero();
 		}		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_C))
-			if(!isChatting())
-				inventoryView = !inventoryView;
+		// -------------------------------------------------------------------
+		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_ESCAPE)){
 			if(chatTextBox.isChatOn()) {
 				chatTextBox.setChatOn(false);
@@ -137,6 +187,7 @@ public class GameScene extends AbstractScene{
 			}
 		}
 		
+		// Option Window Update------------------------------------------------
 		if(optionWindowShow) {
 			volumeSlider.update(gc, gm);
 			exitButton.update(gc, gm);
@@ -161,11 +212,14 @@ public class GameScene extends AbstractScene{
 				optionWindowShow = false;
 			}
 		}
+		//----------------------------------------------------------------------
 		if(chatTextBox.isChatOn()) {
 			chatTextBox.update(gc, gm);
 		}
 		
-
+		lastStateTargetChanged =false;
+		if(tooltip.isActive())
+			tooltip.update(gc, gm);
 		camera.update(gc, gm);
 		Physics.update();
 	}
@@ -184,6 +238,8 @@ public class GameScene extends AbstractScene{
 		}
 
 		renderUI(gc,r);
+		if(tooltip.isActive())
+			tooltip.render(gc, r);
 		
 	}
 	//---------------------------------------------------------------------------------------------
@@ -205,8 +261,8 @@ public class GameScene extends AbstractScene{
 		
 		//r.drawImage(gc.getImageLoader().getImage("window"), gc.getWidth() / 2 - 192, gc.getHeight() /2- 240, 0);
 		
-		if(inventoryView)
-			renderInven(gc,r);
+		if(stateViewPlayer != null)
+			renderState(gc,r);
 		
 		if(currentMapIndex >0) {
 			// Bar-----------------------------------------------------------------------
@@ -288,23 +344,68 @@ public class GameScene extends AbstractScene{
 		}
 	}
 	
-	private void renderInven(GameContainer gc,Renderer r) {
-		int ltX = gc.getWidth() / 2 + 180;
-		int ltY = gc.getHeight() - 405;
+	private void renderState(GameContainer gc,Renderer r) {
 		
-		r.drawImage(gc.getResourceLoader().getImage("inv"),ltX,ltY,0 );
-		
+		r.drawImage(gc.getResourceLoader().getImage("state"),STATE_GAP,STATE_GAP,0 );
+		r.drawString(stateViewPlayer.getNickname(), STATE_GAP, STATE_GAP - 4, 22, 0xff7a6a3b);
 		for(int i = 0; i < 6;i++) {
 			if(localPlayer.getItems()[i] == null || localPlayer.getItems()[i].getID() == -1)
 				continue;
 			
-			localPlayer.getItems()[i].render(gc, r,ltX + 15 + 70 * (i % 2) , ltY + 15 + 64 * (i / 2));
+			localPlayer.getItems()[i].render(gc, r,STATE_GAP + 60 * (i /2) , STATE_GAP + 29 + 60 * (i % 2));
 			
 		}
 		
-		r.drawString("HP : " + (int)localPlayer.getHealth() + "/" + (int)localPlayer.getMaxHealth(), ltX + 30,  ltY +210, 16, 0xff7a6a3b);
-		r.drawString("HP : " + (int)localPlayer.getMana() + "/" + (int)localPlayer.getMaxMana(), ltX + 30,  ltY +230, 16, 0xff7a6a3b);
+		r.drawText("HP: " + (int)stateViewPlayer.getHealth() + "/" + (int)stateViewPlayer.getMaxHealth(), STATE_GAP + 192 ,  STATE_GAP + 8, 0xff7a6a3b);
+		r.drawText("MP: " + (int)stateViewPlayer.getMana() + "/" + (int)stateViewPlayer.getMaxMana(), STATE_GAP +192,  STATE_GAP +25, 0xff7a6a3b);
+		r.drawText("DF: " + (int)stateViewPlayer.getDefence(), STATE_GAP +192,  STATE_GAP +42, 0xff7a6a3b);
+		r.drawText("SP: " + (int)stateViewPlayer.getMoveSpeed(), STATE_GAP +192,  STATE_GAP +59, 0xff7a6a3b);
 		
+	}
+
+	public void tooltipSetting(Item item,int id,Tooltip.Type type) {
+		if(!tooltip.isActive()) {
+			Tooltip.Content[] content = new Tooltip.Content[item.typeCount()+ 1 ];
+			int contentIndex = 1;
+			content[0] = tooltip.new Content(item.getName(),0xff000000);
+			StringBuilder sb = new StringBuilder();
+			for(int i = 0; i < Item.Type.values().length;i++) {
+				//System.out.println("1: " + Item.Type.values()[i]);
+				if(item.hasType(Item.Type.values()[i])) {
+					sb.setLength( 0);
+					switch(Item.Type.values()[i]) {
+					case STAT_HEALTH:
+						sb.append("HP");
+						break;
+					case STAT_MANA:
+						sb.append("MP");
+						break;
+					case STAT_DAMAGE:
+						sb.append("Damage");
+						break;
+					case STAT_DEFENCE:
+						sb.append("Defence");
+						break;
+					case STAT_MOVESPEED:
+						sb.append("MoveSpeed");
+						break;
+					default:
+						break;
+					}
+					int option = item.getOptionValue(Item.Type.values()[i]);
+					//System.out.println(option);
+					if(option != 0) {
+						if(option > 0)
+							sb.append(" +");
+						sb.append(option);
+					}
+					
+					content[contentIndex++] =  tooltip.new Content(sb.toString(),0xff444444);
+				}
+			}
+			tooltip.setting(content, id,type);
+		}
+		tooltip.setActive(true);
 	}
 	
 
@@ -513,6 +614,7 @@ public class GameScene extends AbstractScene{
 				localPlayer.setPos(_pos[0], _pos[1]);
 
 				localPlayer.revival();
+				System.out.println("MapLoad Player Position Setting");
 			}
 			synchronized (gc) {
 				camera.focusTarget(gc, gm);
@@ -544,6 +646,7 @@ public class GameScene extends AbstractScene{
 		
 		Player p = new Player(name,nickname,pos[0], pos[1], this,isLocalPlayer);
 		this.objects.add(p);
+		System.out.println("AddPlayer");
 		return p;
 	}
 	
@@ -635,6 +738,19 @@ public class GameScene extends AbstractScene{
 
 	public int getMaxRound() {
 		return maxRound;
+	}
+
+	public Tooltip getTooltip() {
+		return tooltip;
+	}
+
+	public Player getStateViewPlayer() {
+		return stateViewPlayer;
+	}
+
+	public void setStateViewPlayer(Player stateViewPlayer) {
+		this.stateViewPlayer = stateViewPlayer;
+		lastStateTargetChanged = true;
 	}
 
 	public void setMaxRound(int maxRound) {

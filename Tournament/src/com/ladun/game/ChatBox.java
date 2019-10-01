@@ -39,8 +39,11 @@ public class ChatBox {
 		for(int i = 1; i <= MAX_HEIGHT; i++) {
 			int index = (head - i) < 0 ? MAX_HEIGHT + (head - i) : head - i;
 			if(texts[index] != null && texts[index].length() > 0) {
-				if(timers[index] > 0)
+				if(timers[index] > 0) {
+					r.drawFillRect(20, gc.getHeight() - 220 - 30* (i -  1),
+							gc.getWindow().getG().getFontMetrics(gc.getWindow().getG().getFont().deriveFont((float)25)).stringWidth(texts[index]) + 10, 25, 0, 0x77ffffff);
 					r.drawString(texts[index], 20, gc.getHeight() - 220 - 30* (i -  1), 25, colors[index]);//0xffff9447);
+				}
 			}
 		}
 	}

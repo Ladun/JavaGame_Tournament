@@ -65,9 +65,6 @@ public class Camera {
 
 		// Camera Position Setting
 		positionClamp(gc,gm);
-		
-		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE))
-			cameraShake();
 
 		if(cameraShaking) {
 			shakePercent += Time.DELTA_TIME * 25;

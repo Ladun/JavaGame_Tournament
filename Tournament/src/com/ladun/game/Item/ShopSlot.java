@@ -7,7 +7,6 @@ import com.ladun.game.net.Client;
 import com.ladun.game.objects.UI.Button;
 
 public class ShopSlot {
-	public static final int IMAGE_SIZE = 54;
 	public static final int GAP = 8;
 	public static final int BUTTON_HEIGHT = 32;
 	public static final int STRING_SIZE = 15;
@@ -22,7 +21,7 @@ public class ShopSlot {
 	
 	public ShopSlot(Shop sh,int id,Item item,int posX,int posY) {
 		this.sh = sh;
-		parchaseButton = new Button(0,0, IMAGE_SIZE, BUTTON_HEIGHT, 0xffbbbbbb);
+		parchaseButton = new Button(0,0, Item.IMAGE_SIZE, BUTTON_HEIGHT, 0xffbbbbbb);
 		setItem(id,item, posX, posY);
 		
 	}
@@ -45,13 +44,14 @@ public class ShopSlot {
 			}
 		}
 		
-		if(gc.getInput().getMouseX() >= posX  && gc.getInput().getMouseX() <= posX + GAP * 2 + IMAGE_SIZE &&
-				gc.getInput().getMouseY() >= posY  && gc.getInput().getMouseY() <= posY + GAP * 2 + IMAGE_SIZE) {
-			sh.tooltipSetting(item,id);
+		if(gc.getInput().getMouseX() >= posX  && gc.getInput().getMouseX() <= posX + GAP * 2 + Item.IMAGE_SIZE &&
+				gc.getInput().getMouseY() >= posY  && gc.getInput().getMouseY() <= posY + GAP * 2 + Item.IMAGE_SIZE) {
+			sh.getGs().tooltipSetting(item,id,Tooltip.Type.Shop);
 		}
 		else {
-			if(sh.getTooltip().getContentID() == id)
-				sh.getTooltip().setActive(false);
+			if(sh.getGs().getTooltip().getType() == Tooltip.Type.Shop)
+				if(sh.getGs().getTooltip().getContentID() == id)
+					sh.getGs().getTooltip().setActive(false);
 		}
 	}
 	public void render(GameContainer gc, Renderer r) {
@@ -61,7 +61,8 @@ public class ShopSlot {
 		// item image Render
 		item.render(gc, r, posX  + GAP, posY + GAP);
 		// Price Render
-		r.drawText(item.getPrice() + "", posX + GAP * 2, posY + GAP+ GAP + IMAGE_SIZE  , 0xff000000);
+		String priceString = item.getPrice() +"";
+		r.drawText(priceString, posX + 35 - priceString.length() * 6 , posY + GAP+ GAP + Item.IMAGE_SIZE  , 0xff000000);
 		// Buy Button Render
 		parchaseButton.render(gc, r);
 	}
@@ -73,7 +74,7 @@ public class ShopSlot {
 		this.posX = posX;
 		this.posY = posY;
 		parchaseButton.setPosX(posX + GAP);
-		parchaseButton.setPosY(posY + GAP * 3 + STRING_SIZE+ IMAGE_SIZE);
+		parchaseButton.setPosY(posY + GAP * 3 + STRING_SIZE + Item.IMAGE_SIZE);
 		
 	}
 
@@ -85,10 +86,10 @@ public class ShopSlot {
 		this.active = active;
 	}
 	public static int getWidth() {
-		return GAP * 2 + IMAGE_SIZE;
+		return GAP * 2 + Item.IMAGE_SIZE;
 	}
 	public static int getHeight() {
-		return GAP * 4 + STRING_SIZE + BUTTON_HEIGHT + IMAGE_SIZE;
+		return GAP * 4 + STRING_SIZE + BUTTON_HEIGHT + Item.IMAGE_SIZE;
 	}
 }
 

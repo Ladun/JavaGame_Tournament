@@ -8,6 +8,8 @@ import com.ladun.game.GameManager;
 
 public class Tooltip {
 	
+	public enum Type {State, Shop};
+	
 	public class Content{
 		public String str;
 		public int color;
@@ -17,6 +19,7 @@ public class Tooltip {
 			this.color =color;
 		}
 	}
+	private Type type;
 	private boolean active;
 	private Content[] content;
 	private int posX,posY;
@@ -38,13 +41,22 @@ public class Tooltip {
 		}
 	}
 
-	public void setting(Content[] content, int id) {
+	public void setting(Content[] content, int id,Type type) {
 		this.content = content;
 		contentID =id;
+		this.type = type;
 	}
 
 	public int getContentID() {
 		return contentID;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 	public boolean isActive() {

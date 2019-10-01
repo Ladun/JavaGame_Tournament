@@ -10,7 +10,7 @@ import com.ladun.game.util.Util;
 
 public class Weapon extends GameObject{
 	public enum Type{
-		SWORD,BOW,SPEAR,DAGGER
+		SWORD,BOW,SPEAR,DAGGER,MAGIC,HAMMER
 	}
 	private final static float LIMIT_TIME = 1/10f; 
 	

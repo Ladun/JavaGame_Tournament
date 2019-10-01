@@ -385,7 +385,7 @@ public class Client {
 					// ValueType, mana
 					// changeType : 체력이 바뀐 타입 0 == init
 					// 
-					if(netArgs.length <3){
+					if(netArgs.length <2){
 						System.out.println("0x03-0x21 : netArgs Error");
 						break;
 					}
@@ -404,7 +404,7 @@ public class Client {
 				case 0x22:{
 					// ValueType, health
 					// 
-					if(netArgs.length <3){
+					if(netArgs.length <2){
 						System.out.println("0x03-0x22 : netArgs Error");
 						break;
 					}

@@ -11,6 +11,7 @@ import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.game.GameManager;
+import com.ladun.game.components.Component;
 
 public class TextBox{
 	
@@ -46,7 +47,7 @@ public class TextBox{
 	public void update(GameContainer gc, GameManager gm) {
 		if(chatOn) {
 			if(gc.getInput().isKeyPressed()){
-				if(gc.getInput().getLastCode() != KeyEvent.VK_BACK_SPACE) {
+				if(gc.getInput().getLastCode() != KeyEvent.VK_BACK_SPACE && gc.getInput().getLastCode() != KeyEvent.VK_ENTER) {
 					if(sb.length() < maxLength) {
 						char c = gc.getInput().getLastStr();
 						if(c == 3) {

@@ -13,8 +13,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+
+import com.ladun.engine.gfx.Image;
 
 public class Window {
 
@@ -88,15 +92,21 @@ public class Window {
 
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Icon.png")));
 		
-		/*
+		
 		// Transparent 16 x 16 pixel cursor image.
-		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage cursorImg;
+		try {
+			cursorImg = ImageIO.read(Image.class.getResourceAsStream("/Cursor.png"));//new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+			// Create a new blank cursor.
+			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			    cursorImg, new Point(0, 0), "blank cursor");
+			frame.setCursor(blankCursor);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
-		// Create a new blank cursor.
-		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-		    cursorImg, new Point(0, 0), "blank cursor");
-		frame.setCursor(blankCursor);
-	    */
+	    
 	}
 	public void update(){
 		g.drawImage(image,0, 0, canvas.getWidth(), canvas.getHeight(), null);

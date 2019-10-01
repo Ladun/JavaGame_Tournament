@@ -240,7 +240,9 @@ public class Renderer {
 	}
 	
 	public void drawString(String str, int offX, int offY,float size, int color) {
-		
+
+		offX -= camX;
+		offY -= camY;
 		if(!processing) {
 			stringRequests.add(new StringRequest(str, offX, offY, size, color));
 		}

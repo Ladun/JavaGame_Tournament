@@ -18,6 +18,8 @@ public class Slider{
 	private int backgroundColor;	
 	private Button 		slider;
 	
+	private boolean pressed;
+	
 	public Slider( int x, int y,
 			int width, int height,int sliderWidth,float percent,
 			int sliderColor, int backgroundColor)
@@ -33,7 +35,7 @@ public class Slider{
 
 	public void update(GameContainer gc,GameManager gm) {
 		slider.update(gc, gm);
-		
+		pressed = false;
 		if(slider.isPressed())
 		{
 			int p = (gc.getInput().getMouseX() - preMousePosX);
@@ -53,8 +55,10 @@ public class Slider{
 			}
 		}
 		if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-			if(inSlider(gc.getInput().getMouseX()- slider.getWidth() / 2)){
+			if(inSlider(gc.getInput().getMouseX()- slider.getWidth() / 2) &&
+					gc.getInput().getMouseY() >= posY && gc.getInput().getMouseY() <= posY + height){
 				slider.setPosX(gc.getInput().getMouseX() - slider.getWidth() / 2);
+				pressed = true;
 			}
 		}
 		preMousePosX = gc.getInput().getMouseX();
@@ -81,7 +85,7 @@ public class Slider{
 	
 	public boolean isPressed()
 	{
-		return slider.isPressed();
+		return slider.isPressed() || pressed;
 	}
 
 	boolean inSlider(float x)

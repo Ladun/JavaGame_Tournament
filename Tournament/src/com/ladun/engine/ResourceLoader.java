@@ -41,13 +41,13 @@ public class ResourceLoader {
 		addImage("key_image", "/UI/KeyImage.png",16,16);
 		addImage("slot_black", "/UI/SlotBlack.png");
 		addImage("window", "/UI/Window.png");
-		addImage("inv","/UI/Inventory.png");
+		addImage("state","/UI/State.png");
 		addImage("skill_icon", "/UI/SlotContents/SkillIcon.png",64,64);
 		
 		// Buttons
 		addImage("store_button","/UI/StoreButton.png",96,96);
 		addImage("job_button","/UI/JobButton.png",96,96);
-		for(int i = 1; i <= 4;i++) {
+		for(int i = 1; i <= 6;i++) {
 			addImage("jobSelect_button" + i,"/UI/JobSelect/JobSelect" + i + ".png",64,64);
 			
 		}

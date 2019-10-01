@@ -17,7 +17,7 @@ public class Server {
 	private final static byte[] PACKET_SERVER_HEADER = new byte[] { 0x41,0x41};
 	private final static byte PACKET_VALUETYPE_CLIENTID = 0x10;
 	
-	private final int START_MOENY = 1000;
+	private final int START_MOENY = 10000;
 	
 	private int port;
 	private Thread listenThread;
@@ -223,13 +223,11 @@ public class Server {
 				case 0x13:
 				case 0x18:
 				case 0x21:
-				case 0x22:
 					// 0x11: ValueType, x, y, z, angle
 					// 0x12: ValueType, angle
 					// 0x13: ValueType, type	
 					// 0x18: ValueType, hiding	
 					// 0x21: ValueType, mana
-					// 0x22: ValueType, health
 					break;
 				case 0x14:{
 					// ValueType, teamNumber
@@ -279,7 +277,6 @@ public class Server {
 					
 					Client c = getClient(_clientID);
 					c.setHealth(c.getHealth() - Integer.parseInt(netArgs[1]));	
-
 					if(netArgs[3].equalsIgnoreCase("null") || netArgs[2].charAt(0) == 0)
 						break;
 					
@@ -504,6 +501,13 @@ public class Server {
 						break;
 					}
 					break;
+				}
+
+				case 0x22:{
+					// ValueType, health
+					Client c = getClient(_clientID);
+					c.setHealth(Integer.parseInt(netArgs[1]));
+					
 				}
 				
 				}
