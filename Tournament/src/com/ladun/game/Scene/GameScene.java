@@ -141,14 +141,13 @@ public class GameScene extends AbstractScene{
 		// Tooltip Setting ----------------------------------------
 
 		if(stateViewPlayer != null) {
-
-			System.out.println(gc.getInput().getMouseX() + ":" + (STATE_GAP + 60 ) + ":" +gc.getInput().getMouseY() + ":" + (STATE_GAP + 89 )  );
+			
 			for(int i = 0; i < 6;i++) {
 				if(stateViewPlayer.getItems()[i] == null || stateViewPlayer.getItems()[i].getID() == -1)
 					continue;
 				
-				if(gc.getInput().getMouseX() >= STATE_GAP + 60 * (i /2)  && gc.getInput().getMouseX() <= STATE_GAP + 60 * (i /2) + Item.IMAGE_SIZE &&
-						gc.getInput().getMouseY() >= STATE_GAP + 29 + 60 * (i % 2)  && gc.getInput().getMouseY() <= STATE_GAP + 29 + 60 * (i % 2) + Item.IMAGE_SIZE) {
+				if(gc.getInput().getMouseX() >= STATE_GAP + 60 * (i % 3)  && gc.getInput().getMouseX() <= STATE_GAP + 60 * (i % 3) + Item.IMAGE_SIZE &&
+						gc.getInput().getMouseY() >= STATE_GAP + 29 + 60 * (i / 3)  && gc.getInput().getMouseY() <= STATE_GAP + 29 + 60 * (i / 3) + Item.IMAGE_SIZE) {
 					tooltipSetting(stateViewPlayer.getItems()[i],i,Tooltip.Type.State);
 				}
 				else {
@@ -254,8 +253,16 @@ public class GameScene extends AbstractScene{
 			return;
 		
 		r.drawString(gm.getNickname(), Renderer.ALLIGN_RIGHT, 0, 30, 0xff000000);
-		r.drawString(gm.getMoney() +"", 0, 0, 25, 0xffafca42);
-		r.drawString(round + " / " + maxRound, -1 , 0, 13, 0xff207cda);
+		if(currentMapIndex > 0) {
+			r.drawString(gm.getMoney() +"", 40, gc.getHeight() - 35, 20, 0xffafca42);
+			r.drawString(round + " / " + maxRound, -1 , 0, 20, 0xff207cda);
+		}
+		if(camera.isMouseLock()) {
+			r.drawImage(gc.getResourceLoader().getImage("mouse_lock"), gc.getWidth() - 80, gc.getHeight() -40, 0);
+		}
+		if(camera.isCharacterLock()) {
+			r.drawImage(gc.getResourceLoader().getImage("camera_lock"),  gc.getWidth() - 40, gc.getHeight() - 40, 0);
+		}
 		
 		renderOthers(gc,r);
 		
@@ -349,10 +356,10 @@ public class GameScene extends AbstractScene{
 		r.drawImage(gc.getResourceLoader().getImage("state"),STATE_GAP,STATE_GAP,0 );
 		r.drawString(stateViewPlayer.getNickname(), STATE_GAP, STATE_GAP - 4, 22, 0xff7a6a3b);
 		for(int i = 0; i < 6;i++) {
-			if(localPlayer.getItems()[i] == null || localPlayer.getItems()[i].getID() == -1)
+			if(stateViewPlayer.getItems()[i] == null || stateViewPlayer.getItems()[i].getID() == -1)
 				continue;
 			
-			localPlayer.getItems()[i].render(gc, r,STATE_GAP + 60 * (i /2) , STATE_GAP + 29 + 60 * (i % 2));
+			stateViewPlayer.getItems()[i].render(gc, r,STATE_GAP + 60 * (i %3) , STATE_GAP + 29 + 60 * (i /3));
 			
 		}
 		
@@ -486,6 +493,7 @@ public class GameScene extends AbstractScene{
 				gm.getAnnounce().show(3f);
 				*/
 			}
+			// 직업 선택 버튼 update --------------------------------------------------------
 			if(jobButton.isReleased()) {
 				jobSelectButtonShow = !jobSelectButtonShow;
 				jSBMovePercent = 0;
@@ -538,6 +546,8 @@ public class GameScene extends AbstractScene{
 					
 				}
 			}
+			//  ----------------------------------------------------------------------------------------------------------------
+
 						
 		}
 		else {
@@ -608,6 +618,7 @@ public class GameScene extends AbstractScene{
 				}
 			}
 			 
+			System.out.println("MapLoading");
 			if(t < 5) {
 				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
 				int[] _pos = currentMap.randomSpawnPoint();

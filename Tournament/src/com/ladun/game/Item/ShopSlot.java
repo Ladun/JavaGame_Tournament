@@ -34,13 +34,17 @@ public class ShopSlot {
 				int itemSlotIndex = sh.getGs().getLocalPlayer().emptyItemSlot();
 				if(itemSlotIndex == -1) {
 					// TODO: 아이템 창이 꽉참
+					
 				}else {
 					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE, new Object[] {(char)0x20, item.getID(),itemSlotIndex,(char)0x00});
 					sh.getGs().getLocalPlayer().getItems()[itemSlotIndex] = item;
+					sh.getGs().getLocalPlayer().revival();
+					sh.getGs().getLocalPlayer().setMana(sh.getGs().getLocalPlayer().getMaxMana());
 				}
 					
 			}else {
 				// TODO: 돈이 부족함
+				
 			}
 		}
 		

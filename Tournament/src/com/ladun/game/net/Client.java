@@ -374,6 +374,7 @@ public class Client {
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
+
 					try {
 						Item item = gm.getItemDatabase().getItem(Integer.parseInt(netArgs[1]));
 						_p.getItems()[Integer.parseInt(netArgs[2])] = item;

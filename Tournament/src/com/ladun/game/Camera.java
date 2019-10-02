@@ -196,6 +196,14 @@ public class Camera {
 		return targetTag;
 	}
 
+	public boolean isCharacterLock() {
+		return characterLock;
+	}
+
+	public boolean isMouseLock() {
+		return mouseLock;
+	}
+
 	public void setTargetTag(String targetTag) {
 		this.targetTag = targetTag;
 		this.target = null;

@@ -43,7 +43,9 @@ public class ResourceLoader {
 		addImage("window", "/UI/Window.png");
 		addImage("state","/UI/State.png");
 		addImage("skill_icon", "/UI/SlotContents/SkillIcon.png",64,64);
-		
+
+		addImage("mouse_lock", "/UI/MouseLock.png");
+		addImage("camera_lock", "/UI/CameraLock.png");
 		// Buttons
 		addImage("store_button","/UI/StoreButton.png",96,96);
 		addImage("job_button","/UI/JobButton.png",96,96);

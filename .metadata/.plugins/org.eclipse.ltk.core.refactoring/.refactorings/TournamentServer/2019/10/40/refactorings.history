@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;_c&apos; in &apos;com.ladun.tournamentserver.Server.process(...)&apos; to &apos;c&apos;&#x0D;&#x0A;- Original project: &apos;TournamentServer&apos;&#x0D;&#x0A;- Original element: &apos;com.ladun.tournamentserver.Server.process(DatagramPacket)._c&apos;&#x0D;&#x0A;- Renamed element: &apos;_c&apos;&#x0D;&#x0A;- Update references to refactored element" description="Rename local variable &apos;_c&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;com.ladun.tournamentserver{Server.java[Server~process~QDatagramPacket;@_c!12644!12676!12651!12652!QClient;!0!false" name="c" references="true" stamp="1570021524132" version="1.0"/>
+</session>

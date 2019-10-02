@@ -474,28 +474,29 @@ public class Server {
 					// ValueType, itemID, slotIndex, type
 					// type : 0 == buy, 1 == sell
 					try {
-						Client _c = getClient(_clientID);
+						Client c = getClient(_clientID);
 						Item item = itemDatabase.getItem(Integer.parseInt(netArgs[1]));
-						_c.getItems()[Integer.parseInt(netArgs[2])] = item;
+						c.getItems()[Integer.parseInt(netArgs[2])] = item;
 						
 						if(netArgs[3].charAt(0) == 0)
-							_c.setMoney(_c.getMoney() - item.getPrice());
+							c.setMoney(c.getMoney() - item.getPrice());
 						else if(netArgs[3].charAt(0) == 1)
-							_c.setMoney(_c.getMoney() + item.getPrice() / 2);
+							c.setMoney(c.getMoney() + item.getPrice() / 2);
 						
 
 						sb.setLength(0);
 						bw.clear();
 						bw.write((byte)0x03);
 						sb.append(":");
-						sb.append(_c.getClientdID());
+						sb.append(c.getClientdID());
 						sb.append(":");
 						sb.append((char)0x19);
 						sb.append(",");
-						sb.append(_c.getMoney());
+						sb.append(c.getMoney());
 						bw.write((sb.toString()).getBytes());	
 						
-						send(bw.getBytes(), _c.getAddress(), _c.getPort());
+						send(bw.getBytes(), c.getAddress(), c.getPort());
+
 						
 					} catch(NumberFormatException e) {
 						break;
