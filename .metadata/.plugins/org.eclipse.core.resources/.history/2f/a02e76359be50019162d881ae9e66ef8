@@ -254,8 +254,8 @@ public class GameScene extends AbstractScene{
 		
 		r.drawString(gm.getNickname(), Renderer.ALLIGN_RIGHT, 0, 30, 0xff000000);
 		if(currentMapIndex > 0) {
-			r.drawImage(gc.getResourceLoader().getImage("money"), 12, gc.getHeight() - 46, 0);
-			r.drawString(gm.getMoney() +"", 46, gc.getHeight() - 35, 25, 0xffe4c96b);
+			r.drawImage(gc.getResourceLoader().getImage("mouse_lock"), 4, gc.getHeight() - 35, 0);
+			r.drawString(gm.getMoney() +"", 40, gc.getHeight() - 35, 20, 0xffafca42);
 			r.drawString(round + " / " + maxRound, -1 , 0, 20, 0xff207cda);
 		}
 		if(camera.isMouseLock()) {
@@ -611,8 +611,7 @@ public class GameScene extends AbstractScene{
 				currentMap = new Map(mapNames[currentMapIndex]);
 			}
 			
-			float t = 0;		
-			long stTime = System.currentTimeMillis();
+			float t = 0;				
 			while(localPlayer == null) {
 				t += Time.DELTA_TIME;
 				if(t >= 5) {
@@ -620,7 +619,7 @@ public class GameScene extends AbstractScene{
 				}
 			}
 			 
-			System.out.println("MapLoading " + t +", " + (System.currentTimeMillis() - stTime) );
+			System.out.println("MapLoading");
 			if(t < 5) {
 				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
 				int[] _pos = currentMap.randomSpawnPoint();

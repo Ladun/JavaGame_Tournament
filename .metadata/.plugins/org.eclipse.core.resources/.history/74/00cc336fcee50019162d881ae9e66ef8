@@ -254,8 +254,8 @@ public class GameScene extends AbstractScene{
 		
 		r.drawString(gm.getNickname(), Renderer.ALLIGN_RIGHT, 0, 30, 0xff000000);
 		if(currentMapIndex > 0) {
-			r.drawImage(gc.getResourceLoader().getImage("money"), 12, gc.getHeight() - 46, 0);
-			r.drawString(gm.getMoney() +"", 46, gc.getHeight() - 35, 25, 0xffe4c96b);
+			r.drawImage(gc.getResourceLoader().getImage("money"), 8, gc.getHeight() - 40, 0);
+			r.drawString(gm.getMoney() +"", 40, gc.getHeight() - 35, 20, 0xffafca42);
 			r.drawString(round + " / " + maxRound, -1 , 0, 20, 0xff207cda);
 		}
 		if(camera.isMouseLock()) {
