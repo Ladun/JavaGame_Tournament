@@ -30,8 +30,14 @@ public class ResourceLoader {
 		addImage("bow", "/weapon/Bow.png");
 		addImage("spear", "/weapon/Spear.png");
 		addImage("dagger", "/weapon/Dagger.png");
+		addImage("blunt", "/weapon/Blunt.png");
+		addImage("cane", "/weapon/Cane.png");
+		addImage("shield", "/weapon/Shield.png",64,64);
+		
+		// Projectile Load
 		addImage("arrow", "/weapon/Projectile/Arrow.png",64,64);	
-		addImage("stone", "/weapon/Projectile/Stone.png",64,64);	
+		addImage("stone", "/weapon/Projectile/Stone.png",64,64);
+		addImage("magic_bolt", "/weapon/Projectile/MagicBolt.png",64,64);		
 		
 		//UI Image Load
 		addImage("hbar", "/UI/HBar.png",334,13);

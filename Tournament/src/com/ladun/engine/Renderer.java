@@ -577,8 +577,8 @@ public class Renderer {
 			for(int x = newX; x < newWidth;x++)
 			{
 				
-				int p = (alpha & (image.getP()[ ((xMirror?image.getW() - 1 -x : x)  +tileX * image.getTileW()) + 
-				 						               ((yMirror?image.getH() - 1 -y:y) + tileY * image.getTileH()) *image.getW()]));
+				int p = (alpha & (image.getP()[ ((xMirror?image.getTileW() - 1 -x : x)  +tileX * image.getTileW()) + 
+				 						               ((yMirror?image.getTileH() - 1 -y:y) + tileY * image.getTileH()) *image.getW()]));
 				
 				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
 						 py + (int)((x - dw) * s + (y - dh) * c),

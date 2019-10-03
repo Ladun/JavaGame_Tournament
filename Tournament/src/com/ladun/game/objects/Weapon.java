@@ -3,6 +3,7 @@ package com.ladun.game.objects;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
+import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Item.Item;
 import com.ladun.game.Scene.GameScene;
@@ -10,7 +11,7 @@ import com.ladun.game.util.Util;
 
 public class Weapon extends GameObject{
 	public enum Type{
-		SWORD,BOW,SPEAR,DAGGER,MAGIC,HAMMER
+		SWORD,BOW,SPEAR,DAGGER,CANE,BLUNT
 	}
 	private final static float LIMIT_TIME = 1/10f; 
 	
@@ -37,6 +38,7 @@ public class Weapon extends GameObject{
 	private float distanceToParent = 24;
 
 	private boolean mirror;
+	private boolean shieldBlock = false;
 
 	private HitRange hitRange;
 	
@@ -73,8 +75,18 @@ public class Weapon extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
 		
-		r.drawImage(gc.getResourceLoader().getImage(imageName),(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
+		r.drawImage(gc.getResourceLoader().getImage(imageName),
+				(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
 		
+		if(type == Type.BLUNT) {
+
+			float iposX = (parent.getCenterX()- width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle+ 180))));
+			float iposZ = (parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle +180))));
+			
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("shield"),
+					(int)(iposX ),(int)(iposZ + posY ),0,0,
+					.5f,.65f,!mirror,true,angle + (!mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
+		}
 		//r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
 		
 		
@@ -143,6 +155,12 @@ public class Weapon extends GameObject{
 				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			}
+			break;
+		case CANE:
+			
+			break;
+		case BLUNT: 
+			
 			break;
 		}
 		attackTime = 0;
@@ -214,6 +232,10 @@ public class Weapon extends GameObject{
 				hitRange.active(posX +deltaX + width * xPivot - 9  +10* co, posZ + posY + deltaZ + height * yPivot  - 9 + 10 * si, 18, 18);
 			}
 			break;
+
+		case BLUNT:
+			
+			break;
 		}
 		
 	}
@@ -245,7 +267,7 @@ public class Weapon extends GameObject{
 		switch(type) {
 		case SWORD:
 			damage = 16;
-			knockback = 450;
+			knockback = 900;
 			imageName = "sword";
 			width = 64;
 			height = 64;
@@ -255,7 +277,7 @@ public class Weapon extends GameObject{
 			break;
 		case BOW:
 			damage = 15;
-			knockback = 350;
+			knockback = 700;
 			projectileSpeed = 750;
 			imageName = "bow";
 			width = 64;
@@ -267,7 +289,7 @@ public class Weapon extends GameObject{
 
 		case SPEAR:
 			damage = 13;
-			knockback = 450;
+			knockback = 900;
 			imageName = "spear";
 			width = 128;
 			height = 64;
@@ -278,13 +300,35 @@ public class Weapon extends GameObject{
 			
 		case DAGGER:
 			damage = 18;
-			knockback = 300;
+			knockback = 600;
 			imageName = "dagger";
 			width = 48;
 			height = 32;
 			xPivot = .5f;
 			yPivot = .5f;
 			distanceToParent = 30;
+			break;
+			
+		case BLUNT:
+			damage = 16;
+			knockback = 1200;
+			imageName = "blunt";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .72f;
+			distanceToParent = 18;
+			
+			break;
+		case CANE:
+			damage = 16;
+			knockback = 900;
+			imageName = "cane";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .66f;
+			distanceToParent = 18;			
 			break;
 		}
 		
@@ -351,6 +395,32 @@ public class Weapon extends GameObject{
 			}
 			break;
 		case DAGGER:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
+			}
+			break;
+
+		case BLUNT:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
+			}
+			break;
+
+		case CANE:
 			switch(attackType) {
 			case 0:
 				return 0.5f;

@@ -538,27 +538,42 @@ public class Player extends Entity{
 				healthRegeneration = 1;
 				manaRegeneration = 1;
 				maxHealth = 180;
-				maxMana = 100;
+				maxMana = 80;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
 				healthRegeneration = .3f;
 				manaRegeneration = 1;
-				maxHealth = 100;
+				maxHealth = 120;
 				maxMana = 100;
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
 				healthRegeneration = 1;
 				manaRegeneration = 1;
-				maxHealth = 135;
-				maxMana = 100;
+				maxHealth = 150;
+				maxMana = 80;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
 				healthRegeneration = .5f;
 				manaRegeneration = 1;
+				maxHealth = 120;
+				maxMana = 100;
+				break;
+			case 4:
+				weapon.setType(Weapon.Type.CANE);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
 				maxHealth = 100;
+				maxMana = 150;
+				break;
+
+			case 5:
+				weapon.setType(Weapon.Type.BLUNT);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
+				maxHealth = 200;
 				maxMana = 100;
 				break;
 		}
