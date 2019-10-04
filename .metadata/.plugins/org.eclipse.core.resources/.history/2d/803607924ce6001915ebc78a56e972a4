@@ -1,0 +1,1054 @@
+package com.ladun.engine;
+
+import java.awt.Color;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+
+import com.ladun.engine.gfx.Font;
+import com.ladun.engine.gfx.Image;
+import com.ladun.engine.gfx.ImageRequest;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.engine.gfx.Light;
+import com.ladun.engine.gfx.LightRequest;
+import com.ladun.engine.gfx.StringRequest;
+import com.ladun.game.GameManager;
+
+public class Renderer {
+	
+	public final static int LAYER_UI = Integer.MAX_VALUE - 10;
+
+	public final static int ALLIGN_CENTER = -1;
+	public final static int ALLIGN_RIGHT = -2;
+	
+	private Font font = Font.STANDARD;
+	private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
+	private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();	
+	private ArrayList<StringRequest> stringRequests = new ArrayList<StringRequest>();	
+	
+	private int backgroundColor = 0;
+	
+	private int pW,pH;
+	private int[] p;
+	private int[] zb;
+	private int[] lm;
+	private int[] lb;
+	
+	private int ambientColor = 0xff232323;
+	private int zDepth = 0;
+	private boolean processing = false;
+	private int camX, camY;
+	
+	private Image backgroundImage;
+	private int backgroundSt,backgroundEd;
+	private int backgroundWidth;
+	
+	private GameContainer gc;
+	
+	public Renderer(GameContainer gc){
+		
+		this.gc = gc;
+		
+		//gc.getWindow().getG().setFont(new java.awt.Font("소야솔9", java.awt.Font.BOLD, 80));
+		try {
+			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,getClass().getResourceAsStream("/fonts/소야얼음10.ttf")));
+		} catch (FontFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		pW = Window.WIDTH;
+		pH = Window.HEIGHT;
+		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
+		zb = new int[p.length];
+		lm = new int[p.length];
+		lb = new int[p.length];
+	}
+	public void init() {
+		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
+		zb = new int[p.length];
+		lm = new int[p.length];
+		lb = new int[p.length];
+	}
+	
+	public void clear(){
+		/*
+		Arrays.fill(p, backgroundColor);
+		Arrays.fill(zb, 0);
+		Arrays.fill(lm, ambientColor);
+		Arrays.fill(lb, 0);
+		*/
+		
+		
+		for(int i =0; i < p.length;i++)
+		{
+			if(i >= backgroundSt && i < backgroundEd)
+				p[i] = backgroundImage.getP()[i % gc.getWidth() + (i / gc.getWidth()  )* backgroundWidth ]; // backgroundSt 는 항상 음수 아니면 0
+			else
+				p[i] = backgroundColor;
+			zb[i] = 0;
+			lm[i] = ambientColor;
+			lb[i] = 0;
+		}
+	}
+	
+	public void process(){
+		processing = true;
+		
+		Collections.sort(imageRequests,new Comparator<ImageRequest>(){
+
+			@Override
+			public int compare(ImageRequest i0, ImageRequest i1) {
+				// TODO Auto-generated method stub
+				if(i0.zDepth < i1.zDepth)
+					return 1;
+				if(i0.zDepth > i1.zDepth)
+					return -1;
+				return 0;
+			}
+		});
+		
+		for(int i = 0; i < imageRequests.size();i++)
+		{
+			ImageRequest ir = imageRequests.get(i);
+			setzDepth(ir.zDepth);
+			drawImage(ir.image,ir.offX,ir.offY,ir.xPivot,ir.yPivot,ir.xMirror,ir.yMirror,ir.angle);
+		}
+		
+		//Draw lighting
+		for(int i = 0; i < lightRequests.size();i++)
+		{
+			LightRequest l = lightRequests.get(i);
+			this.drawLightRequest(l.light, l.locX, l.locY);
+		}
+		
+		
+		
+		for(int i = 0; i< p.length;i++)
+		{
+			
+			float r = ((lm[i] >> 16) & 0xff) /255f;
+			float g = ((lm[i] >> 8) & 0xff) /255f;
+			float b = (lm[i] & 0xff) /255f;
+			
+			
+			p[i] = ((int)(((p[i] >> 16) & 0xff) * r) << 16 | (int)(((p[i] >> 8) & 0xff) * g) << 8 | (int)((p[i] & 0xff) * b));
+		}
+		
+		imageRequests.clear();
+		lightRequests.clear();
+		processing = false;
+	}
+	
+	public void processText() {
+		
+		processing = true;
+		for(int i = 0; i < stringRequests.size();i++)
+		{
+			StringRequest sr = stringRequests.get(i);
+			
+			drawString(sr.str,sr.posX,sr.posY,sr.size,sr.color);
+		}
+		stringRequests.clear();
+		processing = false;
+	}
+	
+	public void setPixel(int x,int y, int value){
+
+		int alpha = ((value >> 24) & 0xff);
+		
+		if(x < 0 || x>= pW || y < 0 || y >= pH || alpha == 0)
+			return;
+		
+		int index = x + y * pW;
+		
+		if(zb[index] > zDepth)
+			return;
+		zb[index] = zDepth;
+		
+		if(alpha == 255)	
+		{
+			p[index] = value;
+		}
+		else{
+			int pixelColor = p[index];
+			
+			int newRed = ((pixelColor >> 16) & 0xff) - (int)((((pixelColor >> 16) & 0xff) - ((value >> 16) & 0xff)) * alpha /255f);
+			int newGreen = ((pixelColor >> 8) & 0xff) - (int)((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * alpha /255f);
+			int newBlue = ((pixelColor) & 0xff) - (int)((((pixelColor) & 0xff) - ((value) & 0xff)) * alpha /255f);
+			
+			p[index] = (newRed << 16 | newGreen << 8 | newBlue);
+			
+		}
+	}
+	
+	public void setLightMap(int x,int y,int value)
+	{
+		
+		if(x < 0 || x>= pW || y < 0 || y >= pH )
+			return;
+		
+		int baseColor = lm[x+ y * pW];
+		
+		int maxRed = Math.max((baseColor >> 16) & 0xff, (value >> 16) & 0xff); 
+		int maxGreen = Math.max((baseColor >> 8) & 0xff, (value >> 8) & 0xff); 
+		int maxBlue = Math.max(baseColor & 0xff, value & 0xff); 
+		
+		
+		
+		lm[x + y * pW] = ( maxRed << 16 | maxGreen << 8 | maxBlue);
+		
+		
+	}
+
+	public void setLightBlock(int x,int y,int value)
+	{
+		if(x < 0 || x>= pW || y < 0 || y >= pH )
+			return;
+		
+		
+		if(zb[x+y*pW] > zDepth)
+			return;
+		
+		lb[x + y * pW] = value;
+		
+		
+	}
+	//------------------------------------------------------------------------------------------------------------------------------
+	public void drawText(String text,int offX,int offY, int color)
+	{
+
+		offX -= camX;
+		offY -= camY;
+		int offset = 0;
+		
+		for(int i = 0; i < text.length();i++)
+		{
+			int unicode = text.codePointAt(i);
+			
+			
+			for(int y = 0; y < font.getFontImage().getH();y++)
+			{
+				for(int x = 0 ; x < font.getWidths()[unicode];x++)
+				{
+					if(font.getFontImage().getP()[(x + font.getOffsets()[unicode]) + y * font.getFontImage().getW()] == 0xffffffff){
+						setPixel(x + offX + offset,y + offY,color);
+					}
+				}
+			}
+			
+			offset += font.getWidths()[unicode];
+		}
+	}
+	
+	public void drawString(String str, int offX, int offY,float size, int color) {
+
+		offX -= camX;
+		offY -= camY;
+		if(!processing) {
+			stringRequests.add(new StringRequest(str, offX, offY, size, color));
+		}
+		offY += size - (gc.getWindow().getFrame().isUndecorated()? 5 : 0);//gc.getWindow().getFrame().getInsets().top ;
+		
+		Graphics2D g2 = (Graphics2D)gc.getWindow().getG();
+		g2.setFont(g2.getFont().deriveFont(size));
+		g2.setColor(new Color(color));
+		
+		if(offX == ALLIGN_CENTER){
+			offX = gc.getWidth() / 2 - gc.getWindow().getG().getFontMetrics().stringWidth(str) / 2;
+		}
+		else if(offX == ALLIGN_RIGHT) {
+			offX = gc.getWidth()  - gc.getWindow().getG().getFontMetrics().stringWidth(str) ;			
+		}
+		offX += gc.getWindow().getFrame().getInsets().left;
+		
+		g2.drawString(str, offX, offY);
+	}
+	
+	//------------------------------------------------------------------------------------------------------------------------------
+	public void drawImage(Image image, int offX, int offY, float angle){
+		drawImage(image,offX,offY,0,0,angle);
+	}
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot, float angle) {
+		drawImage(image,offX,offY,xPivot,yPivot,false,false,angle);
+	}
+	public void drawImage(Image image, int offX,int offY, int stX,int stY,int width, int height) {
+		offX -= camX;
+		offY -= camY;
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,0,0,false	,false,0));
+			return;
+		}
+		
+		//Don't Render code
+		if(offX < -image.getW()) return;
+		if(offY < -image.getH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		if(stX >= image.getW()) return;
+		if(stY >= image.getH()) return;
+		if(width > image.getW()) return;
+		if(height > image.getH()) return;
+		
+		int newX = stX;
+		int newY = stY;
+		int newWidth = width;
+		int newHeight = height;
+		
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+		
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(offX + x,offY + y,
+						 image.getP()[x + y *image.getW()]);
+				
+				setLightBlock(offX + x,offY + y,
+							  image.getLightBlock());
+			}
+		}
+	}
+	
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot,boolean xMirror, boolean yMirror, float angle){
+		offX -= camX;
+		offY -= camY;
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,angle));
+			return;
+		}		
+		//Don't Render code
+		if(offX < -image.getW()) return;
+		if(offY < -image.getH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		int newX = 0;
+		int newY = 0;
+		int newWidth = image.getW();
+		int newHeight = image.getH();
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int dw = (int)( image.getW()  * xPivot); // delX
+		int dh = (int)(image.getH() * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
+		
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+		
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(px + (int)((x-dw) * c - (y-dh) * s),
+						 py + (int)((x-dw) *s + (y-dh) * c),
+						 image.getP()[(xMirror?image.getW() - 1 -x : x) + (yMirror?image.getH() - 1 -y:y) *image.getW()]);
+				
+				setLightBlock(px + (int)((x-dw) * c - (y-dh) * s),
+						 	  py + (int)((x-dw) *s + (y-dh) * c),
+							  image.getLightBlock());
+			}
+		}
+	}
+	
+	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot,boolean xMirror, boolean yMirror, float angle,float alphaPercent){
+
+		offX -= camX;
+		offY -= camY;
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image,zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,angle));
+			return;
+		}
+		if(alphaPercent > 1)
+			alphaPercent = 1;
+		else if(alphaPercent < 0)
+			alphaPercent = 0;
+		
+		
+		//Don't Render code
+		if(offX < -image.getW()) return;
+		if(offY < -image.getH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		int newX = 0;
+		int newY = 0;
+		int newWidth = image.getW();
+		int newHeight = image.getH();
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int dw = (int)( image.getW()  * xPivot); // delX
+		int dh = (int)(image.getH() * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
+		
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+		
+		int alpha = (int)(255 * alphaPercent);
+		alpha = (alpha << 24) | 0x00ffffff ;
+		
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+
+				int p = (alpha& (image.getP()[(xMirror?image.getW() - 1 -x : x) + (yMirror?image.getH() - 1 -y:y) *image.getW()]));
+				
+				
+				setPixel(px + (int)((x-dw) * c - (y-dh) * s),
+						 py + (int)((x-dw) *s + (y-dh) * c),
+						 p);
+				
+				setLightBlock(px + (int)((x-dw) * c - (y-dh) * s),
+						 	  py + (int)((x-dw) *s + (y-dh) * c),
+							  image.getLightBlock());
+			}
+		}
+	}
+	
+	public void drawImageTile(ImageTile image, int offX, int offY,int tileX,int tileY, float angle){
+		drawImageTile(image,offX,offY,tileX,tileY,0,0,angle);
+	}
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,float angle)
+	{
+		drawImageTile(image,offX,offY,tileX,tileY,xPivot,yPivot, false,false,angle);
+	}
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX, int tileY, int stX,int stY,int width, int height)
+	{
+		offX -= camX;
+		offY -= camY;
+
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,0,0,false,false,0));
+			return;
+		}
+		
+		//Don't Render code
+		if(offX < -image.getTileW()) return;
+		if(offY < -image.getTileH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		if(stX >= image.getTileW()) return;
+		if(stY >= image.getTileH()) return;
+		if(width > image.getTileW()) return;
+		if(height > image.getTileH()) return;
+				
+		int newX = stX;
+		int newY = stY;
+		int newWidth = width;
+		int newHeight = height;				
+				
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+				
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(offX + x, offY + y,
+						 image.getP()[ x + tileX * image.getTileW() + 
+						               (y + tileY * image.getTileH()) *image.getW()]);
+				
+				setLightBlock(offX + x, offY + y,
+							  image.getLightBlock());
+			}
+		}
+	}
+	
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,boolean xMirror, boolean yMirror,float angle)	{
+		
+		offX -= camX;
+		offY -= camY;
+
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,0));
+			return;
+		}
+		//Don't Render code
+		if(offX < -image.getTileW()) return;
+		if(offY < -image.getTileH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+				
+		int newX = 0;
+		int newY = 0;
+		int newWidth = image.getTileW();
+		int newHeight = image.getTileH();
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int dw = (int)(image.getTileW()  * xPivot); // delX
+		int dh = (int)(image.getTileH() * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
+				
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+				
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 image.getP()[ ((xMirror?image.getW() - 1 -x : x)  +tileX * image.getTileW()) + 
+ 						               ((yMirror?image.getH() - 1 -y:y) + tileY * image.getTileH()) *image.getW()]);
+				
+				setLightBlock(px + (int)((x - dw) * c - (y - dh) * s),
+						 	  py + (int)((x - dw) * s + (y - dh) * c),
+							  image.getLightBlock());
+			}
+		}
+	}
+	
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,boolean xMirror, boolean yMirror,float angle,float alphaPercent)	{
+		offX -= camX;
+		offY -= camY;
+
+		if(image.isAlpha() && !processing)
+		{
+			imageRequests.add(new ImageRequest(image.getTileImage(tileX, tileY),zDepth,offX,offY,xPivot,yPivot,xMirror,yMirror,0));
+			return;
+		}
+
+		if(alphaPercent > 1)
+			alphaPercent = 1;
+		else if(alphaPercent < 0)
+			alphaPercent = 0;
+		
+		//Don't Render code
+		if(offX < -image.getTileW()) return;
+		if(offY < -image.getTileH()) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+				
+		int newX = 0;
+		int newY = 0;
+		int newWidth = image.getTileW();
+		int newHeight = image.getTileH();
+
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+		int dw = (int)(image.getTileW()  * xPivot); // delX
+		int dh = (int)(image.getTileH() * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
+				
+		int alpha = (int)(255 * alphaPercent);
+		alpha = (alpha << 24) | 0x00ffffff ;
+				
+		//Clipping code
+		if(offX < 0){newX -= offX;}
+		if(offY < 0){newY -= offY;}
+		if(newWidth + offX >= pW){newWidth -= (newWidth + offX - pW);}
+		if(newHeight + offY >= pH){newHeight -= (newHeight + offY - pH);}
+				
+		for(int y = newY; y < newHeight;y++)
+		{
+			for(int x = newX; x < newWidth;x++)
+			{
+				
+				int p = (alpha & (image.getP()[ ((xMirror?image.getTileW() - 1 -x : x)  +tileX * image.getTileW()) + 
+				 						               ((yMirror?image.getTileH() - 1 -y:y) + tileY * image.getTileH()) *image.getW()]));
+				
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 p);
+				
+				setLightBlock(px + (int)((x - dw) * c - (y - dh) * s),
+						 	  py + (int)((x - dw) * s + (y - dh) * c),
+							  image.getLightBlock());
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------------------------------------
+	public void drawMap(Image image,int imageWidth, int imageHeight) {
+		//TODO : 최적화 ㄱㄱ
+		backgroundImage = image;
+		
+		backgroundWidth = imageWidth ;
+		int _height = imageHeight ;
+		
+		int _camX,_camY;
+		if(backgroundWidth < gc.getWidth()) {
+			_camX =-( gc.getWidth() - backgroundWidth)/2;
+		}else {
+			_camX = 0;
+		}
+		if(_height< gc.getHeight()) {
+			_camY =-( gc.getHeight() - _height )/2;		
+		}else {
+			_camY = 0;
+		}
+		backgroundSt = _camX + _camY * backgroundWidth;
+		backgroundEd = (_camX + backgroundWidth) + (_camY + _height) * backgroundWidth;
+		//drawImage(image,0,0,0);
+	}
+	//------------------------------------------------------------------------------------------------------------------------------
+	public void drawRect(int offX,int offY,int width, int height, float angle,int color)
+	{
+		offX -= camX;
+		offY -= camY;
+
+		if(offX < -width) return;
+		if(offY < -height) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;
+		
+		double c = Math.cos(Math.toRadians(angle));
+		double s = Math.sin(Math.toRadians(angle));
+
+		int hw = width /2;
+		int hh = height /2;
+		int cx = offX + hw;
+		int cy = offY + hh;
+		for(int y = -hh; y <= hh;y++)
+		{					
+			setPixel((int)(cx + (-hw *c - y * s))	,
+					 (int)(cy + (-hw *s + y * c)),
+					 color);
+			setPixel((int)(cx + (hw *c - y * s))	,
+					 (int)(cy + (hw *s + y * c)),
+					 color);
+		}
+		for(int x = -hw; x <= hw;x++)
+		{
+			setPixel((int)(cx + (x *c - -hh * s))	,
+					 (int)(cy + (x *s + -hh * c)),
+					 color);
+			setPixel((int)(cx + (x *c - hh * s))	,
+					 (int)(cy + (x *s + hh * c)),
+					 color);
+		}  
+	}
+	
+	public void drawFillRect(int offX,int offY,int width, int height, float angle,int color)	{
+		drawFillRect( offX, offY, width,  height,0,0,  angle, color);
+	}
+	public void drawFillRect(int offX,int offY,int width, int height,float xPivot, float yPivot, float angle,int color)	{
+		offX -= camX;
+		offY -= camY;
+		
+		//Don't Render code
+		if(offX < -width) return;
+		if(offY < -height) return;
+		if(offX >= pW) return;
+		if(offY >= pH) return;		
+		
+		double c = Math.cos(Math.toRadians(angle)); // 1
+		double s = Math.sin(Math.toRadians(angle)); // 0			
+
+
+		int dw = (int)(width  * xPivot); // delX
+		int dh = (int)(height * yPivot); // delY
+		int px = offX + dw; // pivot X
+		int py = offY + dh; // pivot Y
+		
+		//int hw = width /2;
+		//int hh = height /2;
+		//int cx = offX + hw;
+		//int cy = offY + hh;		
+
+		for(int y = 0; y <= height;y++)
+		{
+			for(int x = 0; x <= width;x++)
+			{
+				setPixel(px + (int)((x - dw) * c - (y - dh) * s),
+						 py + (int)((x - dw) * s + (y - dh) * c),
+						 color);
+			}
+		}
+	}
+
+	public void drawCircle(int cx,int cy,int r, int color)
+ {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -r) return;
+		if(cy < -r) return;
+		if(cx >= pW + r) return;
+		if(cy >= pH + r) return;
+
+		int x = 0;
+		int y = r;
+		int p = 1- r;
+		
+		setPixel(cx		 , r+cy		, color);
+		setPixel(cx		 , -r+ cy	, color);
+		setPixel(r + cx	 , cy		, color);
+		setPixel(-r + cx , cy		, color);
+		
+		while(x < y) {
+			x++;
+			if(p < 0) {
+				p += x + x + 1;
+			}
+			else {
+				p += x + x + 1 - y - y;
+				y--;
+			}
+			setPixel(x + cx		, y+cy		, color);
+			setPixel(x + cx		, -y+ cy	, color);
+			setPixel(-x + cx	, y+cy		, color);
+			setPixel(-x + cx	, -y+ cy	, color);
+			setPixel(y + cx		, x+cy		, color);
+			setPixel(y + cx		, -x+ cy	, color);
+			setPixel(-y + cx	, x+cy		, color);
+			setPixel(-y + cx	, -x+ cy	, color);
+		}
+		
+	}
+	
+	public void drawFillCircle(int cx,int cy,int r, int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -r) return;
+		if(cy < -r) return;
+		if(cx >= pW + r) return;
+		if(cy >= pH + r) return;
+
+		int x = 0;
+		int y = r;
+		int p = 1- r;
+		
+		setPixel(cx			, r+cy		, color);
+		setPixel(cx			, -r+ cy	, color);
+		setPixel(r + cx		, cy		, color);
+		setPixel(-r + cx	, cy		, color);
+		
+		while(x < y) {
+			x++;
+			if(p < 0) {
+				p += x + x + 1;
+			}
+			else {
+				p += x + x + 1 - y - y;
+				y--;
+
+				setPixel(cx			, y+cy		, color);
+				setPixel(cx			, -y+ cy	, color);
+				setPixel(y + cx		, cy		, color);
+				setPixel(-y + cx	, cy		, color);
+				for(int xx =1; xx < x;xx++) {
+					setPixel(xx + cx	, y+cy		, color);
+					setPixel(xx + cx	, -y+ cy	, color);
+					setPixel(-xx + cx	, y+cy		, color);
+					setPixel(-xx + cx	, -y+ cy	, color);
+					setPixel(y + cx		, xx+cy		, color);
+					setPixel(y + cx		, -xx+ cy	, color);
+					setPixel(-y + cx	, xx+cy		, color);
+					setPixel(-y + cx	, -xx+ cy	, color);
+				}
+			}
+			setPixel(x + cx		, y+cy		, color);
+			setPixel(x + cx		, -y+ cy	, color);
+			setPixel(-x + cx	, y+cy		, color);
+			setPixel(-x + cx	, -y+ cy	, color);
+			setPixel(y + cx		, x+cy		, color);
+			setPixel(y + cx		, -x+ cy	, color);
+			setPixel(-y + cx	, x+cy		, color);
+			setPixel(-y + cx	, -x+ cy	, color);
+		}
+		
+		for(int i = -y+1; i < y;i++) {
+			for(int j = -y+1; j < y;j++) {
+				setPixel(i + cx	, j+ cy	, color);
+			}
+		}
+		
+	}
+	
+	public void drawElipse(int cx, int cy,int w,int h,int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -w) return;
+		if(cy < -h) return;
+		if(cx >= pW + w) return;
+		if(cy >= pH + h) return;
+		
+		int x = 0;
+		int y = h;
+		int w2 = w * w;
+		int h2 = h * h;
+		int p = (4 * h2 + w2 *(1 - 4 * h))/ 4;
+
+		setPixel(cx, h + cy, color);
+		setPixel(cx, -h + cy, color);
+		setPixel(w + cx, cy, color);
+		setPixel(-w + cx, cy, color);
+		
+				
+		// x 독립변수 구간
+		while(h2* x < w2 * (y-1)) {
+			++x;
+			if( p < 0) {
+				p+= h2 * (2 * x + 1);
+			}
+			else {
+				--y;			
+				p+= h2 * (2 * x + 1) - 2 * w2* y;	
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		x = w;
+		y = 0;
+		p = (4 * w2 + h2 * (1- 4*w))/4;		
+		
+		// y 독립변수 구간
+		while(h2* x > w2 * y ) {
+			++y;
+			if( p < 0) {
+				p+= w2 * (2 * y + 1);
+			}
+			else {		
+				--x;		
+				p+= w2 * (2 *y + 1) - 2 * h2 * x;
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+	}
+	
+	public void drawFillElipse(int cx, int cy,int w,int h,int color) {
+		cx -= camX;
+		cy -= camY;
+
+		if(cx < -w) return;
+		if(cy < -h) return;
+		if(cx >= pW + w) return;
+		if(cy >= pH + h) return;
+		
+		int x = 0;
+		int y = h;
+		int w2 = w * w;
+		int h2 = h * h;
+		int p = (4 * h2 + w2 *(1 - 4 * h))/ 4;
+
+		setPixel(cx, h + cy, color);
+		setPixel(cx, -h + cy, color);
+		setPixel(w + cx, cy, color);
+		setPixel(-w + cx, cy, color);
+		
+				
+		// x 독립변수 구간
+		while(h2* x < w2 * (y-1)) {
+			++x;
+			if( p < 0) {
+				p+= h2 * (2 * x + 1);
+			}
+			else {
+				--y;
+				p+= h2 * (2 * x + 1) - 2 * w2* y;	
+				
+				setPixel(cx, y + cy, color);
+				setPixel(cx, -y + cy, color);
+				for(int xx= 1; xx < x; xx++) {
+					setPixel(xx + cx, y + cy, color);
+					setPixel(-xx + cx, y + cy, color);
+					setPixel(xx + cx, -y + cy, color);
+					setPixel(-xx + cx, -y + cy, color);
+				}
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		x = w;
+		y = 0;
+		p = (4 * w2 + h2 * (1- 4*w))/4;		
+		
+		// y 독립변수 구간
+		while(h2* x > w2 * (y+1)) {
+			++y;
+			if( p < 0) {
+				p+= w2 * (2 * y + 1);
+			}
+			else {
+				--x;
+				p+= w2 * (2 *y + 1) - 2 * h2 * x;	
+				
+				setPixel(x + cx, cy, color);
+				setPixel(-x + cx, cy, color);
+				for(int yy= 1; yy < y; yy++) {
+					setPixel(x + cx, yy + cy, color);
+					setPixel(-x + cx, yy + cy, color);
+					setPixel(x + cx, -yy + cy, color);
+					setPixel(-x + cx, -yy + cy, color);
+				}			
+			}
+			
+			setPixel(x + cx, y + cy, color);
+			setPixel(-x + cx, y + cy, color);
+			setPixel(x + cx, -y + cy, color);
+			setPixel(-x + cx, -y + cy, color);
+		}
+		
+		
+		for(int i = -x +1 ; i < x ; i++)
+			for(int j = -y +1; j < y; j++)
+				setPixel(i + cx, j + cy, color);
+	}
+	
+	//------------------------------------------------------------------------------------------------------------------------------
+	
+	public void drawLight(Light l, int offX,int offY)
+	{
+		lightRequests.add(new LightRequest(l,offX,offY));
+	}
+	
+	private void drawLightRequest(Light l,int offX,int offY)
+	{
+
+		offX -= camX;
+		offY -= camY;
+		for(int i = 0; i < l.getDiameter();i++)
+		{
+			drawLightLine(l, l.getRadius(),l.getRadius(), i,0,offX,offY);
+			drawLightLine(l, l.getRadius(),l.getRadius(), i, l.getDiameter(),offX,offY);
+			drawLightLine(l, l.getRadius(),l.getRadius(), 0, i ,offX,offY);
+			drawLightLine(l, l.getRadius(),l.getRadius(), l.getDiameter(),i,offX,offY);
+		}
+	}
+	
+	private void drawLightLine(Light l, int x0,int y0, int x1 ,int y1,int offX,int offY)
+	{
+		int dx = Math.abs(x1 - x0);
+		int dy = Math.abs(y1 - y0);
+		
+		int sx = x0 < x1 ? 1 : -1;
+		int sy = y0 < y1 ? 1 : -1;
+		
+		int err = dx - dy;
+		int e2;
+		
+		while(true){
+			int screenX = x0 - l.getRadius() + offX;
+			int screenY = y0 - l.getRadius() + offY;
+			
+			if(screenX < 0 || screenX >= pW || screenY < 0 || screenY >= pH)
+				return;
+			
+			int lightColor = l.getLightValue(x0, y0);
+			if(lightColor == 0)
+				return;
+			
+			
+			if(lb[screenX + screenY * pW] == Light.FULL)
+				return;
+			
+			setLightMap(screenX ,screenY,lightColor);
+			
+			if(x0 == x1 && y0 == y1)
+				break;
+			
+			e2 = 2 * err;
+			
+			if(e2 > -1 * dy)
+			{
+				err -= dy;
+				x0 += sx;
+				
+			}
+			
+			if(e2 < dx)
+			{
+				err += dx;
+				y0 += sy;
+			}
+		}
+	}
+	
+	//------------------------------------------------------------------------------------------------------------------------------
+	public int getAmbientColor() {
+		return ambientColor;
+	}
+
+	public void setAmbientColor(int ambientColor) {
+		this.ambientColor = ambientColor;
+	}
+
+	public int getCamX() {
+		return camX;
+	}
+
+	public void setCamX(int camX) {
+		this.camX = camX;
+	}
+
+	public int getCamY() {
+		return camY;
+	}
+
+	public void setCamY(int camY) {
+		this.camY = camY;
+	}
+
+	public int getBackgroundColor() {
+		return backgroundColor;
+	}
+
+	public void setBackgroundColor(int backgroundColor) {
+		this.backgroundColor = backgroundColor;
+	}
+
+	public int getzDepth() {
+		return zDepth;
+	}
+
+	public void setzDepth(int zDepth) {
+		this.zDepth = zDepth;
+	}
+}

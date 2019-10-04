@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.ladun.engine.gfx.StringRequest"/>
-<fullyQualifiedTypeName name="java.awt.Graphics2D"/>
 <fullyQualifiedTypeName name="com.ladun.game.ChatBox"/>
 <fullyQualifiedTypeName name="javax.swing.plaf.SliderUI"/>
 <fullyQualifiedTypeName name="java.lang.Thread"/>
@@ -60,4 +58,6 @@
 <fullyQualifiedTypeName name="java.awt.event.MouseEvent"/>
 <fullyQualifiedTypeName name="com.ladun.game.components.Component"/>
 <fullyQualifiedTypeName name="com.ladun.game.Item.Tooltip.Type"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Weapon.Type"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.Projectile.Type"/>
 </qualifiedTypeNameHistroy>

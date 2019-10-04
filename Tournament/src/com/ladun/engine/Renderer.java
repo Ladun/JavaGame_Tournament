@@ -19,6 +19,7 @@ import com.ladun.engine.gfx.ImageTile;
 import com.ladun.engine.gfx.Light;
 import com.ladun.engine.gfx.LightRequest;
 import com.ladun.engine.gfx.StringRequest;
+import com.ladun.game.GameManager;
 
 public class Renderer {
 	
@@ -44,6 +45,11 @@ public class Renderer {
 	private int zDepth = 0;
 	private boolean processing = false;
 	private int camX, camY;
+	private int lastCamX, lastCamY;
+	
+	private Image backgroundImage;
+	private int backgroundSt,backgroundEd;
+	private int backgroundWidth;
 	
 	private GameContainer gc;
 	
@@ -81,9 +87,20 @@ public class Renderer {
 		Arrays.fill(lb, 0);
 		
 		/*
+		//System.out.println(lastCamX + ", " +lastCamY);
 		for(int i =0; i < p.length;i++)
 		{
-			p[i] = 0;
+			if(i >= backgroundSt && i < backgroundEd) {
+				try {
+					p[i] = backgroundImage.getP()[i % gc.getWidth() +lastCamX + (i / gc.getWidth() + lastCamY )* backgroundWidth ]; // backgroundSt 는 항상 음수 아니면 0
+				}
+				catch(IndexOutOfBoundsException e){
+					System.out.println((i % gc.getWidth())  +", " + (i/ gc.getWidth()) );
+					p[i] = backgroundColor;
+				}
+			}
+			else
+				p[i] = backgroundColor;
 			zb[i] = 0;
 			lm[i] = ambientColor;
 			lb[i] = 0;
@@ -592,8 +609,29 @@ public class Renderer {
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------
-	public void drawMap(Image image) {
+	public void drawMap(Image image,int imageWidth, int imageHeight) {
 		//TODO : 최적화 ㄱㄱ
+		
+		/*
+		backgroundImage = image;
+		
+		backgroundWidth = imageWidth ;
+		int _height = imageHeight ;
+		
+		int _camX,_camY;
+		if(backgroundWidth < gc.getWidth()) {
+			_camX = -( gc.getWidth() - backgroundWidth)/2;
+		}else {
+			_camX = 0;
+		}
+		if(_height< gc.getHeight()) {
+			_camY = -( gc.getHeight() - _height )/2;		
+		}else {
+			_camY = 0;
+		}
+		backgroundSt = _camX + _camY * backgroundWidth;
+		backgroundEd = (_camX + backgroundWidth) + (_camY + _height) * backgroundWidth;
+		*/
 		drawImage(image,0,0,0);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -1021,6 +1059,22 @@ public class Renderer {
 		return zDepth;
 	}
 
+	public int getLastCamX() {
+		return lastCamX;
+	}
+	public void setLastCamX(int lastCamX) {
+		if(lastCamX <0)
+			lastCamX = 0;
+		this.lastCamX = lastCamX;
+	}
+	public int getLastCamY() {
+		return lastCamY;
+	}
+	public void setLastCamY(int lastCamY) {
+		if(lastCamY <0)
+			lastCamY = 0;
+		this.lastCamY = lastCamY;
+	}
 	public void setzDepth(int zDepth) {
 		this.zDepth = zDepth;
 	}

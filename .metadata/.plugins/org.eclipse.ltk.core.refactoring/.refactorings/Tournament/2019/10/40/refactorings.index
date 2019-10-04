@@ -1,2 +1,7 @@
 1569936430981	Rename field 'inventoryView'
 1569936631815	Rename method 'renderInven'
+1570120737434	Rename local variable 'bullet'
+1570120741495	Rename local variable 'projec'
+1570124001300	Rename local variable 'levelW'
+1570124006181	Rename local variable 'levelH'
+1570124009372	Rename local variable 'imageHeightr'

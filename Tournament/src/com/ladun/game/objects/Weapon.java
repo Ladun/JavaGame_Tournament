@@ -84,7 +84,7 @@ public class Weapon extends GameObject{
 			float iposZ = (parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle +180))));
 			
 			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("shield"),
-					(int)(iposX ),(int)(iposZ + posY ),0,0,
+					(int)(iposX ),(int)(iposZ + posY ),shieldBlock? 1: 0,0,
 					.5f,.65f,!mirror,true,angle + (!mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
 		}
 		//r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
@@ -126,6 +126,9 @@ public class Weapon extends GameObject{
 		}
 	}
 	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex) {
+		// Player 에서 호출
+		
+		
 		switch(type) {
 		case SWORD:
 			hitRange.setDamage(getDamage());
@@ -145,21 +148,24 @@ public class Weapon extends GameObject{
 		case BOW:
 			switch(attackIndex) {
 			case 0:
-				Shoot(gm,gs,posX,posZ,_angle);
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle);
 				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			case 1:
-				Shoot(gm,gs,posX,posZ,_angle,_angle - 10);
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle,_angle - 10);
 				//gc.getResourceLoader().getSound("bow_attack").play();
-				Shoot(gm,gs,posX,posZ,_angle, _angle +10);
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle, _angle +10);
 				gc.getResourceLoader().getSound("bow_attack").play();
 				break;
 			}
 			break;
 		case CANE:
+			Shoot(gm,gs, Projectile.Type.MAGICBOLT, posX,posZ,_angle);
 			
 			break;
 		case BLUNT: 
+			hitRange.setDamage(getDamage());
+			attacking = true;
 			
 			break;
 		}
@@ -234,27 +240,49 @@ public class Weapon extends GameObject{
 			break;
 
 		case BLUNT:
-			
+			if(attackTime >= 0.2f) {
+				deltaAngle = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+
+				if(mirror) {
+					deltaAngle -= Time.DELTA_TIME * 975;		
+					float co = (float)Math.cos(Math.toRadians(deltaAngle +90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle +90 +angle));
+
+					hitRange.active(posX + width * xPivot - 12 + 36 * co , posZ + posY + height * yPivot  - 12+  36* si , 24, 24);		
+				}
+				else {
+					deltaAngle += Time.DELTA_TIME * 975;
+					float co = (float)Math.cos(Math.toRadians(deltaAngle -90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle -90 +angle));
+
+					hitRange.active(posX + width * xPivot - 12 + 36 * co , posZ + posY + height * yPivot  - 12+  36* si , 24, 24);
+				}
+				
+			}
 			break;
 		}
 		
 	}
-	public void Shoot(GameManager gm,GameScene gs,int posX,int posZ, float _angle) {
-		Shoot(gm,gs,posX,posZ,_angle,_angle);
+	public void Shoot(GameManager gm,GameScene gs, Projectile.Type type, int posX,int posZ, float _angle) {
+		Shoot(gm,gs, type, posX,posZ,_angle,_angle);
 	}
-	public void Shoot(GameManager gm,GameScene gs,int posX,int posZ, float _angle, float spawnAngle) {
-		Projectile bullet = (Projectile)gs.getInactiveObject("projectile");
+	public void Shoot(GameManager gm,GameScene gs, Projectile.Type type, int posX,int posZ, float _angle, float spawnAngle) {
+		Projectile pr = (Projectile)gs.getInactiveObject("projectile");
 		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(spawnAngle));
 		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(spawnAngle)) ;
 
 		float _posX = posX + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
 		float _posZ = posZ + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
 		
-		if(bullet == null) {
-			gs.addObject(new Projectile(gs,_posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(),parent.tag));
+		if(pr == null) {
+			gs.addObject(new Projectile(gs, type, _posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(),parent.tag));
 		}
 		else {
-			bullet.setting(_posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(),parent.tag);
+			pr.setting(type, _posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(),parent.tag);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -351,6 +379,14 @@ public class Weapon extends GameObject{
 		return knockback;
 	}
 
+	public boolean isShieldBlock() {
+		return shieldBlock;
+	}
+
+	public void setShieldBlock(boolean shieldBlock) {
+		this.shieldBlock = shieldBlock;
+	}
+
 	public void setKnockback(int knockback) {
 		this.knockback = knockback;
 	}
@@ -412,7 +448,7 @@ public class Weapon extends GameObject{
 			case 0:
 				return 0.5f;
 			case 1:
-				return 0.5f;
+				return 0.2f;
 			case 2:
 				return 0.5f;
 			case 3:

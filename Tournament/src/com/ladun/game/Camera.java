@@ -88,6 +88,8 @@ public class Camera {
 	{
 		r.setCamX((int)(offX + shakeX));
 		r.setCamY((int)(offZ + shakeY));
+		r.setLastCamX((int)(offX + shakeX));
+		r.setLastCamY((int)(offZ + shakeY));
 	}
 	
 	public void focusTarget(GameContainer gc,GameManager gm) {

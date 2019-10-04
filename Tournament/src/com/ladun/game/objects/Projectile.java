@@ -10,7 +10,7 @@ import com.ladun.game.components.CircleCollider;
 
 public class Projectile extends GameObject{
 
-	public enum Type{ ARROW, STONE};
+	public enum Type{ ARROW, STONE,MAGICBOLT};
 	
 	private String attackerTag;
 	private String imageName;
@@ -37,15 +37,14 @@ public class Projectile extends GameObject{
 	
 	private CircleCollider cc;
 	
-	public Projectile(GameScene gs,float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
+	public Projectile(GameScene gs, Type type, float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
 		this.tag = "projectile";	
 		this.addComponent(new CircleCollider(this));
 
 		this.gs = gs;
 		this.width = 64;
-		this.height = 64;
-		setType(Type.ARROW);	
-		setting(posX,posY,posZ,angle,speed,damage,attackerTag);
+		this.height = 64;	
+		setting(type, posX,posY,posZ,angle,speed,damage,attackerTag);
 		
 		cc = (CircleCollider)findComponent("circleCollider");
 	}
@@ -119,9 +118,11 @@ public class Projectile extends GameObject{
 		cc.setEnable(false);
 	}
 	//-------------------------------------------------------------------------------------------------------
-	public void setting(float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
-		posX -= pL - (width - pL - pB) / 2;
-		posZ -= pT - (height - pL - pB) / 2;
+	public void setting( Type type,float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
+		setType(type);
+		
+		posX -= pL + (width - pL - pR) / 2; // 스폰되는 위치가 이미지의 중앙에 가게 하기 위해
+		posZ -= pT + (height - pT - pB) / 2;
 		
 		this.attackerTag = attackerTag;
 		this.tileX = (int) (posX / GameManager.TS);
@@ -191,6 +192,17 @@ public class Projectile extends GameObject{
 			pL = 14;
 			pT = 14;
 			pB = 14;
+			anim = 0;
+			animMax = 6;
+			animSpeed = 12;
+			break;
+		case MAGICBOLT:
+			imageName = "magic_bolt";
+			hY = 3;
+			pR = 16;
+			pL = 13;
+			pT = 16;
+			pB = 15;
 			anim = 0;
 			animMax = 6;
 			animSpeed = 12;

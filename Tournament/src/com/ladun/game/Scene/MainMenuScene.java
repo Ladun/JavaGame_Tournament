@@ -132,7 +132,7 @@ public class MainMenuScene extends AbstractScene{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		// TODO Auto-generated method stub
-		r.drawImage(backgroundImage, 0, 0, 0);
+		r.drawMap(backgroundImage, gc.getWidth(), gc.getHeight());
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
 				objects.get(i).render(gc, r);

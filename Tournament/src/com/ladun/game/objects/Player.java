@@ -216,7 +216,7 @@ public class Player extends Entity{
 								attackIndex = 0;
 								
 								if(!weapon.isAttacking()) {
-									if(weapon.getType() != Weapon.Type.BOW)	{
+									if(weapon.getType() != Weapon.Type.BOW && weapon.getType() != Weapon.Type.CANE)	{
 										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
 										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0);
 										
@@ -249,6 +249,13 @@ public class Player extends Entity{
 								case DAGGER:
 									
 									break;
+								case CANE:
+									
+									break;
+								case BLUNT:
+									weapon.setShieldBlock(!weapon.isShieldBlock());
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									break;
 								}
 							}
 						}
@@ -278,6 +285,12 @@ public class Player extends Entity{
 									hiding = true;
 									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									break;
+								case CANE:
+									
+									break;
+								case BLUNT:
+									
 									break;
 								}
 							}
@@ -417,15 +430,17 @@ public class Player extends Entity{
 		}
 	}
 	public void hit(float damage, boolean crit,String attackerTag) {
-		if(damage == 0)
+		if(damage == 0) {
 			return;
+		}
 		hitMain(damage,crit,attackerTag);
 	}
 	
 	@Override
 	public void hit(float damage,boolean crit,String attackerTag,int hashcode) {
-		if(damage == 0)
+		if(damage == 0) {
 			return;
+		}
 		
 		if(!isExistAttackObject(hashcode)) {
 			attackObjects.add(new AttackObject(hashcode));			
@@ -433,11 +448,16 @@ public class Player extends Entity{
 			if(crit) {
 				damage *= 1.5f;
 				gs.getCamera().cameraShake();
+			}else {
+				if(weapon.isShieldBlock()) {
+					damage *= .4f;
+				}
 			}
 			
 			damage -= getDefence();
-			if(damage <= 0)
+			if(damage <= 0) 
 				damage = 1;
+			
 			
 			hitMain(damage,crit,attackerTag);
 		}
@@ -539,6 +559,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 180;
 				maxMana = 80;
+				moveSpeed = 190;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
@@ -546,6 +567,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 120;
 				maxMana = 100;
+				moveSpeed = 200;
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
@@ -553,6 +575,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 150;
 				maxMana = 80;
+				moveSpeed = 180;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
@@ -560,6 +583,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 120;
 				maxMana = 100;
+				moveSpeed = 220;
 				break;
 			case 4:
 				weapon.setType(Weapon.Type.CANE);
@@ -567,6 +591,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 100;
 				maxMana = 150;
+				moveSpeed = 190;
 				break;
 
 			case 5:
@@ -575,6 +600,7 @@ public class Player extends Entity{
 				manaRegeneration = 1;
 				maxHealth = 200;
 				maxMana = 100;
+				moveSpeed = 170;
 				break;
 		}
 		
@@ -690,11 +716,11 @@ public class Player extends Entity{
 	}
 	
 	public float getMoveSpeed() {
-		return moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED) * 10;
+		return (moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED)) * (weapon.isShieldBlock()? .7f:1);
 	}
 	
 	public float getDefence() {
-		return getItemStat(Item.Type.STAT_DEFENCE);
+		return getItemStat(Item.Type.STAT_DEFENCE) ;
 	}
 	
 	public float getMaxMana() {
