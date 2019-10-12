@@ -108,7 +108,7 @@ public class Client {
 			try {
 				socket = new DatagramSocket();
 			} catch (SocketException e) {
-				// TODO Auto-generated catch block
+			
 				//e.printStackTrace();
 				errorCode = Error.SOCKET_EXCEPTION;
 				return false;
@@ -189,7 +189,7 @@ public class Client {
 			// Disconnection
 			// Server -> Client Packet : [header type: clientID]	
 			case 0x02 : { //type			
-				//TODO: Ohter Player disconnect server, delete other Player 	
+				 	
 
 				StringBuilder sb = new StringBuilder();
 				sb.append("Player");
@@ -590,7 +590,7 @@ public class Client {
 					e.printStackTrace();
 				}
 			} catch (UnknownHostException e1) {
-				// TODO Auto-generated catch block
+				
 				e1.printStackTrace();
 			}
 			//socket.close();
@@ -602,7 +602,6 @@ public class Client {
 				listenThread.join();
 				timeoutThread.join();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}*/
 			
@@ -670,7 +669,7 @@ public class Client {
 								serverRespond = false;
 							else {
 								System.out.println("Server is down");
-								//TODO ¼­¹ö¶û Á¢¼Ó ²÷±â
+								
 								disconnect();
 							}
 						}

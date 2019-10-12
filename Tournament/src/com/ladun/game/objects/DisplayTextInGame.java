@@ -26,7 +26,7 @@ public class DisplayTextInGame extends GameObject{
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		time += Time.DELTA_TIME;
 		posY -= Time.DELTA_TIME * 32;
 		
@@ -37,7 +37,7 @@ public class DisplayTextInGame extends GameObject{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
+		
 		r.setzDepth(Renderer.LAYER_UI);
 		
 		r.drawText(text, (int)posX, (int)posY, color);
@@ -45,7 +45,7 @@ public class DisplayTextInGame extends GameObject{
 
 	@Override
 	public void collision(GameObject other) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 	

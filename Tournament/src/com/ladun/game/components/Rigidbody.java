@@ -23,7 +23,7 @@ public class Rigidbody extends Component{
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		if(power != 0) {
 			((Entity)parent).addPosX((float)(power * c * Time.DELTA_TIME));
 			((Entity)parent).addPosZ((float)(power * s * Time.DELTA_TIME));
@@ -38,7 +38,6 @@ public class Rigidbody extends Component{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
 		
 	}
 	

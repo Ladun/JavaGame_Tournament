@@ -82,6 +82,12 @@ public abstract class GameObject
 	public float getCenterZ() {
 		return posZ + pT + (height - pT - pB) / 2;		
 	}
+	public void setCenterX(float x) {
+		this.posX = x - pL + (width - pL - pR) / 2;
+	}
+	public void setCenterZ(float z) {
+		this.posZ = z - pT + (height - pT - pB) / 2;
+	}
 	
 	public float getAngle() {
 		return angle;

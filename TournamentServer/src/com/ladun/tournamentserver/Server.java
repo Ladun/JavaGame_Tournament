@@ -123,7 +123,7 @@ public class Server {
 				bw.clear();
 				if(gaming) {
 					
-					//TODO : 게임이 진행 중이여서 접속을 못한다는 패킷 전달
+					
 					bw.write((byte)0x07);
 					sb.append(":");
 					sb.append((char)0x00);
@@ -773,7 +773,7 @@ public class Server {
 		try {
 			send("stop".getBytes(),InetAddress.getByName("localhost"),port);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		socket.close();

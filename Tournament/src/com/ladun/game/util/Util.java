@@ -9,6 +9,15 @@ public class Util {
 		
 		return src + (dst - src) * percent;
 	}
+
+	public static int lerp(int src, int dst, float percent) {
+		if(percent < 0)
+			percent = 0;
+		else if (percent > 1)
+			percent = 1;
+		
+		return (int)(src + (dst - src) * percent);
+	}
 	
 	public static float distance(float stX, float stY, float edX, float edY) {
 		float dx = edX - stX;

@@ -1,0 +1,115 @@
+package com.ladun.game.objects.effect;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.GameManager;
+import com.ladun.game.objects.GameObject;
+
+public class Effect extends GameObject{
+	
+	private float anim;
+	private int animType;
+	private int animMax;
+	private float animTime;
+	private boolean looping;
+	private boolean reverse;
+	private String imageName;
+	
+	private boolean zDepthDepended;
+	
+	public Effect() {
+		this.tag = "effect";
+		setting("",0,0,0,
+				0,0,0,
+				0,0,
+				0,
+				false, false);
+	}
+	
+	public Effect(String imageName,
+			int animMax, float animTime, int animType,
+			float centerX,float posY, float centerZ,
+			int width, int height,
+			float angle,
+			boolean looping, boolean reverse) {
+		
+		
+		this.tag = "effect";
+		setting(imageName,
+				animMax, animTime,animType,
+				centerX,posY,centerZ,
+				width,height,
+				angle,
+				looping,reverse);
+	}
+
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		if(reverse) {
+			anim -= Time.DELTA_TIME * animMax * animTime;
+			if(anim < 0) {
+				anim += animMax;
+				if(!looping)
+					active =false;
+			}			
+		}
+		else {
+			anim += Time.DELTA_TIME * animMax * animTime;
+			if(anim >= animMax) {
+				anim -= animMax;
+				if(!looping)
+					active =false;
+			}
+		}
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		r.setzDepth((int)(Math.abs(posY) + posZ + height));
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)posX, (int)(posY + posZ), (int)anim, animType,angle);
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		
+		
+	}
+	
+	//------------------------------------------------------
+	public void setting(String imageName,
+			int animMax, float animTime , int animType,
+			float centerX,float posY, float centerZ,
+			int width, int height,
+			float angle,
+			boolean looping, boolean reverse) {
+		
+		this.active = true;
+		this.looping = looping;
+		this.reverse = reverse;
+		this.imageName = imageName;
+		this.animType = animType;
+		this.animMax = animMax;
+		if(animTime <= 0)
+			animTime = .1f;
+		this.animTime = 1 / animTime;
+		if(reverse)
+			this.anim = animMax;
+		else
+			this.anim = 0;
+		this.width = width;
+		this.height = height;
+		this.posX = centerX - width / 2;
+		this.posY = posY;
+		this.posZ = centerZ - height / 2;
+		this.angle = angle;
+	}
+	//------------------------------------------------------
+
+	public String getImageName() {
+		return imageName;
+	}
+	
+
+}

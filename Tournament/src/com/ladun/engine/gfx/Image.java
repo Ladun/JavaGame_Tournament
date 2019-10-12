@@ -19,7 +19,7 @@ public class Image {
 		try {
 			image = ImageIO.read(Image.class.getResourceAsStream(path));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		

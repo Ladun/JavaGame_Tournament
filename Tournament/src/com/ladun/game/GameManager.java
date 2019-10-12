@@ -40,7 +40,7 @@ public class GameManager extends AbstractGame {
 	
 	@Override
 	public boolean init(GameContainer gc) {
-		// TODO Auto-generated method stub
+		
 		this.gc =gc;
 		gc.getRenderer().setAmbientColor(-1);
 		announce = new Announce();
@@ -64,7 +64,7 @@ public class GameManager extends AbstractGame {
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
 				scenes[i].update(gc);
@@ -82,7 +82,7 @@ public class GameManager extends AbstractGame {
 	}
 	@Override
 	public void render(Renderer r) {
-		// TODO Auto-generated method stub
+		
 
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
@@ -96,6 +96,7 @@ public class GameManager extends AbstractGame {
 		if(loading) {
 			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("loading"), gc.getWidth() - 150, gc.getHeight() - 150, (int)loadingAnim, 0, 0);
 		}
+
 		announce.render(gc, r);
 		chatBox.render(gc, r);
 	}

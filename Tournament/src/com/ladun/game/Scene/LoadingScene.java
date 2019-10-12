@@ -20,7 +20,7 @@ public class LoadingScene extends AbstractScene{
 	
 	@Override
 	public boolean init(GameContainer gc, GameManager gm, boolean active) {
-		// TODO Auto-generated method stub
+		
 		this.gm = gm;
 		this.active = active;		
 		this.name = "LoadingScene";	
@@ -34,7 +34,6 @@ public class LoadingScene extends AbstractScene{
 
 	@Override
 	public void update(GameContainer gc) {
-		// TODO Auto-generated method stub
 		time += Time.DELTA_TIME;
 		if(time >= 3.5f) {
 			if(fadingPercent < 1) {
@@ -65,7 +64,6 @@ public class LoadingScene extends AbstractScene{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
 		float alpha = 255 * fadingPercent;
 		
 				
@@ -86,13 +84,12 @@ public class LoadingScene extends AbstractScene{
 
 	@Override
 	public int getLevelW() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int getLevelH() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 

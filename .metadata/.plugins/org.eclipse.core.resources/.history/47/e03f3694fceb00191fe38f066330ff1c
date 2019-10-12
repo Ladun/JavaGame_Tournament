@@ -1,0 +1,490 @@
+package com.ladun.game.objects;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.GameManager;
+import com.ladun.game.Item.Item;
+import com.ladun.game.Scene.GameScene;
+import com.ladun.game.objects.effect.SkillEffect;
+import com.ladun.game.util.Util;
+
+public class Weapon extends GameObject{
+	public enum Type{
+		SWORD,BOW,SPEAR,DAGGER,CANE,BLUNT
+	}
+	private final static float LIMIT_TIME = 1/10f; 
+	
+	private Type type;
+	private Player parent;
+	
+	private int damage;
+	private int knockback;
+	private int projectileSpeed;
+	
+	private float deltaAngle;
+	private float deltaX;
+	private float deltaZ;
+	private float attackTime;
+	private boolean attacking = false;
+	
+	private float srcAngle = 0;
+	private float dstAngle = 0;
+	private float time = 0;
+	
+	private String imageName;
+	private float xPivot;
+	private float yPivot;
+	private float distanceToParent = 24;
+
+	private boolean mirror;
+	private boolean shieldBlock = false;
+
+	private HitRange hitRange;
+	
+	
+	
+	public Weapon(Player parent) {
+		
+		this.parent = parent;
+		width = 64;
+		height = 64;
+		setType(Type.BOW);
+		this.posY = -16;
+		
+		hitRange = new HitRange(this,HitRange.Type.CIRCLE,parent.tag);
+		srcAngle = parent.angle;
+		dstAngle = parent.angle;
+	}
+	
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		
+		time += Time.DELTA_TIME;
+		positionSetting();
+
+		if(attacking) {
+			attackFunction();
+		}
+		
+		if(hitRange.isActive())
+			hitRange.update(gc, gm);
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		
+		r.drawImage(gc.getResourceLoader().getImage(imageName),
+				(int)(posX + deltaX),(int)(posZ + posY + deltaZ),xPivot,yPivot,mirror,false,angle + deltaAngle + (mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
+		
+		if(type == Type.BLUNT) {
+
+			float iposX = (parent.getCenterX()- width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle+ 180))));
+			float iposZ = (parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle +180))));
+			
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("shield"),
+					(int)(iposX ),(int)(iposZ + posY ),shieldBlock? 1: 0,0,
+					.5f,.65f,!mirror,true,angle + (!mirror? 180 : 0),!parent.isHiding()? 1:0.3f);
+		}
+		//r.drawRect((int)posX, (int)posZ, 2,2, 0, 0xffff0000);
+		
+		
+		if(hitRange.isActive())
+			hitRange.render(gc, r);;
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		
+	}
+	
+	// -------------------------------------------------------------------------
+	public void positionSetting() {
+		
+		dstAngle = parent.angle;
+		
+		if(time >= LIMIT_TIME) {
+			time -= LIMIT_TIME;
+			srcAngle = dstAngle;
+		}
+		
+		angle = Util.lerp(srcAngle,dstAngle,time / LIMIT_TIME);		
+
+		//posX = parent.posX + parent.width / 2 - width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle)));
+		//posZ = parent.posZ + parent.posY + parent.height / 2 - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle)));
+		
+		
+		posX = parent.getCenterX()- width * xPivot + (float)(distanceToParent * Math.cos(Math.toRadians(angle)));
+		posZ = parent.getCenterZ() - height * yPivot + (float)(distanceToParent* Math.sin(Math.toRadians(angle)));
+		
+		if(Math.abs(angle) > 90) {
+			mirror = true;
+		}
+		else {
+			mirror = false;
+		}
+	}
+	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex) {
+		// Player 에서 호출
+		
+		
+		switch(type) {
+		case SWORD:
+			hitRange.setDamage(getDamage());
+			attacking = true;
+			gc.getResourceLoader().getSound("sword_attack").play();
+			break;
+		case SPEAR:
+			hitRange.setDamage(getDamage());
+			attacking = true;
+			gc.getResourceLoader().getSound("spear_attack").play();
+			break;
+		case DAGGER:
+			hitRange.setDamage(getDamage());
+			attacking = true;
+			//gc.getResourceLoader().getSound("dagger_attack").play();			
+			break;
+		case BOW:
+			switch(attackIndex) {
+			case 0:
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle);
+				gc.getResourceLoader().getSound("bow_attack").play();
+				break;
+			case 1:
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle,_angle - 10);
+				//gc.getResourceLoader().getSound("bow_attack").play();
+				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle, _angle +10);
+				gc.getResourceLoader().getSound("bow_attack").play();
+				break;
+			}
+			break;
+		case CANE:
+
+			switch(attackIndex) {
+			case 0:
+				Shoot(gm,gs, Projectile.Type.MAGICBOLT, posX,posZ,_angle);
+				break;
+			case 2:{
+				SkillEffect skill = (SkillEffect)gs.getInactiveObject("skilleffect");		
+				if(skill == null) {
+					gs.addObject(new SkillEffect(parent.tag,SkillEffect.Type.Meteor,posX,0,posZ));
+				}
+				else {
+					skill.setting(SkillEffect.Type.Meteor,posX,0,posZ);
+				}
+				break;
+			}
+			}
+			break;
+		case BLUNT: 
+			hitRange.setDamage(getDamage());
+			attacking = true;
+			
+			break;
+		}
+		attackTime = 0;
+		
+	}
+	
+	private void attackFunction() {
+		attackTime += Time.DELTA_TIME;
+		
+		switch(type) {
+		case SWORD:
+			if(attackTime >= 0.2f) {
+				deltaAngle = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+				
+				if(mirror) {
+					deltaAngle -= Time.DELTA_TIME * 975;		
+					float co = (float)Math.cos(Math.toRadians(deltaAngle +90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle +90 +angle));
+
+					hitRange.active(posX + width * xPivot - 14 + 36 * co , posZ + posY + height * yPivot  - 14+  36* si , 28, 28);		
+				}
+				else {
+					deltaAngle += Time.DELTA_TIME * 975;
+					float co = (float)Math.cos(Math.toRadians(deltaAngle -90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle -90 +angle));
+
+					hitRange.active(posX + width * xPivot - 14 + 36 * co , posZ + posY + height * yPivot  - 14+  36* si , 28, 28);
+				}
+				
+			}
+			break;
+		case SPEAR:
+			if(attackTime >= .2f) {
+				deltaX = 0;
+				deltaZ = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+				float co = (float)Math.cos(Math.toRadians(angle));
+				float si = (float)Math.sin(Math.toRadians(angle));
+				
+				deltaX += Time.DELTA_TIME * 500 * co;
+				deltaZ += Time.DELTA_TIME * 500 * si;
+
+				hitRange.active(posX +deltaX + width * xPivot - 18  +40* co, posZ + posY + deltaZ + height * yPivot  - 18 + 40 * si, 36, 36);
+			}
+			
+			break;
+			
+		case DAGGER:
+			if(attackTime >= .1f) {
+				deltaX = 0;
+				deltaZ = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+				float co = (float)Math.cos(Math.toRadians(angle));
+				float si = (float)Math.sin(Math.toRadians(angle));
+				
+				deltaX += Time.DELTA_TIME * 200 * co;
+				deltaZ += Time.DELTA_TIME * 200 * si;
+
+				hitRange.active(posX +deltaX + width * xPivot - 9  +10* co, posZ + posY + deltaZ + height * yPivot  - 9 + 10 * si, 18, 18);
+			}
+			break;
+
+		case BLUNT:
+			if(attackTime >= 0.2f) {
+				deltaAngle = 0;
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+
+				if(mirror) {
+					deltaAngle -= Time.DELTA_TIME * 975;		
+					float co = (float)Math.cos(Math.toRadians(deltaAngle +90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle +90 +angle));
+
+					hitRange.active(posX + width * xPivot - 12 + 36 * co , posZ + posY + height * yPivot  - 12+  36* si , 24, 24);		
+				}
+				else {
+					deltaAngle += Time.DELTA_TIME * 975;
+					float co = (float)Math.cos(Math.toRadians(deltaAngle -90 +angle));
+					float si = (float)Math.sin(Math.toRadians(deltaAngle -90 +angle));
+
+					hitRange.active(posX + width * xPivot - 12 + 36 * co , posZ + posY + height * yPivot  - 12+  36* si , 24, 24);
+				}
+				
+			}
+			break;
+		}
+		
+	}
+	public void Shoot(GameManager gm,GameScene gs, Projectile.Type type, int posX,int posZ, float _angle) {
+		Shoot(gm,gs, type, posX,posZ,_angle,_angle);
+	}
+	public void Shoot(GameManager gm,GameScene gs, Projectile.Type type, int posX,int posZ, float _angle, float spawnAngle) {
+		Projectile pr = (Projectile)gs.getInactiveObject("projectile");
+		float dX = (parent.getWidth() * 0.75f)* (float)Math.cos(Math.toRadians(spawnAngle));
+		float dZ =  (parent.getHeight() * 0.75f )* (float)Math.sin(Math.toRadians(spawnAngle)) ;
+
+		float _posX = posX + (float)(distanceToParent * Math.cos(Math.toRadians(spawnAngle)));
+		float _posZ = posZ + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
+		
+		if(pr == null) {
+			gs.addObject(new Projectile(gs, type, _posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(),parent.tag));
+		}
+		else {
+			pr.setting(type, _posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(),parent.tag);
+		}
+	}
+	// -------------------------------------------------------------------------
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+		switch(type) {
+		case SWORD:
+			damage = 16;
+			knockback = 900;
+			imageName = "sword";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .84f;
+			distanceToParent = 18;
+			break;
+		case BOW:
+			damage = 15;
+			knockback = 700;
+			projectileSpeed = 750;
+			imageName = "bow";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .5f;
+			distanceToParent = 24;
+			break;
+
+		case SPEAR:
+			damage = 13;
+			knockback = 900;
+			imageName = "spear";
+			width = 128;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .5f;
+			distanceToParent = 24;
+			break;
+			
+		case DAGGER:
+			damage = 18;
+			knockback = 600;
+			imageName = "dagger";
+			width = 48;
+			height = 32;
+			xPivot = .5f;
+			yPivot = .5f;
+			distanceToParent = 30;
+			break;
+			
+		case BLUNT:
+			damage = 16;
+			knockback = 1200;
+			imageName = "blunt";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .72f;
+			distanceToParent = 18;
+			
+			break;
+		case CANE:
+			damage = 16;
+			knockback = 900;
+			imageName = "cane";
+			width = 64;
+			height = 64;
+			xPivot = .5f;
+			yPivot = .66f;
+			distanceToParent = 18;			
+			break;
+		}
+		
+		
+	}
+	
+	public int getDamage() {
+		return parent.getItemStat(Item.Type.STAT_DAMAGE) + damage;
+	}
+	
+	public void setDstAngle(float dstAngle) {
+		this.dstAngle = dstAngle;
+	}
+
+	public boolean isAttacking() {
+		return attacking;
+	}
+
+	public int getKnockback() {
+		return knockback;
+	}
+
+	public boolean isShieldBlock() {
+		return shieldBlock;
+	}
+
+	public void setShieldBlock(boolean shieldBlock) {
+		this.shieldBlock = shieldBlock;
+	}
+
+	public void setKnockback(int knockback) {
+		this.knockback = knockback;
+	}
+	
+	public float getCoolDown(int attackType) {
+		switch(type) {
+		case SWORD:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 0.5f;
+			}
+			break;
+		case BOW:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 6f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 13f;
+			}
+			break;
+
+		case SPEAR:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 0.5f;
+			}
+			break;
+		case DAGGER:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
+			}
+			break;
+
+		case BLUNT:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.2f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
+			}
+			break;
+
+		case CANE:
+			switch(attackType) {
+			case 0:
+				return 0.5f;
+			case 1:
+				return 0.5f;
+			case 2:
+				return 0.5f;
+			case 3:
+				return 14f;
+			}
+			break;
+		}
+		return 1;
+	}
+	
+
+}

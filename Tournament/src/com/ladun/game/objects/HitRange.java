@@ -15,7 +15,7 @@ public class HitRange extends GameObject{
 	private Type type;
 	private float damage;
 	
-	public HitRange(GameObject parent,Type t,float damage) {
+	public HitRange(GameObject parent,Type t) {
 		this.tag = "hitRange";
 		this.parent = parent;
 		this.active = false;
@@ -30,21 +30,21 @@ public class HitRange extends GameObject{
 			break;
 		}
 	}
-	public HitRange(GameObject parent,Type t,float damage,String ignoreTag) {
-		this(parent,t,damage);
+	public HitRange(GameObject parent,Type t,String ignoreTag) {
+		this(parent,t);
 		this.attackerTag = ignoreTag;
 		
 	}
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		this.updateComponents(gc, gm);
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
+		
 		this.renderComponents(gc, r);
 	}
 

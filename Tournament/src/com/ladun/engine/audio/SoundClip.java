@@ -42,7 +42,7 @@ public class SoundClip {
 			
 			
 		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		

@@ -93,7 +93,7 @@ public class Projectile extends GameObject{
 
 	@Override
 	public void collision(GameObject other) {
-		// TODO Auto-generated method stub
+		
 		if(other instanceof Entity) {
 			Disappear();
 		}

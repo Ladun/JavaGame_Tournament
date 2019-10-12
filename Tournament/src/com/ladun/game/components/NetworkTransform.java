@@ -47,7 +47,7 @@ public class NetworkTransform extends Component{
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		time += Time.DELTA_TIME;
 		
 		
@@ -71,7 +71,6 @@ public class NetworkTransform extends Component{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
 		
 	}
 	//----------------------------------------------------------------------------------------

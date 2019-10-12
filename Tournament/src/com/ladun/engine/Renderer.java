@@ -61,7 +61,7 @@ public class Renderer {
 		try {
 			gc.getWindow().getG().setFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,getClass().getResourceAsStream("/fonts/소야얼음10.ttf")));
 		} catch (FontFormatException | IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -114,7 +114,7 @@ public class Renderer {
 
 			@Override
 			public int compare(ImageRequest i0, ImageRequest i1) {
-				// TODO Auto-generated method stub
+				
 				if(i0.zDepth < i1.zDepth)
 					return 1;
 				if(i0.zDepth > i1.zDepth)
@@ -892,7 +892,7 @@ public class Renderer {
 		
 				
 		// x 독립변수 구간
-		while(h2* x < w2 * (y-1)) {
+		while(h2* x < w2 * (y)) {
 			++x;
 			if( p < 0) {
 				p+= h2 * (2 * x + 1);
@@ -922,7 +922,7 @@ public class Renderer {
 		p = (4 * w2 + h2 * (1- 4*w))/4;		
 		
 		// y 독립변수 구간
-		while(h2* x > w2 * (y+1)) {
+		while(h2* x >= w2 * (y)) {
 			++y;
 			if( p < 0) {
 				p+= w2 * (2 * y + 1);
@@ -949,7 +949,7 @@ public class Renderer {
 		
 		
 		for(int i = -x +1 ; i < x ; i++)
-			for(int j = -y +1; j < y; j++)
+			for(int j = -y+2 ; j < y-1; j++)
 				setPixel(i + cx, j + cy, color);
 	}
 	

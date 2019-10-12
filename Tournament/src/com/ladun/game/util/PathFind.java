@@ -18,7 +18,7 @@ public class PathFind {
 		}
 		@Override
 		public int compareTo(Node o) {
-			// TODO Auto-generated method stub
+			
 			return this.g + this.h <= o.g +o.h? 1:-1;
 		}
 		public void setting(Node parent,int g, int h) {

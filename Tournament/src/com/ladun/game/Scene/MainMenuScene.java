@@ -30,7 +30,7 @@ public class MainMenuScene extends AbstractScene{
 	
 	@Override
 	public boolean init(GameContainer gc,GameManager gm, boolean active) {
-		// TODO Auto-generated method stub
+		
 		this.gm = gm;
 		this.active = active;
 		this.name = "MainMenu";
@@ -51,7 +51,7 @@ public class MainMenuScene extends AbstractScene{
 
 	@Override
 	public void update(GameContainer gc) {
-		// TODO Auto-generated method stub
+		
 		
 		
 		for(int i = 0; i < objects.size();i++) {
@@ -131,7 +131,7 @@ public class MainMenuScene extends AbstractScene{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
+		
 		r.drawMap(backgroundImage, gc.getWidth(), gc.getHeight());
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive())
@@ -198,14 +198,14 @@ public class MainMenuScene extends AbstractScene{
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					
 					e.printStackTrace();
 				}
 
 				synchronized (gm) {
 					if(gm.getClient().getServerState() != ServerState.GAME_START) {
 						if(nowTime>= 5) {
-							//TODO ¼­¹ö°¡ ´ÝÇôÀÖÀ½
+							
 							//System.out.println("Server is Closed");
 							gm.getClient().disconnect();
 							gm.getAnnounce().addString("¼­¹ö°¡ ´ÝÇû½À´Ï´Ù",Announce.DEFAULT_COLOR);
@@ -230,13 +230,13 @@ public class MainMenuScene extends AbstractScene{
 	//-------------------------------------------------------------------------------
 	@Override
 	public int getLevelW() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int getLevelH() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 

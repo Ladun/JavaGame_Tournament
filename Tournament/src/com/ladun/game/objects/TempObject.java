@@ -23,7 +23,7 @@ public class TempObject extends GameObject{
 	}
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		color = 0xffff0000;
 		if(chaseMouse) {
 			this.posX = gc.getInput().getMouseX() + gs.getCamera().getOffX();
@@ -34,7 +34,7 @@ public class TempObject extends GameObject{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
+		
 		
 		r.drawFillCircle((int)posX + (width) / 2, (int)posZ + (height) / 2, 24, color);
 		//r.drawFillRect((int)posX, (int)posZ, 24, 24, 0, color);
@@ -44,7 +44,7 @@ public class TempObject extends GameObject{
 
 	@Override
 	public void collision(GameObject other) {
-		// TODO Auto-generated method stub
+		
 		color = 0xff000000;
 	}
 

@@ -99,7 +99,7 @@ public class Interior extends GameObject{
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		// TODO Auto-generated method stub
+		
 		
 		if(animation) {
 			anim += Time.DELTA_TIME * animSpeed;
@@ -111,7 +111,6 @@ public class Interior extends GameObject{
 
 	@Override
 	public void render(GameContainer gc, Renderer r) {
-		// TODO Auto-generated method stub
 		
 		r.setzDepth((int)posZ + height - pB);
 		if(!animation) 
@@ -124,7 +123,6 @@ public class Interior extends GameObject{
 
 	@Override
 	public void collision(GameObject other) {
-		// TODO Auto-generated method stub
 		
 	}
 

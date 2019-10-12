@@ -20,10 +20,16 @@ import com.ladun.game.components.NetworkTransform;
 import com.ladun.game.components.RectCollider;
 import com.ladun.game.components.Rigidbody;
 import com.ladun.game.net.Client;
+import com.ladun.game.objects.effect.Effect;
 import com.ladun.game.util.Util;
 
 public class Player extends Entity{
 	
+	// Default: 기본 형태로 키를 누르면 공격함
+	// DependOnAngle: 마우스 클릭 시 공격하는 타입으로 플레이어의 각도에 영향을 받음
+	// DependOnMouse: 플레이어의 마우스 위치에 스킬, 공격이 되는 타입
+	// Targeting: 플레이어 타겟팅하는 타입
+	public enum AttackType { Default,DependOnAngle, DependOnMouse,Targeting}
 	
 	private Queue<Point>	clickPoints = new LinkedList<Point>(); // 차후에 큐로 바꾸기
 	private Item[] items = new Item[6];
@@ -31,7 +37,6 @@ public class Player extends Entity{
 	private int[] animMaxIndex = {6,1,1};
 	
 	private float fcos,fsin;
-	private boolean readyToShoot = false;
 	private int attackIndex = 0;	
 
 	//--------------------------------------
@@ -41,6 +46,7 @@ public class Player extends Entity{
 	
 	private float backAttackRange = 120;
 	//--------------------------------------
+	private AttackType attackType;
 	private float reduceAttack_A_Cool = 1f;
 	
 	private float skill_hideTime = 0;
@@ -112,10 +118,9 @@ public class Player extends Entity{
 			timePassAttackObject();
 			
 			if(localPlayer){	
-				
 				if(mana < getMaxMana()) {
 					int lastMana = (int)mana;
-					mana += Time.DELTA_TIME * getManaRegeneration();
+					mana += Time.DELTA_TIME * getManaRegeneration() * 100;
 					if(mana > getMaxMana())
 						mana = getMaxMana();
 					
@@ -211,6 +216,7 @@ public class Player extends Entity{
 				// Attack----------------------------------------------------
 				if(currentMapIndex >= 2) {
 					if(!gs.isChatting()) {
+						
 						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
 							if(actionCoolDownTime[0]  <= 0) {
 								attackIndex = 0;
@@ -219,7 +225,7 @@ public class Player extends Entity{
 									if(weapon.getType() != Weapon.Type.BOW && weapon.getType() != Weapon.Type.CANE)	{
 										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
 										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0);
-										
+
 										if(skill_hideTime > 0) {
 											hiding = false;
 											gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
@@ -227,7 +233,7 @@ public class Player extends Entity{
 										}
 									}
 									else {
-										readyToShoot = true;
+										attackType = AttackType.DependOnAngle;
 									}
 								}	
 							}
@@ -241,7 +247,7 @@ public class Player extends Entity{
 									
 									break;
 								case BOW:
-									readyToShoot = true;	
+									attackType = AttackType.DependOnAngle;
 									break;
 								case SPEAR:
 									
@@ -250,10 +256,10 @@ public class Player extends Entity{
 									
 									break;
 								case CANE:
-									
+									attackType = AttackType.DependOnMouse;
 									break;
 								case BLUNT:
-									weapon.setShieldBlock(!weapon.isShieldBlock());
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex);
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 									break;
 								}
@@ -262,6 +268,26 @@ public class Player extends Entity{
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
 							if(actionCoolDownTime[2] <= 0&& useMana(20)) {
 								attackIndex = 2;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									attackType = AttackType.DependOnAngle;
+									break;
+								case SPEAR:
+									
+									break;
+								case DAGGER:
+									
+									break;
+								case CANE:
+									attackType = AttackType.DependOnMouse;
+									break;
+								case BLUNT:
+
+									break;
+								}
 							}
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
@@ -299,20 +325,27 @@ public class Player extends Entity{
 					
 
 					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
-						if(readyToShoot) {
+						if(attackType != AttackType.Default) {
 							//System.out.println(reduceAttack_A_Cool);
 							if(attackIndex == 0)
 								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
 							else
 								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
-							
-							readyToShoot = false;
 							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
 							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
-							
+
+							int _attackX = (int)getCenterX();
+							int _attackZ = (int)getCenterZ();
+							if(attackType == AttackType.DependOnMouse) {
+								_attackX = (int)gs.getCamera().getOffX() + gc.getInput().getMouseX();
+								_attackZ = (int)gs.getCamera().getOffY() + gc.getInput().getMouseY();
+							}
 							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
 							weapon.setDstAngle(angle);
-							attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,attackIndex);					
+							attack(gc,gm,_attackX,_attackZ,angle,attackIndex);	
+
+							
+							attackType = AttackType.Default;
 						}
 					}
 				}
@@ -391,7 +424,7 @@ public class Player extends Entity{
 
 	@Override
 	public void collision(GameObject other) {
-		// TODO Auto-generated method stub
+		
 		super.collision(other);
 		if(other instanceof HitRange) {
 			HitRange hr = (HitRange)other;
@@ -421,13 +454,12 @@ public class Player extends Entity{
 		if(c == null)
 			return;
 		
-		Effect effect = (Effect)gs.getInactiveObject("effect");		
-		if(effect == null) {
-			gs.addObject(new Effect("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180));
-		}
-		else {
-			effect.setting("hit_effect_32",animType,c.getCenterX(),other.posY,c.getCenterZ(),angle + 180);
-		}
+		gs.addEffect("hit_effect_32",
+				4, .3f,animType,
+				c.getCenterX(),other.posY,c.getCenterZ(),
+				32,32,
+				angle + 180,
+				false,false);
 	}
 	public void hit(float damage, boolean crit,String attackerTag) {
 		if(damage == 0) {
@@ -612,6 +644,7 @@ public class Player extends Entity{
 	
 	public void attack(GameContainer gc,GameManager gm,int posX,int posZ,float _angle,int attackIndex) {
 
+		//System.out.println(posX + ":" + posZ);
 		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex);			
 
 		if(localPlayer) {
