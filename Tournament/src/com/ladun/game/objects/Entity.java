@@ -175,6 +175,8 @@ public abstract class Entity extends GameObject{
 	}
 
 	public void setHealth(float health) {
+		if(health > getMaxHealth())
+			health = getMaxHealth();
 		this.health = health;
 	}
 

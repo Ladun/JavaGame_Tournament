@@ -266,7 +266,7 @@ public class Client {
 					if(_p == null)
 						return;
 					
-					_p.attack(gc,null,Integer.parseInt(netArgs[1]),Integer.parseInt(netArgs[2]), Float.parseFloat(netArgs[3]), Integer.parseInt(netArgs[4]));
+					_p.attack(gc,null,Integer.parseInt(netArgs[1]),Integer.parseInt(netArgs[2]), Float.parseFloat(netArgs[3]), Integer.parseInt(netArgs[4]), netArgs[5]);
 					
 					break;
 				}

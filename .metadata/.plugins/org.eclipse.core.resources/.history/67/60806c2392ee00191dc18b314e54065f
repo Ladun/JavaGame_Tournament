@@ -1,0 +1,871 @@
+package com.ladun.game.objects;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
+import com.ladun.engine.gfx.ImageTile;
+import com.ladun.game.GameManager;
+import com.ladun.game.Physics;
+import com.ladun.game.Point;
+import com.ladun.game.Item.Item;
+import com.ladun.game.Scene.GameScene;
+import com.ladun.game.Scene.TeamColor;
+import com.ladun.game.components.Collider;
+import com.ladun.game.components.NetworkTransform;
+import com.ladun.game.components.RectCollider;
+import com.ladun.game.components.Rigidbody;
+import com.ladun.game.net.Client;
+import com.ladun.game.objects.effect.Effect;
+import com.ladun.game.util.Util;
+
+public class Player extends Entity{
+	
+	// Default: 기본 형태로 키를 누르면 공격함
+	// DependOnAngle: 마우스 클릭 시 공격하는 타입으로 플레이어의 각도에 영향을 받음
+	// DependOnMouse: 플레이어의 마우스 위치에 스킬, 공격이 되는 타입
+	// Targeting: 플레이어 타겟팅하는 타입
+	public enum AttackType { Default,DependOnAngle, DependOnMouse,Targeting}
+	
+	private Queue<Point>	clickPoints = new LinkedList<Point>(); // 차후에 큐로 바꾸기
+	private Item[] items = new Item[6];
+	
+	private int[] animMaxIndex = {6,1,1};
+	
+	private float fcos,fsin;
+	private int attackIndex = 0;	
+
+	//--------------------------------------
+	private int maxMana;
+	private float mana;
+	private float manaRegeneration;
+	
+	private float backAttackRange = 120;
+	//--------------------------------------
+	private AttackType attackType;
+	private float reduceAttack_A_Cool = 1f;
+	
+	private float skill_hideTime = 0;
+	private float skill_bowTime = 0;
+	
+	private boolean targetSelectClick = false; // AttackType이 Targeting일 때 한 프레임 쉬기 위해, 그래야 정확하게 선택이 됨
+	
+	private Weapon weapon;
+	//--------------------------------------	
+	private boolean localPlayer;
+	private int teamNumber;
+	private String nickname;
+	//--------------------------------------
+	private boolean mouseOver;
+	
+
+	public Player(String tag,String nickname,int tileX,int tileZ,GameScene gs,boolean localPlayer) {
+		
+		this.tag = tag;
+		this.nickname = nickname;
+		
+		this.tileX 	= tileX;
+		this.tileZ 	= tileZ;
+		this.offX 	= 0;
+		this.offZ 	= 0;
+		this.posX 	= tileX * GameManager.TS;
+		this.posZ 	= tileZ * GameManager.TS;
+		this.width 	= GameManager.TS;
+		this.height	= GameManager.TS;
+		
+		this.hY = 50;
+		this.pR = pL = 20;
+		this.pB = 0;
+		this.pT = 30;
+		
+		this.moveSpeed 		= 200;
+		this.jump		= -7f;		
+		this.animSpeed = 12;
+		
+		this.gs = gs;
+		this.gm = gs.getGm();
+		
+		this.localPlayer = localPlayer;
+		
+		this.weapon = new Weapon(this);
+		this.maxHealth 	= 100;
+		setWeaponType(0);
+		
+		for(int i =0;i < 6;i++) {
+			items[i] = new Item();
+		}
+		
+		
+		this.addComponent(new NetworkTransform(this,localPlayer));
+		this.addComponent(new RectCollider(this));
+		this.addComponent(new Rigidbody(this));
+		
+		if(localPlayer) {
+			gs.setLocalPlayer(this);
+			
+			actionCoolDownTime = new float[4];
+		}
+	}
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+		if(currentMapIndex != gs.getCurrentMapIndex())
+			return;
+		
+		if(gs.isGameisStart()) {
+
+			timePassAttackObject();
+			
+			if(localPlayer){	
+				if(mana < getMaxMana()) {
+					int lastMana = (int)mana;
+					mana += Time.DELTA_TIME * getManaRegeneration();
+					if(mana > getMaxMana())
+						mana = getMaxMana();
+					
+					if((int)mana != lastMana)
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x21,(int)mana});
+						
+				}
+				if(health < getMaxHealth()) {
+					int lastHealth = (int)health;
+					health += Time.DELTA_TIME * getHealthRegeneration();
+					if(health > getMaxHealth())
+						health = getMaxHealth();
+
+					if((int)health != lastHealth)
+						gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health});
+				}
+				
+				
+				//if(gc.getInput().isKeyDown(KeyEvent.VK_L))
+				//	System.out.println("["+offX +", " + Math.round(posY)  + ", " + offZ +"] | [" + tileX + "," + tileZ +"]," + (tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)));
+				
+				
+				for(int i = 0; i < 4; i ++) {
+					if(actionCoolDownTime[i] > 0 ) {
+						actionCoolDownTime[i] -= Time.DELTA_TIME;
+						if(actionCoolDownTime[i]  < 0)
+							actionCoolDownTime[i]  = 0;
+					}
+				}
+				buffTimer();
+				
+				// Moving ------------------------------------------------------
+				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
+					int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+					int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+					
+					if(clickPoints.size() == 0) {
+						angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
+						
+						fcos = (float)Math.cos(Math.toRadians(angle));
+						fsin = (float)Math.sin(Math.toRadians(angle));
+						clickPoints.offer(new Point(_x,_y));
+					}
+					else {					
+						if(gc.getInput().isKey(KeyEvent.VK_SHIFT))
+						{
+							clickPoints.offer(new Point(_x,_y));					
+						}
+						else {
+							angle =(float) Math.toDegrees(Math.atan2(_y - getCenterZ(),  _x - getCenterX()));
+							
+							fcos = (float)Math.cos(Math.toRadians(angle));
+							fsin = (float)Math.sin(Math.toRadians(angle));
+							if(clickPoints.size() == 1) {
+								clickPoints.peek().setX(_x);
+								clickPoints.peek().setY(_y);
+							}
+							else {
+								clickPoints.clear();
+								clickPoints.offer(new Point(_x,_y));
+							}
+						}
+					}
+					
+				}
+				
+				if(clickPoints.size() > 0) {
+					float distance = Util.distance(clickPoints.peek().getX() ,clickPoints.peek().getY(),getCenterX()	,getCenterZ());
+					if(distance >= getMoveSpeed()  * Time.DELTA_TIME) {
+						moving(getMoveSpeed() * fcos,getMoveSpeed() * fsin);
+					}
+					else {
+						moving(distance * fcos, distance * fsin);
+						clickPoints.poll();
+						if(clickPoints.size() > 0) {
+							angle =(float) Math.toDegrees(Math.atan2(clickPoints.peek().getY() - getCenterZ(),  clickPoints.peek().getX() - getCenterX()));
+							fcos = (float)Math.cos(Math.toRadians(angle));
+							fsin = (float)Math.sin(Math.toRadians(angle));
+							
+						}
+					}
+	
+					moving = true;
+				}
+				else			{
+					moving = false;
+				}
+				// Moving End --------------------------------------------------
+				
+				// jump(gc);
+				
+				
+				// Attack----------------------------------------------------
+				if(currentMapIndex >= 2) {
+					if(!gs.isChatting()) {
+						
+						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
+							if(actionCoolDownTime[0]  <= 0 && canUseMana(weapon.getUsingMana(0))) {
+								attackIndex = 0;
+								
+								if(!weapon.isAttacking()) {
+									if(weapon.getType() != Weapon.Type.BOW && weapon.getType() != Weapon.Type.CANE)	{
+										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0);
+
+										if(skill_hideTime > 0) {
+											hiding = false;
+											gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+											actionCoolDownTime[3] = 4;
+										}
+									}
+									else {
+										attackType = AttackType.DependOnAngle;
+									}
+								}	
+							}
+	
+						}
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
+							if(actionCoolDownTime[1] <= 0 && canUseMana(weapon.getUsingMana(1))) {
+								attackIndex = 1;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									attackType = AttackType.DependOnAngle;
+									break;
+								case SPEAR:
+									
+									break;
+								case DAGGER:
+									
+									break;
+								case CANE:
+									attackType = AttackType.DependOnMouse;
+									break;
+								case BLUNT:
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
+									break;
+								}
+							}
+						}
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
+							if(actionCoolDownTime[2] <= 0&& canUseMana(weapon.getUsingMana(2))) {
+								attackIndex = 2;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									attackType = AttackType.DependOnAngle;
+									break;
+								case SPEAR:
+									
+									break;
+								case DAGGER:
+									
+									break;
+								case CANE:
+									attackType = AttackType.DependOnMouse;
+									break;
+								case BLUNT:
+									attackType = AttackType.Targeting;
+									break;
+								}
+							}
+						}
+						else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
+							if(actionCoolDownTime[3] <= 0&& canUseMana(weapon.getUsingMana(3))) {
+								attackIndex = 3;
+								switch(weapon.getType()) {
+								case SWORD:
+									
+									break;
+								case BOW:
+									skill_bowTime = 5;
+									reduceAttack_A_Cool = .5f;
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
+									
+									break;
+								case SPEAR:
+									
+									break;
+								case DAGGER:
+									skill_hideTime= 10;
+									hiding = true;
+									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
+									break;
+								case CANE:
+									
+									break;
+								case BLUNT:
+									
+									break;
+								}
+							}
+						}
+					}
+					
+
+					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
+						if(attackType != AttackType.Default) {
+							switch(attackType) {
+							case Targeting:
+								if(!targetSelectClick) {
+									targetSelectClick = true;
+									break;
+								}
+								else {
+									targetSelectClick = false;								
+								}
+							default:
+								if(attackIndex == 0)
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+								else
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+								mana -= weapon.getUsingMana(attackIndex);
+								
+								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+								int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+	
+								int _attackX = (int)getCenterX();
+								int _attackZ = (int)getCenterZ();
+								if(attackType == AttackType.DependOnMouse) {
+									_attackX = (int)gs.getCamera().getOffX() + gc.getInput().getMouseX();
+									_attackZ = (int)gs.getCamera().getOffY() + gc.getInput().getMouseY();
+								}
+								angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+								weapon.setDstAngle(angle);
+								attack(gc,gm,_attackX,_attackZ,angle,attackIndex);	
+	
+								
+								attackType = AttackType.Default;
+							}
+						}
+					}
+				}
+				// Attack End -------------------------------------------------
+				
+				if(moving) {
+					anim += Time.DELTA_TIME * animSpeed;
+					if(anim >= animMaxIndex[animType]) {
+						anim -=animMaxIndex[animType];
+					}
+				}
+				else {
+					anim = 0;
+				}
+				
+				
+				if((int)fallDistance != 0) {
+					ground = false;
+				}
+				groundLast = ground;				
+				this.AdjustPosition();	
+			}
+		}
+		if(currentMapIndex > 0)
+			weapon.update(gc, gm);
+		this.updateComponents(gc,gm);
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+
+		if(currentMapIndex != gs.getCurrentMapIndex())
+			return;
+		if(!localPlayer)
+			if(hiding)
+				return;
+		
+		
+		
+		r.setzDepth((int)(posZ + Math.abs(groundHeight)) + pT + (height - (pT + pB)) );		
+		// Shadow Draw
+		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
+		
+		
+		/*
+		r.setzDepth((int)(Math.abs(posY) ));
+		// PosX PosZ Position Draw
+		r.drawFillRect((int)posX + pL,   (int)(posZ) + pT,    width - (pL + pR),    height - (pT + pB),angle,0x55000000);
+		*/
+		
+		/*
+		// Basic Physics Bound Draw
+		r.drawFillRect((int)posX + pL,   (int)(posZ + posY) + pT,    width - (pL + pR),    height - (pT + pB),angle,0xffffffff);
+		r.drawFillRect((int)posX + pL+(width - (pL + pR)) / 4,   (int)(posZ + posY)+ pT + (height - (pT + pB)) /2 -hY,   (width - (pL + pR)) / 2,   hY,angle, 0xff30b2c9);
+		 */
+		
+		r.setzDepth((int)(posZ + Math.abs(posY) + height));
+		for(Point _p : clickPoints) {
+			//r.drawRect((int)clickPoints.get(i).getX(), (int)clickPoints.get(i).getY(), 32, 32, 0, 0xfff7a87f);
+			r.drawImage(gc.getResourceLoader().getImage("point"), (int)_p.getX() - 16, (int)_p.getY() - 16 , 0);
+		}
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
+		// HP Bar
+		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
+		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
+
+		if(mouseOver)
+			r.drawString(nickname, (int)posX,  (int)(posZ + posY) - 35, 20, 0xff000000);
+
+		if(currentMapIndex > 0)
+			weapon.render(gc, r);
+		
+		//RenderRect(r,2);
+		this.renderComponents(gc,r);
+	}
+
+	@Override
+	public void collision(GameObject other) {
+		
+		super.collision(other);
+		if(other instanceof HitRange) {
+			HitRange hr = (HitRange)other;
+			if(!hr.getAttackerTag().equals(tag)) {
+				if(localPlayer)
+					hit(hr.getDamage(),isBackAttack(gm.getObject(hr.getAttackerTag())),hr.getAttackerTag(),other.hashCode());
+				
+
+				addHitEffect(other, hr.getParent().angle);
+			}
+		}
+		else if(other instanceof Projectile) {
+			if(localPlayer) 
+				hit(((Projectile)other).getDamage(),isBackAttack(other),((Projectile)other).getAttackerTag(),other.hashCode());
+			addHitEffect(other, other.angle);
+		}
+	
+	}
+	
+	private void addHitEffect(GameObject other, float angle) {
+
+		int animType = (int)(Math.random() * 2);
+		
+		Collider c = (Collider)other.findComponent("circleCollider");
+		if(c == null)
+			c = (Collider)other.findComponent("rectCollider");		
+		if(c == null)
+			return;
+		
+		gs.addEffect("hit_effect_32",
+				4, .3f,animType,
+				c.getCenterX(),other.posY,c.getCenterZ(),
+				32,32,
+				angle + 180,
+				false,false);
+	}
+	public void hit(float damage, boolean crit,String attackerTag) {
+		if(damage == 0) {
+			return;
+		}
+		hitMain(damage,crit,attackerTag);
+	}
+	
+	@Override
+	public void hit(float damage,boolean crit,String attackerTag,int hashcode) {
+		if(damage == 0) {
+			return;
+		}
+		
+		if(!isExistAttackObject(hashcode)) {
+			attackObjects.add(new AttackObject(hashcode));			
+
+			if(crit) {
+				damage *= 1.5f;
+				gs.getCamera().cameraShake();
+			}else {
+				if(weapon.isShieldBlock()) {
+					damage *= .4f;
+				}
+			}
+			
+			damage -= getDefence();
+			if(damage <= 0) 
+				damage = 1;
+			
+			
+			hitMain(damage,crit,attackerTag);
+		}
+	}
+	
+	
+	private void hitMain(float damage,boolean crit,String attackerTag) {
+
+		damage = (int)damage;
+		health -= damage;
+
+		if(localPlayer)
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)damage,(char)(crit? 0x02 : 0x01),attackerTag});
+		
+		Player _p = (Player)gm.getObject(attackerTag);
+		if(_p != null) {
+			float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
+			((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
+		}
+		//----------------------------------------------------------------------------------------
+		DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
+		if(displayDamage == null) {
+			gs.addObject(new DisplayTextInGame((int)-damage, getCenterX(), posZ + posY,crit?DisplayTextInGame.CRIT_COLOR : DisplayTextInGame.HIT_COLOR));
+		}
+		else {
+			displayDamage.setting((int)-damage,getCenterX(), posZ + posY,crit?DisplayTextInGame.CRIT_COLOR : DisplayTextInGame.HIT_COLOR);
+		}
+		//----------------------------------------------------------------------------------------hit_effect_32
+		//----------------------------------------------------------------------------------------
+		
+		if(health <= 0) {
+
+			gm.getChatBox().addTexts(_p.getNickname() +" kill " + this.nickname,0xff000000);
+			
+			active =false;
+		}
+	}
+	
+	@Override
+	public void revival() {
+		this.health = getMaxHealth();
+
+		if(localPlayer)
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x22,(int)health});
+	
+		this.active = true;
+	}
+
+	//---------------------------------------------------------------------------------------
+	
+	public boolean canUseMana(float usingMana) {
+		if(usingMana <= mana) {			
+			return true;
+		}
+		return false;
+	}
+	
+	
+	private boolean isBackAttack(GameObject g) {
+		boolean crit = false;
+		if(g != null) {
+			float angleByOther = Util.angle360((float)Math.toDegrees(Math.atan2(g.getCenterZ() - getCenterZ() ,g.getCenterX() - getCenterX()) ));
+			float tempAngle = Util.angle360(angle);
+			angleByOther = ((angleByOther - tempAngle < 0) ? 360 + (angleByOther - tempAngle) : angleByOther - tempAngle) % 360;
+			
+			if(angleByOther >= 180 - backAttackRange / 2 && angleByOther <= 180 + backAttackRange / 2) {
+				crit = true;
+			}
+		}
+		return crit;
+	}
+	private void buffTimer() {
+
+		if(skill_bowTime > 0) {
+			skill_bowTime -= Time.DELTA_TIME;
+			if(skill_bowTime <= 0) {
+				reduceAttack_A_Cool = 1;
+				skill_bowTime = 0;						
+			}
+		}
+		if(skill_hideTime > 0) {
+			skill_hideTime -= Time.DELTA_TIME;
+			if(skill_hideTime <= 0) {
+				hiding = false;
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+				skill_hideTime = 0;						
+			}
+		}
+		
+	}
+
+	public void setWeaponType(int t) {
+		switch(t){
+			case 0 :
+				weapon.setType(Weapon.Type.SWORD);
+				healthRegeneration = 1;
+				manaRegeneration = 1;
+				maxHealth = 180;
+				maxMana = 80;
+				moveSpeed = 190;
+				break;
+			case 1 :
+				weapon.setType(Weapon.Type.BOW);
+				healthRegeneration = .3f;
+				manaRegeneration = 1;
+				maxHealth = 120;
+				maxMana = 100;
+				moveSpeed = 200;
+				break;
+			case 2 :
+				weapon.setType(Weapon.Type.SPEAR);
+				healthRegeneration = 1;
+				manaRegeneration = 1;
+				maxHealth = 150;
+				maxMana = 80;
+				moveSpeed = 180;
+				break;
+			case 3:
+				weapon.setType(Weapon.Type.DAGGER);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
+				maxHealth = 120;
+				maxMana = 100;
+				moveSpeed = 220;
+				break;
+			case 4:
+				weapon.setType(Weapon.Type.CANE);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
+				maxHealth = 100;
+				maxMana = 150;
+				moveSpeed = 190;
+				break;
+
+			case 5:
+				weapon.setType(Weapon.Type.BLUNT);
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
+				maxHealth = 200;
+				maxMana = 100;
+				moveSpeed = 170;
+				break;
+		}
+		
+		mana = maxMana;
+		revival();
+		if(localPlayer)
+			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
+	}
+	
+	public void attack(GameContainer gc,GameManager gm,int posX,int posZ,float _angle,int attackIndex,String tag) {
+
+		//System.out.println(posX + ":" + posZ);
+		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex);			
+
+		if(localPlayer) {
+			
+			if(gm != null) {
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,posX,posZ,angle,attackIndex,tag});
+					
+			}
+		}
+	
+	}
+	
+	private void moving( float dX,float dY) {
+		addPosX((float)(dX * Time.DELTA_TIME));
+		addPosZ((float)(dY * Time.DELTA_TIME));
+
+	}
+	
+	private void jump(GameContainer gc) {
+
+		
+		fallDistance += Physics.GRAVITY * Time.DELTA_TIME;
+		
+		if(fallDistance > 0) { 
+			
+			int[][] del = {{0, (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0)}, {0, (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)}}; 
+			float _h;
+			for(int _y = 0; _y < 2; _y++) {
+				for(int _x = 0; _x< 2; _x++) {
+					groundHeight= gs.getHeight(tileX + del[0][_x], tileZ + del[1][_y]);
+					if(groundHeight== Physics.MAX_HEIGHT) {
+						continue;
+					}
+					
+					if(Math.round(posY) >= groundHeight)
+					{
+						posY = groundHeight;
+						fallDistance = 0;
+						ground = true;
+					}					
+				}				
+			}
+		}
+		
+		
+		if(gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) 
+		{
+			if(ground)
+				fallDistance = jump;
+		}
+		
+		posY += fallDistance;			
+		
+		
+	}
+	
+	private void RenderRect(Renderer r,int type) {
+		switch(type){
+		case 1:
+			r.drawFillRect((int)posX, (int)(posZ + posY),1,1,0, 0xffffffff);
+			r.drawFillRect((int)posX + width, (int)(posZ + posY) + height,1,1,0, 0xffffffff);
+			break;
+		case 2:
+			r.drawRect((int)posX, (int)(posZ + posY), width, height,angle, 0xffffffff);
+		}
+			 
+	}
+	
+	public Item[] getItems() {
+		return items;
+	}
+	public int emptyItemSlot() {
+		for(int i =0; i < 6; i++) {
+			if(items[i].getID() == -1) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	//---------------------------------------------------------------------------------------
+	
+	public int getItemStat(Item.Type statType) {
+		int itemStat = 0;
+		for(int i = 0; i < 6; i++) {
+			if(items[i] == null || items[i].getID() == -1)
+				continue;
+			if(items[i].hasType(statType)) {
+				itemStat += items[i].getOptionValue(statType);
+				
+			}
+		}
+		return itemStat;
+	}
+	
+	public float getManaRegeneration() {
+		return manaRegeneration + getItemStat(Item.Type.STAT_MANAREGE);
+	}
+	
+	@Override
+	public float getHealthRegeneration() {
+		return healthRegeneration + getItemStat(Item.Type.STAT_HEALTHREGE);
+	}
+	
+	public float getMoveSpeed() {
+		return (moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED)) * (weapon.isShieldBlock()? .7f:1);
+	}
+	
+	public float getDefence() {
+		return getItemStat(Item.Type.STAT_DEFENCE) ;
+	}
+	
+	public float getMaxMana() {
+		return maxMana + getItemStat(Item.Type.STAT_MANA);
+	}
+	
+	public float getCoolDownPercent(int i) {
+		if(i >= 4) 
+			return 1;
+		
+		return actionCoolDownTime[i] / weapon.getCoolDown(i);
+	}
+	public boolean isLocalPlayer() {
+		return localPlayer;
+	}
+	public int getTeamNumber() {
+		return teamNumber;
+	}
+	public String getNickname() {
+		return nickname;
+	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
+	}
+	@Override
+	public void setPos(int tileX,int tileY) {
+		super.setPos(tileX, tileY);
+		clickPoints.clear();
+	}
+	public Weapon getWeapon() {
+		return weapon;
+	}
+	@Override
+	public float getMaxHealth() {
+		return maxHealth + getItemStat(Item.Type.STAT_HEALTH);
+	}
+	
+	public float getMana() {
+		return mana;
+	}
+	public void setMana(float mana) {
+		this.mana = mana;
+	}
+	
+	
+	public boolean isMouseOver(float mouseX,float mouseY) {
+		if(mouseX >= posX && mouseX <= posX + width &&
+		   mouseY >= posZ && mouseY <= posZ + height) {
+			mouseOver = true;
+		}
+		else
+			mouseOver =false;
+		return mouseOver;
+	}
+	public void setMouseOver(boolean mouseOver) {
+		this.mouseOver = mouseOver;
+	}
+	@Override 
+	public void addPosX(float _x) {
+		int h = (int)Math.signum(_x);
+		offX += _x;
+		if((gs.getHeight(tileX + h, tileZ) < Math.round(posY)  )||
+		(gs.getHeight(tileX + h, tileZ + (int)Math.signum(((offZ > pB) || (offZ < -pT))?offZ:0)) < Math.round(posY)  )){	
+			
+			if(h == 1) {
+				if(offX > pR)
+					offX = pR;
+			}
+			else {
+				if(offX < -pL)
+					offX = -pL;
+			}
+		}		
+	}
+	@Override 
+	public void addPosZ(float _z) {
+		int v = (int)Math.signum(_z);
+		offZ += _z;
+		if((gs.getHeight(tileX														, tileZ + v) < Math.round(posY)  )||
+		(gs.getHeight(tileX + (int)Math.signum(((offX > pR) || (offX < -pL))?offX:0), tileZ + v) < Math.round(posY)  )){	
+					
+			if(v == 1) {
+				if(offZ > pB)
+					offZ = pB;
+			}
+			else {
+				if(offZ < -pT)
+					offZ = -pT;
+			}
+		}
+
+	}
+
+
+	//---------------------------------------------------------------------------------------
+	
+}

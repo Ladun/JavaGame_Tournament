@@ -46,11 +46,13 @@ public class Player extends Entity{
 	
 	private float backAttackRange = 120;
 	//--------------------------------------
-	private AttackType attackType;
+	private AttackType attackType = AttackType.Default;
 	private float reduceAttack_A_Cool = 1f;
 	
 	private float skill_hideTime = 0;
 	private float skill_bowTime = 0;
+	
+	private boolean targetSelectClick = false; // AttackType이 Targeting일 때 한 프레임 쉬기 위해, 그래야 정확하게 선택이 됨
 	
 	private Weapon weapon;
 	//--------------------------------------	
@@ -120,7 +122,7 @@ public class Player extends Entity{
 			if(localPlayer){	
 				if(mana < getMaxMana()) {
 					int lastMana = (int)mana;
-					mana += Time.DELTA_TIME * getManaRegeneration() * 100;
+					mana += Time.DELTA_TIME * getManaRegeneration() ;
 					if(mana > getMaxMana())
 						mana = getMaxMana();
 					
@@ -217,14 +219,32 @@ public class Player extends Entity{
 				if(currentMapIndex >= 2) {
 					if(!gs.isChatting()) {
 						
+						if(targetSelectClick) {
+							if(gs.getStateViewPlayer() != null) {
+								String targetTag = gs.getStateViewPlayer().tag;	
+	
+								// 밑에 마우스 클릭 시 실행되는 부분과 매우 유사함
+								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+								mana -= weapon.getUsingMana(attackIndex);
+								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+								int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+								angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+								weapon.setDstAngle(angle);
+								attack(gc,gm,0,0,0,attackIndex,targetTag);		
+								
+								attackType = AttackType.Default;	
+							}
+							targetSelectClick = false;							
+						}
+						
 						if(gc.getInput().isKeyDown(KeyEvent.VK_A)) {
-							if(actionCoolDownTime[0]  <= 0) {
+							if(actionCoolDownTime[0]  <= 0 && canUseMana(weapon.getUsingMana(0))) {
 								attackIndex = 0;
 								
 								if(!weapon.isAttacking()) {
 									if(weapon.getType() != Weapon.Type.BOW && weapon.getType() != Weapon.Type.CANE)	{
 										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
-										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0);
+										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0, null);
 
 										if(skill_hideTime > 0) {
 											hiding = false;
@@ -240,7 +260,7 @@ public class Player extends Entity{
 	
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_S)) {
-							if(actionCoolDownTime[1] <= 0 && useMana(10)) {
+							if(actionCoolDownTime[1] <= 0 && canUseMana(weapon.getUsingMana(1))) {
 								attackIndex = 1;
 								switch(weapon.getType()) {
 								case SWORD:
@@ -259,14 +279,15 @@ public class Player extends Entity{
 									attackType = AttackType.DependOnMouse;
 									break;
 								case BLUNT:
-									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex);
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
 									break;
 								}
 							}
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_D)) {
-							if(actionCoolDownTime[2] <= 0&& useMana(20)) {
+							if(actionCoolDownTime[2] <= 0&& canUseMana(weapon.getUsingMana(2))) {
 								attackIndex = 2;
 								switch(weapon.getType()) {
 								case SWORD:
@@ -285,13 +306,13 @@ public class Player extends Entity{
 									attackType = AttackType.DependOnMouse;
 									break;
 								case BLUNT:
-
+									attackType = AttackType.Targeting;
 									break;
 								}
 							}
 						}
 						else if(gc.getInput().isKeyDown(KeyEvent.VK_F)) {
-							if(actionCoolDownTime[3] <= 0&& useMana(40)) {
+							if(actionCoolDownTime[3] <= 0&& canUseMana(weapon.getUsingMana(3))) {
 								attackIndex = 3;
 								switch(weapon.getType()) {
 								case SWORD:
@@ -301,6 +322,7 @@ public class Player extends Entity{
 									skill_bowTime = 5;
 									reduceAttack_A_Cool = .5f;
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
 									
 									break;
 								case SPEAR:
@@ -311,6 +333,7 @@ public class Player extends Entity{
 									hiding = true;
 									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
 									break;
 								case CANE:
 									
@@ -326,26 +349,35 @@ public class Player extends Entity{
 
 					if(gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
 						if(attackType != AttackType.Default) {
-							//System.out.println(reduceAttack_A_Cool);
-							if(attackIndex == 0)
-								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
-							else
-								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
-							int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
-							int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
-
-							int _attackX = (int)getCenterX();
-							int _attackZ = (int)getCenterZ();
-							if(attackType == AttackType.DependOnMouse) {
-								_attackX = (int)gs.getCamera().getOffX() + gc.getInput().getMouseX();
-								_attackZ = (int)gs.getCamera().getOffY() + gc.getInput().getMouseY();
+							switch(attackType) {
+							case Targeting:
+								if(!targetSelectClick) {
+									targetSelectClick = true;
+									break;
+								}
+							default:
+								if(attackIndex == 0)
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+								else
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+								mana -= weapon.getUsingMana(attackIndex);
+								
+								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
+								int _y = (int)(gc.getInput().getMouseY() + gs.getCamera().getOffY());
+	
+								int _attackX = (int)getCenterX();
+								int _attackZ = (int)getCenterZ();
+								if(attackType == AttackType.DependOnMouse) {
+									_attackX = (int)gs.getCamera().getOffX() + gc.getInput().getMouseX();
+									_attackZ = (int)gs.getCamera().getOffY() + gc.getInput().getMouseY();
+								}
+								angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
+								weapon.setDstAngle(angle);
+								attack(gc,gm,_attackX,_attackZ,angle,attackIndex,null);	
+	
+								
+								attackType = AttackType.Default;
 							}
-							angle =(float) Math.toDegrees(Math.atan2(_y - (posZ + height/ 2) ,  _x - (posX + width / 2)	));
-							weapon.setDstAngle(angle);
-							attack(gc,gm,_attackX,_attackZ,angle,attackIndex);	
-
-							
-							attackType = AttackType.Default;
 						}
 					}
 				}
@@ -540,10 +572,8 @@ public class Player extends Entity{
 
 	//---------------------------------------------------------------------------------------
 	
-	private boolean useMana(float usingMana) {
-		if(usingMana <= mana) {
-			mana -= usingMana;
-			
+	public boolean canUseMana(float usingMana) {
+		if(usingMana <= mana) {			
 			return true;
 		}
 		return false;
@@ -642,15 +672,17 @@ public class Player extends Entity{
 			gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x13,t});
 	}
 	
-	public void attack(GameContainer gc,GameManager gm,int posX,int posZ,float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm,int posX,int posZ,float _angle,int attackIndex,String tag) {
 
+		if(tag != null && tag.length() < 6)
+			tag = null;
 		//System.out.println(posX + ":" + posZ);
-		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex);			
+		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex,tag);			
 
 		if(localPlayer) {
 			
 			if(gm != null) {
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,posX,posZ,angle,attackIndex});
+				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x12,posX,posZ,angle,attackIndex,tag});
 					
 			}
 		}

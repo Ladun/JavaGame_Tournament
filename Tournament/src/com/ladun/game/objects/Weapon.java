@@ -126,7 +126,7 @@ public class Weapon extends GameObject{
 			mirror = false;
 		}
 	}
-	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex) {
+	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex, String tag) {
 		// Player 에서 호출
 		
 		
@@ -212,6 +212,21 @@ public class Weapon extends GameObject{
 				break;
 			case 1:
 				shieldBlock = !shieldBlock;
+				break;
+			case 2:
+				if(tag == null)
+					break;
+				Player p = (Player)gs.getObject(tag);
+				if(p == null)
+					break;
+				
+				p.setHealth(p.getHealth() + 30);
+				gs.addEffect("heal",
+						8, .3f, 0,
+						p.getCenterX(), 0, p.getCenterZ() - 16,
+						96, 96, 
+						0,
+						false, false);
 				break;
 			}
 			break;
@@ -438,6 +453,77 @@ public class Weapon extends GameObject{
 		this.knockback = knockback;
 	}
 	
+	public int getUsingMana(int attackType) {
+		switch(type) {
+		case SWORD:
+			switch(attackType) {
+			case 1:
+				return 0;
+			case 2:
+				return 0;
+			case 3:
+				return 0;
+			}
+			break;
+		case BOW:
+			switch(attackType) {
+			case 1:
+				return 20;
+			case 2:
+				return 0;
+			case 3:
+				return 50;
+			}
+			break;
+
+		case SPEAR:
+			switch(attackType) {
+			case 1:
+				return 0;
+			case 2:
+				return 0;
+			case 3:
+				return 0;
+			}
+			break;
+		case DAGGER:
+			switch(attackType) {
+			case 1:
+				return 0;
+			case 2:
+				return 0;
+			case 3:
+				return 20;
+			}
+			break;
+
+		case BLUNT:
+			switch(attackType) {
+			case 1:
+				return 0;
+			case 2:
+				return 30;
+			case 3:
+				return 0;
+			}
+			break;
+
+		case CANE:
+			switch(attackType) {
+			case 0:
+				return 5;
+			case 1:
+				return 20;
+			case 2:
+				return 60;
+			case 3:
+				return 0;
+			}
+			break;
+		}
+		return 0;
+	}
+	
 	public float getCoolDown(int attackType) {
 		switch(type) {
 		case SWORD:
@@ -497,7 +583,7 @@ public class Weapon extends GameObject{
 			case 1:
 				return 0.2f;
 			case 2:
-				return 0.5f;
+				return 3f;
 			case 3:
 				return 14f;
 			}
@@ -508,9 +594,9 @@ public class Weapon extends GameObject{
 			case 0:
 				return 0.5f;
 			case 1:
-				return 0.5f;
+				return 4f;
 			case 2:
-				return 0.5f;
+				return 13f;
 			case 3:
 				return 14f;
 			}

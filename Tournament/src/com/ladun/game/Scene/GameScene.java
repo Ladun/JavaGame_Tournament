@@ -304,11 +304,16 @@ public class GameScene extends AbstractScene{
 				
 				r.drawImage(gc.getResourceLoader().getImage("slot"), gc.getWidth()/2 +pX, gc.getHeight() - 80, 0);		
 				
-				r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
 				r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("skill_icon"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,localPlayer.getWeapon().getType().ordinal(), 0);
-				r.drawImage(gc.getResourceLoader().getImage("slot_black"),
-						gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
-						0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
+				if(!localPlayer.canUseMana(localPlayer.getWeapon().getUsingMana(i))) {
+					r.drawImage(gc.getResourceLoader().getImage("slot_black"),
+							gc.getWidth()/2 + pX, gc.getHeight() - 80,0);					
+				}else {
+					r.drawImage(gc.getResourceLoader().getImage("slot_black"),
+							gc.getWidth()/2 + pX, gc.getHeight() - 80 , 
+							0,0,59,(int)(59 * (localPlayer != null? localPlayer.getCoolDownPercent(i):1 )));
+				}
+				r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("key_image"),  gc.getWidth()/2 +pX, gc.getHeight() - 80,i,0, 0);
 			}
 		}
 		
