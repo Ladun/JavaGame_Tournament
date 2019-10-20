@@ -420,7 +420,7 @@ public class Server {
 					Client c = getClient(_clientID);
 					c.setTargetMapIndex(Integer.parseInt(netArgs[1]));
 					//dumpPacket(packet);
-					if(clients.size() == 1)
+					if(clients.size() == 1 || c.getTargetMapIndex() == 0)
 						break;
 					
 					boolean allSame= true;

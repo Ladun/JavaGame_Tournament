@@ -128,9 +128,11 @@ public class GameManager extends AbstractGame {
 			if(scenes[i].isActive())
 				scenes[i].setActive(false);
 		}
+		
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].getName().equals(name)) {
 				scenes[i].setActive(true);
+				break;
 			}
 		}
 		

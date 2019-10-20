@@ -80,13 +80,16 @@ public class MainMenuScene extends AbstractScene{
 		
 		if(gc.getInput().isKeyDown(KeyEvent.VK_ENTER)) {
 			if(textBoxs[1].getString().length() == 0) {
+				// 별명을 입력을 안 함
 				gm.getAnnounce().addString("별명을 입력해주십시오", Announce.DEFAULT_COLOR);
 				gm.getAnnounce().show(5);
 			}else {
 				gm.setNickname(textBoxs[1].getString());
+				// 서버로 접속
 				if(gm.getClient().setHost(textBoxs[0].getString().trim()))
 					ConnectToServer(gc,gm);
 				else {
+					// 주소의 형식이 잘못 됨
 					gm.getAnnounce().addString("잘못된 주소 형식입니다", Announce.DEFAULT_COLOR);
 					gm.getAnnounce().show(5);
 				}

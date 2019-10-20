@@ -82,14 +82,15 @@ public class Camera {
 				shakeY = 0;
 			}
 		}
+
+		gc.getRenderer().setClearCamX((int)(offX + shakeX));
+		gc.getRenderer().setClearCamY((int)(offZ + shakeY));
 	}
 	
 	public void render(Renderer r)
 	{
 		r.setCamX((int)(offX + shakeX));
 		r.setCamY((int)(offZ + shakeY));
-		r.setLastCamX((int)(offX + shakeX));
-		r.setLastCamY((int)(offZ + shakeY));
 	}
 	
 	public void focusTarget(GameContainer gc,GameManager gm) {
@@ -117,17 +118,24 @@ public class Camera {
 	}
 	
 	private void positionClamp(GameContainer gc, GameManager gm) {
-		if(gm.getActiveScene().getLevelW() * GameManager.TS < gc.getWidth()) {
-			offX =-( gc.getWidth() - gm.getActiveScene().getLevelW() * GameManager.TS )/2;
+		int _levelW = gm.getActiveScene().getLevelW();
+		int _levelH = gm.getActiveScene().getLevelH();
+		
+		if(_levelW * GameManager.TS < gc.getWidth() && _levelW != 0) {
+			offX =-( gc.getWidth() - _levelW * GameManager.TS )/2;
 		}else {
-			if(offX >gm.getActiveScene().getLevelW() * GameManager.TS- gc.getWidth()) offX = gm.getActiveScene().getLevelW()* GameManager.TS - gc.getWidth();
-			if(offX < 0) offX = 0;
+			if(offX > _levelW * GameManager.TS- gc.getWidth()) 
+				offX = _levelW * GameManager.TS - gc.getWidth();
+			if(offX < 0) 
+				offX = 0;
 		}
-		if(gm.getActiveScene().getLevelH() * GameManager.TS < gc.getHeight()) {
-			offZ =-( gc.getHeight() - gm.getActiveScene().getLevelH() * GameManager.TS )/2;		
+		if(_levelH * GameManager.TS < gc.getHeight() && _levelH != 0) {
+			offZ =-( gc.getHeight() - _levelH * GameManager.TS )/2;		
 		}else {
-			if(offZ > gm.getActiveScene().getLevelH()* GameManager.TS - gc.getHeight()) offZ = gm.getActiveScene().getLevelH()* GameManager.TS- gc.getHeight();
-			if(offZ < 0) offZ = 0;
+			if(offZ > _levelH * GameManager.TS - gc.getHeight()) 
+				offZ = _levelH * GameManager.TS- gc.getHeight();
+			if(offZ < 0) 
+				offZ = 0;
 		}
 	}
 	private void lockTheMouse(GameContainer gc,GameManager gm) {

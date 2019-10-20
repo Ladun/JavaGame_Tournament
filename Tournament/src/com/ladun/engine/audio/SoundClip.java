@@ -74,6 +74,8 @@ public class SoundClip {
 	}
 	
 	public void loop(){
+		if(clip == null)
+			return;
 		clip.loop(Clip.LOOP_CONTINUOUSLY);
 		play();
 	}

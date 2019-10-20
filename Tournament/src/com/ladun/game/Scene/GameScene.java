@@ -230,6 +230,8 @@ public class GameScene extends AbstractScene{
 		//r.drawString(gc.getInput().getMouseX() + ", " + gc.getInput().getMouseY(), gc.getInput().getMouseX(), gc.getInput().getMouseY(), 60, 0xff000000);
 		if(currentMap != null)
 			currentMap.render(gc, r);
+		else
+			r.drawMap(null, 0, 0);
 		
 		for(int i = 0; i < objects.size();i++) {
 			if(objects.get(i).isActive()) {
@@ -346,12 +348,12 @@ public class GameScene extends AbstractScene{
 			if(shop.isActive())
 				shop.render(gc,r);
 			storeButton.render(gc, r);
-			jobButton.render(gc, r);
 			if(jobSelectButtonShow || jSBMovePercent != 1) {
 				for(int i = 0; i < jobSelectButtons.length;i++) {
 					jobSelectButtons[i].render(gc, r);
 				}
 			}
+			jobButton.render(gc, r);
 			break;
 		case 2:
 			break;

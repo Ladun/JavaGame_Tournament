@@ -45,7 +45,7 @@ public class Renderer {
 	private int zDepth = 0;
 	private boolean processing = false;
 	private int camX, camY;
-	private int lastCamX, lastCamY;
+	private int clearCamX, clearCamY; // clear() 에서 사용되는 카메라 위치
 	
 	private Image backgroundImage;
 	private int backgroundSt,backgroundEd;
@@ -72,39 +72,36 @@ public class Renderer {
 		lm = new int[p.length];
 		lb = new int[p.length];
 	}
-	public void init() {
-		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData(); 
-		zb = new int[p.length];
-		lm = new int[p.length];
-		lb = new int[p.length];
-	}
 	
 	public void clear(){
-		
+		/*
 		Arrays.fill(p, backgroundColor);
 		Arrays.fill(zb, 0);
 		Arrays.fill(lm, ambientColor);
 		Arrays.fill(lb, 0);
+		*/
 		
-		/*
-		//System.out.println(lastCamX + ", " +lastCamY);
 		for(int i =0; i < p.length;i++)
 		{
-			if(i >= backgroundSt && i < backgroundEd) {
-				try {
-					p[i] = backgroundImage.getP()[i % gc.getWidth() +lastCamX + (i / gc.getWidth() + lastCamY )* backgroundWidth ]; // backgroundSt 는 항상 음수 아니면 0
+			int _x = i % gc.getWidth();
+			int _y = i / gc.getWidth();
+			if(i >= backgroundSt && i <= backgroundEd && backgroundImage != null) {
+				if(_x + clearCamX >= 0 && _x + clearCamX < backgroundImage.getW() &&
+				   _y + clearCamY >= 0 && _y + clearCamY < backgroundImage.getH()	) {				
+					p[i] = backgroundImage.getP()[(_x + clearCamX) + (_y + clearCamY ) * backgroundWidth ]; // backgroundSt 는 항상 음수 아니면 0
 				}
-				catch(IndexOutOfBoundsException e){
-					System.out.println((i % gc.getWidth())  +", " + (i/ gc.getWidth()) );
+				else
 					p[i] = backgroundColor;
-				}
 			}
 			else
 				p[i] = backgroundColor;
 			zb[i] = 0;
 			lm[i] = ambientColor;
 			lb[i] = 0;
-		}*/
+		}
+
+		clearCamX = 0;
+		clearCamY = 0;
 	}
 	
 	public void process(){
@@ -612,27 +609,28 @@ public class Renderer {
 	public void drawMap(Image image,int imageWidth, int imageHeight) {
 		//TODO : 최적화 ㄱㄱ
 		
-		/*
-		backgroundImage = image;
-		
+		backgroundImage = image;		
 		backgroundWidth = imageWidth ;
 		int _height = imageHeight ;
 		
-		int _camX,_camY;
+		int _imageStX,_imageStY;
+		// 이미지의 가로 길이가 화면의 가로 길이보다 작다면
 		if(backgroundWidth < gc.getWidth()) {
-			_camX = -( gc.getWidth() - backgroundWidth)/2;
+
+			_imageStX = ( gc.getWidth() - backgroundWidth)/2;
 		}else {
-			_camX = 0;
+			_imageStX = 0;
 		}
 		if(_height< gc.getHeight()) {
-			_camY = -( gc.getHeight() - _height )/2;		
+			_imageStY = ( gc.getHeight() - _height )/2;		
 		}else {
-			_camY = 0;
+			_imageStY = 0;
 		}
-		backgroundSt = _camX + _camY * backgroundWidth;
-		backgroundEd = (_camX + backgroundWidth) + (_camY + _height) * backgroundWidth;
-		*/
-		drawImage(image,0,0,0);
+		//System.out.println(_imageStX  + ", " + _imageStY);
+		backgroundSt = _imageStX + _imageStY * gc.getWidth();
+		backgroundEd = (_imageStX + gc.getWidth() - 1) + (_imageStY + gc.getHeight() - 1) * gc.getWidth();
+		
+		//drawImage(image,0,0,0);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawRect(int offX,int offY,int width, int height, float angle,int color)
@@ -1059,21 +1057,17 @@ public class Renderer {
 		return zDepth;
 	}
 
-	public int getLastCamX() {
-		return lastCamX;
+	public int getClearCamX() {
+		return clearCamX;
 	}
-	public void setLastCamX(int lastCamX) {
-		if(lastCamX <0)
-			lastCamX = 0;
-		this.lastCamX = lastCamX;
+	public void setClearCamX(int clearCamX) {
+		this.clearCamX = clearCamX;
 	}
-	public int getLastCamY() {
-		return lastCamY;
+	public int getClearCamY() {
+		return clearCamY;
 	}
-	public void setLastCamY(int lastCamY) {
-		if(lastCamY <0)
-			lastCamY = 0;
-		this.lastCamY = lastCamY;
+	public void setClearCamY(int clearCamY) {
+		this.clearCamY = clearCamY;
 	}
 	public void setzDepth(int zDepth) {
 		this.zDepth = zDepth;
