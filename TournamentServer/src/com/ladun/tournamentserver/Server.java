@@ -420,7 +420,7 @@ public class Server {
 					Client c = getClient(_clientID);
 					c.setTargetMapIndex(Integer.parseInt(netArgs[1]));
 					//dumpPacket(packet);
-					if(clients.size() == 1 || c.getTargetMapIndex() == 0)
+					if(clients.size() == 1)
 						break;
 					
 					boolean allSame= true;
@@ -675,7 +675,7 @@ public class Server {
 					bw.write((sb.toString()).getBytes());						
 
 					send(bw.getBytes(), address, port);				
-					
+					break;
 				}
 				
 				

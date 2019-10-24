@@ -6,6 +6,7 @@ import java.util.Random;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.Image;
+import com.ladun.engine.gfx.Light;
 import com.ladun.game.objects.GameObject;
 
 public class Map {
@@ -25,15 +26,17 @@ public class Map {
 	private boolean[] collisions;
 	private int levelW,levelH;
 		
-	public Map(String name) {
+	public Map(String name,boolean noCeiling) {
 		this.name = name;
 		floorImage = new Image("/Map/" + name + "_floor.png");
-		ceilImage = new Image("/Map/" + name + "_ceil.png");
+		if(!noCeiling)
+			ceilImage = new Image("/Map/" + name + "_ceil.png");
+		//ceilImage.setLightBlock(Light.FULL);
 		collisionImage =  new Image("/Map/" + name + "_collision.png");
 		loadLevel();
 	}
-	public Map(String name,GameObject[] objects) {
-		this(name);
+	public Map(String name,boolean noCeiling,GameObject[] objects) {
+		this(name,noCeiling);
 		
 		for(int i = 0; i  < objects.length;i++) {
 			this.objects.add(objects[i]);
@@ -52,7 +55,8 @@ public class Map {
 		r.setzDepth(0);
 		r.drawMap(floorImage,levelW * GameManager.TS,levelH * GameManager.TS);
 		r.setzDepth(Renderer.LAYER_UI - 10);
-		r.drawImage(ceilImage,0,0,0);
+		if(ceilImage != null)
+			r.drawImage(ceilImage,0,0,0);
 		//RenderCollision(r);
 		
 

@@ -33,9 +33,7 @@ public class Effect extends GameObject{
 			float centerX,float posY, float centerZ,
 			int width, int height,
 			float angle,
-			boolean looping, boolean reverse) {
-		
-		
+			boolean looping, boolean reverse) {		
 		this.tag = "effect";
 		setting(imageName,
 				animMax, animTime,animType,

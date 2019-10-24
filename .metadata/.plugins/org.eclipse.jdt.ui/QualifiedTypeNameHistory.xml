@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.ladun.game.objects.Entity"/>
-<fullyQualifiedTypeName name="java.lang.StringBuilder"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="com.ladun.game.Scene.TeamColor"/>
 <fullyQualifiedTypeName name="java.awt.Font"/>
@@ -60,4 +58,6 @@
 <fullyQualifiedTypeName name="com.ladun.game.objects.effect.SkillEffect"/>
 <fullyQualifiedTypeName name="com.ladun.game.util.Util"/>
 <fullyQualifiedTypeName name="com.ladun.game.objects.Player.AttackType"/>
+<fullyQualifiedTypeName name="com.ladun.game.objects.interior.AnimatedInterior"/>
+<fullyQualifiedTypeName name="com.ladun.engine.gfx.Light"/>
 </qualifiedTypeNameHistroy>

@@ -9,6 +9,7 @@ import com.ladun.engine.Renderer;
 import com.ladun.engine.Time;
 import com.ladun.engine.audio.SoundClip;
 import com.ladun.engine.gfx.ImageTile;
+import com.ladun.engine.gfx.Light;
 import com.ladun.game.Camera;
 import com.ladun.game.GameManager;
 import com.ladun.game.Map;
@@ -18,19 +19,20 @@ import com.ladun.game.Item.Shop;
 import com.ladun.game.Item.Tooltip;
 import com.ladun.game.net.Client;
 import com.ladun.game.objects.GameObject;
-import com.ladun.game.objects.Interior;
 import com.ladun.game.objects.Player;
 import com.ladun.game.objects.UI.Button;
 import com.ladun.game.objects.UI.Slider;
 import com.ladun.game.objects.UI.TextBox;
 import com.ladun.game.objects.effect.Effect;
+import com.ladun.game.objects.interior.AnimatedInterior;
+import com.ladun.game.objects.interior.Interior;
 
 public class GameScene extends AbstractScene{
 
 
 	private static final int STATE_GAP = 26;
 	
-	private String[] mapNames = new String[] {"waitingroom","teamwait","map1"};
+	private String[] mapNames = new String[] {"waitingroom","teamwait","map1","map2", "map3"};
 	private Map currentMap;
 	private int currentMapIndex = -1;
 	
@@ -249,6 +251,7 @@ public class GameScene extends AbstractScene{
 	
 	private void renderUI(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
+		r.setUnaffected(true);
 		r.setCamX(0);
 		r.setCamY(0);
 		
@@ -448,6 +451,12 @@ public class GameScene extends AbstractScene{
 						if(localPlayer.getTileX() >= 1 && localPlayer.getTileX() <= 2) {
 							targetMapIndex = 2;
 						}
+						else if(localPlayer.getTileX() >= 4 && localPlayer.getTileX() <= 5) {
+							targetMapIndex = 3;
+						}
+						else if(localPlayer.getTileX() >= 7 && localPlayer.getTileX() <= 8) {
+							targetMapIndex = 4;
+						}
 						else {
 							targetMapIndex = 0;
 						}					
@@ -594,6 +603,7 @@ public class GameScene extends AbstractScene{
 		
 		new Thread(() ->{ 
 
+			System.out.println("========================================");
 			while(gm.isLoading()) {}
 			
 
@@ -601,22 +611,52 @@ public class GameScene extends AbstractScene{
 				gm.setLoading(true);
 			}
 			
+			System.out.println("(In 'mapLoad') index == " + index);
+			gc.getRenderer().setAmbientColor(-1);
+			
 			switch(currentMapIndex) {
 			case 0:
-				currentMap = new Map(mapNames[currentMapIndex]);
+				currentMap = new Map(mapNames[currentMapIndex], false);
+
 				break;
 			case 1:
 				inteamWaitRoom = true;
-				currentMap = new Map(mapNames[currentMapIndex], new GameObject[] {
-						new Interior("portal",249,187,80,72,14f,14,false),
-						(new Interior("battle_stone",249,72,80,115,8f,8,true)).setpT(95).setpB(5),
+				currentMap = new Map(mapNames[currentMapIndex], false, new GameObject[] {
+						new AnimatedInterior("portal",249,187,80,72,1f,14,false),
+						(new AnimatedInterior("battle_stone",249,72,80,115,1f,8,true)).setpT(95).setpB(5),
 						(new Interior("stone_bush_1",128,188,64,41,true)).setpT(19).setpB(8),
 						(new Interior("stone_bush_1",398,379,64,41,true)).setpT(19).setpB(8)
 				});
-				currentMap.setBackgroundColor(0xff405947);
+				currentMap.setBackgroundColor(0xff45624e);
+				break; 
+			case 3:
+				currentMap = new Map(mapNames[currentMapIndex], false, new GameObject[] {
+						new AnimatedInterior("torch",64,336,26,40,.75f,4,false).setLight(new Light(300, 0xffffed5d))				
+				});
+				currentMap.setBackgroundColor(0xff565252);
+				gc.getRenderer().setAmbientColor(0xff232323);
+				break;
+			case 4:
+				
+				currentMap = new Map(mapNames[currentMapIndex], true, new GameObject[] {
+						(new Interior("wall1",384,128,64,204,true)).setpT(64),
+						(new Interior("wall1",384,320,64,204,true)).setpT(64),
+						(new Interior("wall1",832,128,64,204,true)).setpT(64),
+						(new Interior("wall1",832,320,64,204,true)).setpT(64),
+						(new Interior("bush1",100,180,140,71,true)).setpT(48).setpB(7),
+						(new Interior("bush1",200,400,140,71,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1050,180,140,71,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1150,400,140,71,true)).setpT(48).setpB(7),
+						(new Interior("bush1",575,90,140,71,true)).setpT(48).setpB(7),
+						(new Interior("bush1",575,500,140,71,true)).setpT(48).setpB(7)
+						
+				});
+				currentMap.setBackgroundColor(0xff586d3a);
 				break;
 			default:
-				currentMap = new Map(mapNames[currentMapIndex]);
+				// map1(index = 1)
+				
+				currentMap = new Map(mapNames[currentMapIndex], false);
 			}
 				
 			long stTime = System.currentTimeMillis();
@@ -627,8 +667,8 @@ public class GameScene extends AbstractScene{
 					break;
 				}
 			}
-			 
-			System.out.println("MapLoading " + (System.currentTimeMillis() - stTime) );
+
+			System.out.println("MapLoading " + (System.currentTimeMillis() - stTime) + ":"+_second );
 			if(_second < 5) {
 				this.localPlayer.setCurrentMapIndex(currentMapIndex);			
 				int[] _pos = currentMap.randomSpawnPoint();
@@ -637,6 +677,7 @@ public class GameScene extends AbstractScene{
 				localPlayer.revival();
 				System.out.println("MapLoad Player Position Setting");
 			}
+			
 			synchronized (gc) {
 				camera.focusTarget(gc, gm);
 			}
@@ -644,6 +685,8 @@ public class GameScene extends AbstractScene{
 			synchronized (gm) {
 				gm.setLoading(false);
 			}
+			
+			System.out.println("========================================");
 		},"Map Load").start();
 		
 	}

@@ -89,6 +89,9 @@ public class ResourceLoader {
 		addImage("portal","/Map/objects/portal.png",80,72);
 		addImage("battle_stone","/Map/objects/BattleStone.png",80,115);
 		addImage("stone_bush_1","/Map/objects/StoneBush_1.png");
+		addImage("torch","/Map/objects/Torch.png",26,40);
+		addImage("bush1","/Map/objects/Bush1.png");
+		addImage("wall1","/Map/objects/Wall1.png");
 
 		System.out.println("------[ Image Load Finish ]---------------");
 		imageLoad = true;

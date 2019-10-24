@@ -485,6 +485,7 @@ public class Client {
 					break;
 				case 0x03:
 					// GameState, round
+					System.out.println("0x06-0x03");
 					((GameScene)gm.getScene("InGame")).setAllClientReady(true);		
 					try {
 						((GameScene)gm.getScene("InGame")).setRound(Integer.parseInt(netArgs[1]));

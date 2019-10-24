@@ -36,14 +36,16 @@ public class Renderer {
 	private int backgroundColor = 0;
 	
 	private int pW,pH;
-	private int[] p;
-	private int[] zb;
-	private int[] lm;
-	private int[] lb;
+	private int[] p; // pixel
+	private int[] zb; // z Depth
+	private int[] lm; // light map
+	private int[] lb; // light block
+	private int[] ul; // unaffected light 
 	
 	private int ambientColor = 0xff232323;
 	private int zDepth = 0;
 	private boolean processing = false;
+	private boolean unaffected = false;
 	private int camX, camY;
 	private int clearCamX, clearCamY; // clear() 에서 사용되는 카메라 위치
 	
@@ -71,6 +73,7 @@ public class Renderer {
 		zb = new int[p.length];
 		lm = new int[p.length];
 		lb = new int[p.length];
+		ul = new int[p.length];
 	}
 	
 	public void clear(){
@@ -95,13 +98,16 @@ public class Renderer {
 			}
 			else
 				p[i] = backgroundColor;
+			
 			zb[i] = 0;
 			lm[i] = ambientColor;
 			lb[i] = 0;
+			ul[i] = 0;
 		}
 
-		clearCamX = 0;
-		clearCamY = 0;
+		//clearCamX = 0;
+		//clearCamY = 0;
+		unaffected = false;
 	}
 	
 	public void process(){
@@ -138,6 +144,8 @@ public class Renderer {
 		
 		for(int i = 0; i< p.length;i++)
 		{
+			if(ul[i] == 1)
+				continue;
 			
 			float r = ((lm[i] >> 16) & 0xff) /255f;
 			float g = ((lm[i] >> 8) & 0xff) /255f;
@@ -173,6 +181,9 @@ public class Renderer {
 			return;
 		
 		int index = x + y * pW;
+		
+		if(unaffected)
+			ul[index] = 1;
 		
 		if(zb[index] > zDepth)
 			return;
@@ -326,6 +337,9 @@ public class Renderer {
 							  image.getLightBlock());
 			}
 		}
+	}
+	public void drawImage(Image image, int offX, int offY,boolean xMirror, boolean yMirror, float angle){
+		drawImage(image,offX,offY,0,0,xMirror,yMirror,angle);
 	}
 	
 	public void drawImage(Image image, int offX, int offY,float xPivot,float yPivot,boolean xMirror, boolean yMirror, float angle){
@@ -491,7 +505,9 @@ public class Renderer {
 			}
 		}
 	}
-	
+	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,boolean xMirror, boolean yMirror,float angle)	{
+		drawImageTile(image, offX, offY, tileX, tileY,0,0, xMirror, yMirror, angle);
+	}
 	public void drawImageTile(ImageTile image,int offX,int offY,int tileX,int tileY,float xPivot,float yPivot,boolean xMirror, boolean yMirror,float angle)	{
 		
 		offX -= camX;
@@ -961,8 +977,8 @@ public class Renderer {
 	private void drawLightRequest(Light l,int offX,int offY)
 	{
 
-		offX -= camX;
-		offY -= camY;
+		offX -= clearCamX;
+		offY -= clearCamY;
 		for(int i = 0; i < l.getDiameter();i++)
 		{
 			drawLightLine(l, l.getRadius(),l.getRadius(), i,0,offX,offY);
@@ -987,8 +1003,12 @@ public class Renderer {
 			int screenX = x0 - l.getRadius() + offX;
 			int screenY = y0 - l.getRadius() + offY;
 			
-			if(screenX < 0 || screenX >= pW || screenY < 0 || screenY >= pH)
-				return;
+			if(screenX < 0 || screenX >= pW || screenY < 0 || screenY >= pH) {
+				if(screenX < -l.getRadius() || screenX >= pW + l.getRadius() || screenY < -l.getRadius() || screenY >= pH + l.getRadius())
+					return;
+				continue;
+			}
+			
 			
 			int lightColor = l.getLightValue(x0, y0);
 			if(lightColor == 0)
@@ -1021,8 +1041,17 @@ public class Renderer {
 	}
 	
 	//------------------------------------------------------------------------------------------------------------------------------
+	
 	public int getAmbientColor() {
 		return ambientColor;
+	}
+
+	public boolean isUnaffected() {
+		return unaffected;
+	}
+
+	public void setUnaffected(boolean unaffected) {
+		this.unaffected = unaffected;
 	}
 
 	public void setAmbientColor(int ambientColor) {
