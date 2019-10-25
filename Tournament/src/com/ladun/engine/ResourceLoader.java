@@ -33,6 +33,7 @@ public class ResourceLoader {
 		addImage("blunt", "/weapon/Blunt.png");
 		addImage("cane", "/weapon/Cane.png");
 		addImage("shield", "/weapon/Shield.png",64,64);
+		addImage("holyShield", "/weapon/HolyShield.png",64,64);
 		
 		// Projectile Load
 		addImage("arrow", "/weapon/Projectile/Arrow.png",64,64);	
@@ -43,10 +44,12 @@ public class ResourceLoader {
 		addImage("meteor","/Effect/Skill/Meteor.png",128,192);
 		addImage("meteor_after","/Effect/Skill/Meteor_effect.png",450,240);
 		addImage("teleport_effect","/Effect/Skill/TeleportEffect.png",48,84);
+		addImage("sunbo_effect","/Effect/Skill/SunboEffect.png",48,84);
 		addImage("heal","/Effect/Skill/Heal.png",96,96);
 		
 		// Effect 
 		addImage("hit_effect_32","/Effect/HitEffect32.png",32,32);
+		addImage("crash1","/Effect/Crash1.png");
 		
 		//UI Image Load
 		addImage("hbar", "/UI/HBar.png",334,13);

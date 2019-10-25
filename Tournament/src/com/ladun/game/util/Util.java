@@ -25,7 +25,12 @@ public class Util {
 		return (float)Math.sqrt(dx * dx  + dy * dy);
 	}
 	
+	public static float angle(float x1,float y1, float x2, float y2) {
+		return (float)Math.toDegrees(Math.atan2(y2 - y1 ,x2 - x1) );
+	}
+	
 	public static float angle360(float angle) {
 		return Math.abs(angle  - 360) % 360;
 	}
+	
 }

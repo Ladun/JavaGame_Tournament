@@ -31,6 +31,7 @@ public class Tooltip {
 	}
 	
 	public void render(GameContainer gc, Renderer r) {
+		
 		if(content == null || content.length == 0)
 			return;
 		r.drawFillRect(posX, posY,  200, 20 * content.length  + 30, 0, 0xffaaaaaa);

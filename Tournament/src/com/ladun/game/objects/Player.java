@@ -47,11 +47,9 @@ public class Player extends Entity{
 	private float backAttackRange = 120;
 	//--------------------------------------
 	private AttackType attackType = AttackType.Default;
-	private float reduceAttack_A_Cool = 1f;
 	
 	private float skill_hideTime = 0;
-	private float skill_bowTime = 0;
-	
+	private float berserkerTime = 0;
 	private boolean targetSelectClick = false; // AttackType이 Targeting일 때 한 프레임 쉬기 위해, 그래야 정확하게 선택이 됨
 	
 	private Weapon weapon;
@@ -219,6 +217,7 @@ public class Player extends Entity{
 				if(currentMapIndex >= 2) {
 					if(!gs.isChatting()) {
 						
+						// 타겟팅 공격
 						if(targetSelectClick) {
 							if(gs.getStateViewPlayer() != null) {
 								String targetTag = gs.getStateViewPlayer().tag;	
@@ -243,7 +242,7 @@ public class Player extends Entity{
 								
 								if(!weapon.isAttacking()) {
 									if(weapon.getType() != Weapon.Type.BOW && weapon.getType() != Weapon.Type.CANE)	{
-										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
+										actionCoolDownTime[0] = weapon.getCoolDown(attackIndex);
 										attack(gc,gm,(int)getCenterX(),(int)getCenterZ(),angle,0, null);
 
 										if(skill_hideTime > 0) {
@@ -273,7 +272,7 @@ public class Player extends Entity{
 									
 									break;
 								case DAGGER:
-									
+									attackType = AttackType.Targeting;									
 									break;
 								case CANE:
 									attackType = AttackType.DependOnMouse;
@@ -297,10 +296,16 @@ public class Player extends Entity{
 									attackType = AttackType.DependOnAngle;
 									break;
 								case SPEAR:
-									
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);									
 									break;
 								case DAGGER:
-									
+									skill_hideTime= 10;
+									hiding = true;
+									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);									
 									break;
 								case CANE:
 									attackType = AttackType.DependOnMouse;
@@ -319,21 +324,11 @@ public class Player extends Entity{
 									
 									break;
 								case BOW:
-									skill_bowTime = 5;
-									reduceAttack_A_Cool = .5f;
-									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
-									mana -= weapon.getUsingMana(attackIndex);
-									
 									break;
 								case SPEAR:
 									
 									break;
 								case DAGGER:
-									skill_hideTime= 10;
-									hiding = true;
-									gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,1});
-									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
-									mana -= weapon.getUsingMana(attackIndex);
 									break;
 								case CANE:
 									
@@ -356,10 +351,7 @@ public class Player extends Entity{
 									break;
 								}
 							default:
-								if(attackIndex == 0)
-									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex) * reduceAttack_A_Cool;
-								else
-									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+								actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 								mana -= weapon.getUsingMana(attackIndex);
 								
 								int _x  = (int)(gc.getInput().getMouseX() + gs.getCamera().getOffX());
@@ -458,6 +450,7 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		
 		super.collision(other);
+		clickPoints.clear();
 		if(other instanceof HitRange) {
 			HitRange hr = (HitRange)other;
 			if(!hr.getAttackerTag().equals(tag)) {
@@ -473,7 +466,7 @@ public class Player extends Entity{
 				hit(((Projectile)other).getDamage(),isBackAttack(other),((Projectile)other).getAttackerTag(),other.hashCode());
 			addHitEffect(other, other.angle);
 		}
-	
+		
 	}
 	
 	private void addHitEffect(GameObject other, float angle) {
@@ -507,7 +500,10 @@ public class Player extends Entity{
 		}
 		
 		if(!isExistAttackObject(hashcode)) {
-			attackObjects.add(new AttackObject(hashcode));			
+			attackObjects.add(new AttackObject(hashcode));		
+			
+			if(berserkerTime > 0)
+				damage *= 2;
 
 			if(crit) {
 				damage *= 1.5f;
@@ -583,7 +579,7 @@ public class Player extends Entity{
 	private boolean isBackAttack(GameObject g) {
 		boolean crit = false;
 		if(g != null) {
-			float angleByOther = Util.angle360((float)Math.toDegrees(Math.atan2(g.getCenterZ() - getCenterZ() ,g.getCenterX() - getCenterX()) ));
+			float angleByOther = Util.angle360(Util.angle(getCenterX(),g.getCenterX(), getCenterZ(),g.getCenterZ()));
 			float tempAngle = Util.angle360(angle);
 			angleByOther = ((angleByOther - tempAngle < 0) ? 360 + (angleByOther - tempAngle) : angleByOther - tempAngle) % 360;
 			
@@ -595,13 +591,13 @@ public class Player extends Entity{
 	}
 	private void buffTimer() {
 
-		if(skill_bowTime > 0) {
-			skill_bowTime -= Time.DELTA_TIME;
-			if(skill_bowTime <= 0) {
-				reduceAttack_A_Cool = 1;
-				skill_bowTime = 0;						
+		if(berserkerTime > 0) {
+			berserkerTime -= Time.DELTA_TIME;
+			if(berserkerTime <= 0) {
+				berserkerTime = 0;						
 			}
 		}
+		
 		if(skill_hideTime > 0) {
 			skill_hideTime -= Time.DELTA_TIME;
 			if(skill_hideTime <= 0) {
@@ -781,7 +777,7 @@ public class Player extends Entity{
 	}
 	
 	public float getMoveSpeed() {
-		return (moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED)) * (weapon.isShieldBlock()? .7f:1);
+		return (moveSpeed + getItemStat(Item.Type.STAT_MOVESPEED)) * (weapon.isShieldBlock()? .7f:1) * (berserkerTime > 0? 1.3f:1 );
 	}
 	
 	public float getDefence() {
@@ -834,6 +830,12 @@ public class Player extends Entity{
 	}
 	
 	
+	public boolean isBerserkerMode() {
+		return berserkerTime > 0;
+	}
+	public void setBerserkerMode() {
+		this.berserkerTime = 15;
+	}
 	public boolean isMouseOver(float mouseX,float mouseY) {
 		if(mouseX >= posX && mouseX <= posX + width &&
 		   mouseY >= posZ && mouseY <= posZ + height) {
