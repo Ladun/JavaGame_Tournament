@@ -314,15 +314,20 @@ public class Client {
 					Player _p = (Player)gm.getObject(sb.toString());
 					if(_p == null)
 						return;
-	
-					int _damage = Integer.parseInt(netArgs[1]);
-					switch(netArgs[2].charAt(0)) {
-					case 0x01:
-						_p.hit(_damage,false,netArgs[3]);
-						break;
-					case 0x02:
-						_p.hit(_damage,true,netArgs[3]);
-						break;
+					try {
+						int _damage = Integer.parseInt(netArgs[1]);
+						int _knockback = Integer.parseInt(netArgs[2]);
+						switch(netArgs[3].charAt(0)) {
+						case 0x01:
+							_p.hit(_damage,_knockback,false,netArgs[4]);
+							break;
+						case 0x02:
+							_p.hit(_damage,_knockback,true,netArgs[4]);
+							break;
+						}
+					}
+					catch (NumberFormatException e) {
+						System.out.println("0x03-0x15 : parseInt Error, " + netArgs[1] + ", " + netArgs[2]);
 					}
 					
 					break;

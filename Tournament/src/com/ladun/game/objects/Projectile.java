@@ -26,6 +26,7 @@ public class Projectile extends GameObject{
 	
 	private float speed;
 	private float damage;
+	private int knockback;
 	
 	private float s; //sin;
 	private float c; //cos;
@@ -38,14 +39,14 @@ public class Projectile extends GameObject{
 	
 	private CircleCollider cc;
 	
-	public Projectile(GameScene gs, Type type, float posX, float posY, float posZ, float angle,float speed, float damage,String attackerTag) {
+	public Projectile(GameScene gs, Type type, float posX, float posY, float posZ, float angle,float speed, float damage, int knockback,String attackerTag) {
 		this.tag = "projectile";	
 		this.addComponent(new CircleCollider(this));
 
 		this.gs = gs;
 		this.width = 64;
 		this.height = 64;	
-		setting(type, posX,posY,posZ,angle,speed,damage,attackerTag);
+		setting(type, posX,posY,posZ,angle,speed,damage,knockback,attackerTag);
 		
 		cc = (CircleCollider)findComponent("circleCollider");
 	}
@@ -120,7 +121,7 @@ public class Projectile extends GameObject{
 		cc.setEnable(false);
 	}
 	//-------------------------------------------------------------------------------------------------------
-	public void setting( Type type,float posX, float posY,float posZ,float angle, float speed, float damage,String attackerTag) {
+	public void setting( Type type,float posX, float posY,float posZ,float angle, float speed, float damage, int knockback,String attackerTag) {
 		setType(type);
 		
 		posX -= pL + (width - pL - pR) / 2; // 스폰되는 위치가 이미지의 중앙에 가게 하기 위해
@@ -139,6 +140,7 @@ public class Projectile extends GameObject{
 		
 		this.speed = speed;
 		this.damage = damage;
+		this.knockback = knockback;
 		this.time = 0;
 		this.active = true;
 		if(cc != null) {
@@ -244,5 +246,7 @@ public class Projectile extends GameObject{
 		return attackerTag;
 	}
 
-	
+	public int getKnockback() {
+		return knockback;
+	}
 }

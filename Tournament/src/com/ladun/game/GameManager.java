@@ -1,7 +1,5 @@
 package com.ladun.game;
 
-import java.util.Random;
-
 import com.ladun.engine.AbstractGame;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
@@ -20,6 +18,7 @@ import com.ladun.game.objects.GameObject;
 public class GameManager extends AbstractGame {
 
 	public static final int TS = 64;
+	public static boolean DEBUG = true;
 	
 	private Client client;
 	private String nickname;

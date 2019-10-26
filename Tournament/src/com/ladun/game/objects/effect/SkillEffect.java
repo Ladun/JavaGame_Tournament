@@ -12,6 +12,8 @@ import com.ladun.game.objects.HitRange;
 import com.ladun.game.util.Util;
 
 public class SkillEffect extends GameObject{
+	// 메테오같이 떨어지는 스킬
+	
 	public enum Type {Meteor}
 	public enum State {Reach, Disappear}
 
@@ -24,7 +26,6 @@ public class SkillEffect extends GameObject{
 	private float velY;
 	
 	private float timeToReach;
-	private float timeToDisappear;
 	private float time;
 
 	
@@ -67,7 +68,7 @@ public class SkillEffect extends GameObject{
 				int effectWidth = (int)(effect2.getWidth() * .7f);
 				int effectHeight = (int)(effect2.getHeight() * .7f);
 				hitRange.active(getCenterX() - effectWidth / 2 , getCenterZ()  - effectHeight/ 2, effectWidth,effectHeight);
-				hitRange.setDamage(10);
+				hitRange.setting(10,1200);
 				
 				//System.out.println(posX );
 			}

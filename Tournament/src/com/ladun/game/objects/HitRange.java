@@ -14,6 +14,7 @@ public class HitRange extends GameObject{
 	private String attackerTag;
 	private Type type;
 	private float damage;
+	private int knockback;
 	
 	public HitRange(GameObject parent,Type t) {
 		this.tag = "hitRange";
@@ -73,14 +74,18 @@ public class HitRange extends GameObject{
 	public String getAttackerTag() {
 		return attackerTag;
 	}
+	public int getKnockback() {
+		return knockback;
+	}
 	public void setAttackerTag(String attackerTag) {
 		this.attackerTag = attackerTag;
 	}
 	public float getDamage() {
 		return damage;
 	}
-	public void setDamage(float damage) {
+	public void setting(float damage,int knockback) {
 		this.damage = damage;
+		this.knockback = knockback;
 	}
 	
 }

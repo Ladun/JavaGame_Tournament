@@ -47,6 +47,7 @@ public class ResourceLoader {
 		addImage("berserker_effect1","/Effect/Skill/BerserkerEffect1.png");
 		addImage("berserker_effect2","/Effect/Skill/BerserkerEffect2.png",58,30);
 		addImage("sunbo_effect","/Effect/Skill/SunboEffect.png",48,84);
+		addImage("kick_effect","/Effect/Skill/KickEffect.png",64,64);
 		addImage("heal","/Effect/Skill/Heal.png",96,96);
 		
 		// Effect 

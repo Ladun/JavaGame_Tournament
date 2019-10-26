@@ -11,7 +11,7 @@ public class Rigidbody extends Component{
 	private float power;
 	private float angle;
 	
-	private float friction =500;
+	private float friction = 400;
 	
 	
 	private float c,s;
@@ -23,13 +23,12 @@ public class Rigidbody extends Component{
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm) {
-		
 		if(power != 0) {
 			((Entity)parent).addPosX((float)(power * c * Time.DELTA_TIME));
 			((Entity)parent).addPosZ((float)(power * s * Time.DELTA_TIME));
 		}
 		if(power > 0) {
-			power -= friction * Time.DELTA_TIME * 1000;
+			power -= friction * Time.DELTA_TIME *10;
 			if(power < 0) {
 				power = 0;
 			}

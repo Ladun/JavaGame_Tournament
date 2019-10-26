@@ -270,19 +270,19 @@ public class Server {
 					break;
 				}
 				case 0x15:{
-					// ValueType, damage, changeType, tag
+					// ValueType, damage, knockback, changeType, tag
 					// changeType : 체력이 바뀐 타입 1 == hit, 2 == crit
 					// 
 					
 					
 					Client c = getClient(_clientID);
 					c.setHealth(c.getHealth() - Integer.parseInt(netArgs[1]));	
-					if(netArgs[3].equalsIgnoreCase("null") || netArgs[2].charAt(0) == 0)
+					if(netArgs[4].equalsIgnoreCase("null") || netArgs[3].charAt(0) == 0)
 						break;
 					
 					if(c.getHealth() <= 0) {
-						if(netArgs[3].contains("Player")) {
-							Client attacker = getClient(Integer.parseInt(netArgs[3].substring(6)));
+						if(netArgs[4].contains("Player")) {
+							Client attacker = getClient(Integer.parseInt(netArgs[4].substring(6)));
 							attacker.setMoney(attacker.getMoney() + 70);
 							
 							sb.setLength(0);
@@ -455,7 +455,7 @@ public class Server {
 						sb.append(":");
 						sb.append((char)0x00);
 						sb.append(",");
-						if(allSame && c.getTeamNumber() != 0) {
+						if(allSame && c.getTargetMapIndex() != 0) {
 							sb.append(1);
 							gaming = true;
 						}

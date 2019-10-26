@@ -137,7 +137,7 @@ public class Weapon extends GameObject{
 		case SWORD:
 			switch(attackIndex) {
 			case 0:
-				hitRange.setDamage(getDamage());
+				hitRange.setting(getDamage(), knockback);
 				attacking = true;
 				gc.getResourceLoader().getSound("sword_attack").play();
 				break;
@@ -149,14 +149,14 @@ public class Weapon extends GameObject{
 		case SPEAR:
 			switch(attackIndex) {
 			case 0:
-				hitRange.setDamage(getDamage());
+				hitRange.setting(getDamage(), knockback);
 				attacking = true;
 				gc.getResourceLoader().getSound("spear_attack").play();
 				break;
 			case 1:
+				
 				break;
 			case 2: 
-				// TODO: 버서커 이펙트 추가
 				parent.setBerserkerMode();
 				break;
 			}
@@ -164,7 +164,7 @@ public class Weapon extends GameObject{
 		case DAGGER:
 			switch(attackIndex) {
 			case 0:
-				hitRange.setDamage(getDamage());
+				hitRange.setting(getDamage(), knockback);
 				attacking = true;
 				break;
 			case 1:
@@ -209,6 +209,18 @@ public class Weapon extends GameObject{
 				//gc.getResourceLoader().getSound("bow_attack").play();
 				Shoot(gm,gs, Projectile.Type.ARROW, posX,posZ,_angle, _angle +10);
 				gc.getResourceLoader().getSound("bow_attack").play();
+				break;
+			case 2:
+
+				hitRange.setting(getDamage(), 1500);
+				attacking = true;
+				gs.addEffect("kick_effect", 
+						5, .2f, 0,
+						getCenterX(), posY, getCenterZ(),
+						64, 64,
+						_angle,
+						false, false);
+				
 				break;
 			}
 			break;
@@ -259,7 +271,7 @@ public class Weapon extends GameObject{
 		case BLUNT: 
 			switch(attackIndex) {
 			case 0:
-				hitRange.setDamage(getDamage());
+				hitRange.setting(getDamage(), knockback);
 				attacking = true;
 				break;
 			case 1:
@@ -352,9 +364,19 @@ public class Weapon extends GameObject{
 				hitRange.active(posX +deltaX + width * xPivot - 9  +10* co, posZ + posY + deltaZ + height * yPivot  - 9 + 10 * si, 18, 18);
 			}
 			break;
+			
+		case BOW:
+			if(attackTime >= 0.2f) {
+				attacking = false;
+				hitRange.setActive(false);
+			}
+			else {
+					hitRange.active(posX + width * xPivot -32 , posZ + posY + height * yPivot  - 32 , 64, 64);				
+			}
+			break;
 
 		case BLUNT:
-			if(attackTime >= 0.3f) {
+			if(attackTime >= 0.35f) {
 				deltaAngle = 0;
 				attacking = false;
 				hitRange.setActive(false);
@@ -393,10 +415,10 @@ public class Weapon extends GameObject{
 		float _posZ = posZ + (float)(distanceToParent* Math.sin(Math.toRadians(spawnAngle)));
 		
 		if(pr == null) {
-			gs.addObject(new Projectile(gs, type, _posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(),parent.tag));
+			gs.addObject(new Projectile(gs, type, _posX + dX,posY,_posZ + dZ,_angle,projectileSpeed,getDamage(), knockback,parent.tag));
 		}
 		else {
-			pr.setting(type, _posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(),parent.tag);
+			pr.setting(type, _posX + dX, posY, _posZ + dZ, _angle, projectileSpeed, getDamage(), knockback,parent.tag);
 		}
 	}
 	// -------------------------------------------------------------------------
@@ -429,7 +451,7 @@ public class Weapon extends GameObject{
 			yPivot = .5f;
 			distanceToParent = 24;
 			break;
-
+			
 		case SPEAR:
 			damage = 13;
 			knockback = 900;
@@ -454,7 +476,7 @@ public class Weapon extends GameObject{
 			
 		case BLUNT:
 			damage = 16;
-			knockback = 1200;
+			knockback = 900;
 			imageName = "blunt";
 			width = 64;
 			height = 64;

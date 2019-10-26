@@ -67,7 +67,9 @@ public class Effect extends GameObject{
 	public void render(GameContainer gc, Renderer r) {
 		if(!zDepthDepended)			
 			r.setzDepth((int)(Math.abs(posY) + posZ + height));
-		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)posX, (int)(posY + posZ), (int)anim, animType,angle);
+		//r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)posX, (int)(posY + posZ), (int)anim, animType,angle);
+		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage(imageName), (int)posX, (int)(posY + posZ), (int)anim, animType, .5f, .5f, false, false, angle);
+		//r.drawRect((int)posX, (int)(posY + posZ), width, height, 0, 0xff000000);
 	}
 
 	@Override

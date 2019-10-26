@@ -21,7 +21,7 @@ public abstract class Entity extends GameObject{
 		}
 	}
 
-	public static final float HIT_TIME = 0.2f; 
+	public static final float HIT_TIME = 0.21f; 
 
 	
 	protected GameScene gs;
@@ -54,7 +54,7 @@ public abstract class Entity extends GameObject{
 	protected ArrayList<AttackObject> attackObjects = new ArrayList<AttackObject>();
 	
 	
-	public abstract void hit(float damage,boolean crit, String tag,int hashcode);
+	public abstract void hit(float damage,int knockback,boolean crit, String tag,int hashcode);
 	public abstract void revival();
 	
 	public void collision(GameObject other) {

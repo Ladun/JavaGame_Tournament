@@ -29,7 +29,8 @@ public class CircleCollider extends Collider{
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		
-		r.drawCircle(centerX, centerZ + y, radius, 0xffa6ec90);
+		if(GameManager.DEBUG)
+			r.drawCircle(centerX, centerZ + y, radius, 0xffa6ec90);
 		
 	}
 	//---------------------------------------------------------------

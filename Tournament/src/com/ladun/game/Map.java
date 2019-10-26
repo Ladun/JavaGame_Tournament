@@ -6,7 +6,6 @@ import java.util.Random;
 import com.ladun.engine.GameContainer;
 import com.ladun.engine.Renderer;
 import com.ladun.engine.gfx.Image;
-import com.ladun.engine.gfx.Light;
 import com.ladun.game.objects.GameObject;
 
 public class Map {
