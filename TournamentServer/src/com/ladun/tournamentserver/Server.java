@@ -455,7 +455,7 @@ public class Server {
 						sb.append(":");
 						sb.append((char)0x00);
 						sb.append(",");
-						if(allSame) {
+						if(allSame && c.getTeamNumber() != 0) {
 							sb.append(1);
 							gaming = true;
 						}

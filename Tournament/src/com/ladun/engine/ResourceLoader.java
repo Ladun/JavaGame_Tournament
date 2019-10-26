@@ -44,6 +44,8 @@ public class ResourceLoader {
 		addImage("meteor","/Effect/Skill/Meteor.png",128,192);
 		addImage("meteor_after","/Effect/Skill/Meteor_effect.png",450,240);
 		addImage("teleport_effect","/Effect/Skill/TeleportEffect.png",48,84);
+		addImage("berserker_effect1","/Effect/Skill/BerserkerEffect1.png");
+		addImage("berserker_effect2","/Effect/Skill/BerserkerEffect2.png",58,30);
 		addImage("sunbo_effect","/Effect/Skill/SunboEffect.png",48,84);
 		addImage("heal","/Effect/Skill/Heal.png",96,96);
 		

@@ -406,6 +406,7 @@ public class Weapon extends GameObject{
 
 	public void setType(Type type) {
 		this.type = type;
+		shieldBlock = false;
 		switch(type) {
 		case SWORD:
 			damage = 16;
@@ -478,7 +479,7 @@ public class Weapon extends GameObject{
 	}
 	
 	public int getDamage() {
-		return parent.getItemStat(Item.Type.STAT_DAMAGE) + damage;
+		return (int)((parent.getItemStat(Item.Type.STAT_DAMAGE) + damage) * (parent.isBerserkerMode()? 1.5: 1));
 	}
 	
 	public void setDstAngle(float dstAngle) {

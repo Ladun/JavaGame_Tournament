@@ -116,7 +116,8 @@ public class Player extends Entity{
 		if(gs.isGameisStart()) {
 
 			timePassAttackObject();
-			
+
+			buffTimer();
 			if(localPlayer){	
 				if(mana < getMaxMana()) {
 					int lastMana = (int)mana;
@@ -150,7 +151,6 @@ public class Player extends Entity{
 							actionCoolDownTime[i]  = 0;
 					}
 				}
-				buffTimer();
 				
 				// Moving ------------------------------------------------------
 				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
@@ -263,7 +263,9 @@ public class Player extends Entity{
 								attackIndex = 1;
 								switch(weapon.getType()) {
 								case SWORD:
-									
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);									
 									break;
 								case BOW:
 									attackType = AttackType.DependOnAngle;
@@ -412,10 +414,11 @@ public class Player extends Entity{
 		r.setzDepth((int)(posZ + Math.abs(groundHeight)) + pT + (height - (pT + pB)) );		
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
-		
+		if(berserkerTime > 0) {
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("berserker_effect2"), (int)(posX + 3), (int)(posZ + 42), ((int)(berserkerTime * 5 * 3.3)) % 5,0, 0);
+		}
 		
 		/*
-		r.setzDepth((int)(Math.abs(posY) ));
 		// PosX PosZ Position Draw
 		r.drawFillRect((int)posX + pL,   (int)(posZ) + pT,    width - (pL + pR),    height - (pT + pB),angle,0x55000000);
 		*/
@@ -432,6 +435,7 @@ public class Player extends Entity{
 			r.drawImage(gc.getResourceLoader().getImage("point"), (int)_p.getX() - 16, (int)_p.getY() - 16 , 0);
 		}
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
+		
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
@@ -592,24 +596,28 @@ public class Player extends Entity{
 	private void buffTimer() {
 
 		if(berserkerTime > 0) {
+
 			berserkerTime -= Time.DELTA_TIME;
 			if(berserkerTime <= 0) {
 				berserkerTime = 0;						
 			}
 		}
 		
-		if(skill_hideTime > 0) {
-			skill_hideTime -= Time.DELTA_TIME;
-			if(skill_hideTime <= 0) {
-				hiding = false;
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
-				skill_hideTime = 0;						
+		if(localPlayer) {
+			if(skill_hideTime > 0) {
+				skill_hideTime -= Time.DELTA_TIME;
+				if(skill_hideTime <= 0) {
+					hiding = false;
+					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+					skill_hideTime = 0;						
+				}
 			}
 		}
 		
 	}
 
 	public void setWeaponType(int t) {
+		
 		switch(t){
 			case 0 :
 				weapon.setType(Weapon.Type.SWORD);

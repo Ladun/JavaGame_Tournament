@@ -7,6 +7,7 @@ import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Scene.GameScene;
 import com.ladun.game.components.CircleCollider;
+import com.ladun.game.objects.interior.Interior;
 
 public class Projectile extends GameObject{
 
@@ -94,7 +95,7 @@ public class Projectile extends GameObject{
 	@Override
 	public void collision(GameObject other) {
 		
-		if(other instanceof Entity) {
+		if(other instanceof Entity || other instanceof Interior) {
 			Disappear();
 		}
 		else if (other instanceof HitRange || other instanceof Projectile) {
@@ -108,6 +109,7 @@ public class Projectile extends GameObject{
 			}
 			Disappear();
 		}
+		
 	}
 	
 	public void Disappear() {
