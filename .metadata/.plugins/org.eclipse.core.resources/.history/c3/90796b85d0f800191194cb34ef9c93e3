@@ -208,7 +208,7 @@ public class Projectile extends GameObject{
 			pB = 15;
 			anim = 0;
 			animMax = 6;
-			animSpeed = 50;
+			animSpeed = 12;
 			break;
 		}
 

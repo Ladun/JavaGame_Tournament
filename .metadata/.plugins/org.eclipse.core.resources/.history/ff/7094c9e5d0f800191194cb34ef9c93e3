@@ -18,7 +18,7 @@ import com.ladun.game.objects.GameObject;
 public class GameManager extends AbstractGame {
 
 	public static final int TS = 64;
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = true;
 	
 	private Client client;
 	private String nickname;

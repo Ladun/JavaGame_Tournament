@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
-		<item key="selection" value="renderState"/>
+		<item key="selection" value="while"/>
 		<item key="wrap" value="true"/>
 		<item key="casesensitive" value="false"/>
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
 		<list key="findhistory">
+			<item value="while"/>
+			<item value="mapLoad"/>
+			<item value="getAn"/>
+			<item value="gm.getA "/>
+			<item value="cameraShake"/>
+			<item value="SkillEffect"/>
 			<item value="renderState"/>
 			<item value="getDamage"/>
 			<item value="hit"/>
@@ -17,12 +23,6 @@
 			<item value="gameStart"/>
 			<item value="targetMapIndex"/>
 			<item value="ambientColor"/>
-			<item value="abientColor"/>
-			<item value="targetMap"/>
-			<item value="target"/>
-			<item value="currentMapIndex"/>
-			<item value="map"/>
-			<item value="render"/>
 		</list>
 		<list key="replacehistory">
 		</list>
