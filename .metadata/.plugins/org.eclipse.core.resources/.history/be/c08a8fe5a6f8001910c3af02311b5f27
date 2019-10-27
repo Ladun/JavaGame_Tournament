@@ -623,6 +623,7 @@ public class Renderer {
 
 	//------------------------------------------------------------------------------------------------------------------------------
 	public void drawMap(Image image,int imageWidth, int imageHeight) {
+		//TODO : √÷¿˚»≠ §°§°
 		
 		backgroundImage = image;		
 		backgroundWidth = imageWidth ;

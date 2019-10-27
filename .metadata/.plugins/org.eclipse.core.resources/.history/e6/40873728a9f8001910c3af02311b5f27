@@ -38,7 +38,7 @@ public class ShopSlot {
 					gm.getAnnounce().addString("아이템을 더 이상 구매할 수 없습니다.",0xff000000);
 					gm.getAnnounce().show(3);
 				}
-				else if(sh.getGs().getLocalPlayer().isInItemSlot(item.getID())) {
+				else if(!sh.getGs().getLocalPlayer().isInItemSlot(itemIndex)) {
 					gm.getAnnounce().addString("같은 아이템을 구매하실 수 없습니다.",0xff000000);
 					gm.getAnnounce().show(3);					
 				}
