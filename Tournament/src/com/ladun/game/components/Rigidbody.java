@@ -8,10 +8,11 @@ import com.ladun.game.objects.Entity;
 
 public class Rigidbody extends Component{
 
-	private float power;
+	public static final int DEFAULT_FRICTION = 400;
+	private int power;
 	private float angle;
 	
-	private float friction = 400;
+	private int friction = DEFAULT_FRICTION;
 	
 	
 	private float c,s;
@@ -39,16 +40,15 @@ public class Rigidbody extends Component{
 	public void render(GameContainer gc, Renderer r) {
 		
 	}
-	
-	
-	public void addPower(float power) {
-		
+	public void addPower(int power, float angle) {
+		addPower(power,angle, DEFAULT_FRICTION);
 	}
-	public void addPower(float power, float angle) {
+	public void addPower(int power, float angle,int friction) {
 		this.power = power;
 		this.angle = angle;
 		this.c = (float)Math.cos(Math.toRadians(angle));
 		this.s = (float)Math.sin(Math.toRadians(angle));
+		this.friction = friction;
 	}
 	public void addForce(float x, float y) {
 		

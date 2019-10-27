@@ -1,8 +1,0 @@
-package com.ladun.engine.audio;
-
-import javax.sound.sampled.Clip;
-
-public class Sound {
-
-	private Clip musicClip = null;
-}

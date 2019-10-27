@@ -272,7 +272,10 @@ public class Player extends Entity{
 									attackType = AttackType.DependOnAngle;
 									break;
 								case SPEAR:
-									
+									// 위치가 중요하지 않음 (posX, posZ가 딱히 중요하지 않음)
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);										
 									break;
 								case DAGGER:
 									attackType = AttackType.Targeting;									
@@ -543,10 +546,12 @@ public class Player extends Entity{
 			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)damage,knockback,(char)(crit? 0x02 : 0x01),attackerTag});
 		
 		Player _p = (Player)gm.getObject(attackerTag);
+
 		if(_p != null) {
 			float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
 			((Rigidbody)findComponent("rigidbody")).addPower(knockback, _angle);
 		}
+		
 		//----------------------------------------------------------------------------------------
 		DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 		if(displayDamage == null) {
@@ -686,6 +691,8 @@ public class Player extends Entity{
 
 		if(tag != null && tag.length() < 6)
 			tag = null;
+		if(weapon.isAttacking())
+			return;
 		//System.out.println(posX + ":" + posZ);
 		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex,tag);			
 

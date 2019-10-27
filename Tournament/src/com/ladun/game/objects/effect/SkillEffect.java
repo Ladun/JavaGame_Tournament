@@ -12,9 +12,8 @@ import com.ladun.game.objects.HitRange;
 import com.ladun.game.util.Util;
 
 public class SkillEffect extends GameObject{
-	// 메테오같이 떨어지는 스킬
 	
-	public enum Type {Meteor}
+	public enum Type {Meteor, Crash}
 	public enum State {Reach, Disappear}
 
 	private Effect effect1;
@@ -28,8 +27,13 @@ public class SkillEffect extends GameObject{
 	private float timeToReach;
 	private float time;
 
+	private float damage;
+	private int knockback;
 	
-	private HitRange hitRange;
+	private boolean attacked;
+	private boolean cameraShaking;
+	
+	private HitRange hitRange;	
 
 	/**
 	 * 
@@ -41,12 +45,12 @@ public class SkillEffect extends GameObject{
 	 * 	[Type Meteor : targetZ]
 	 */
 	public SkillEffect(String parentTag,Type type,
-			float centerX, float posY, float centerZ) {
+			float centerX, float posY, float centerZ, float damage, int knockback) {
 		this.tag = "skilleffect";
 		effect1 = new Effect();
 		effect2 = new Effect();
 		hitRange = new HitRange(this, HitRange.Type.RECT,parentTag);
-		setting(type,centerX,posY,centerZ);
+		setting(parentTag,type,centerX,posY,centerZ,damage, knockback);
 	}
 
 
@@ -56,19 +60,29 @@ public class SkillEffect extends GameObject{
 		time += Time.DELTA_TIME;
 		switch(state){
 		case Reach:
-			if(time <= timeToReach) {
+
+			if(hitRange.isActive() && time >= .15f) {
+				hitRange.setActive(false);
+				attacked = true;
+			}
+			
+			if(time < timeToReach) {
 			
 				posX += velX * Time.DELTA_TIME;
 				posY += velY * Time.DELTA_TIME;
 			}
 			else {
 				state = State.Disappear;
-				((GameScene)gm.getScene("InGame")).getCamera().cameraShake();
+				// TODO: 카메라 쉐이킹 필요할 때만
+				if(cameraShaking)
+					((GameScene)gm.getScene("InGame")).getCamera().cameraShake();
 				time = 0;
-				int effectWidth = (int)(effect2.getWidth() * .7f);
-				int effectHeight = (int)(effect2.getHeight() * .7f);
-				hitRange.active(getCenterX() - effectWidth / 2 , getCenterZ()  - effectHeight/ 2, effectWidth,effectHeight);
-				hitRange.setting(10,1200);
+				if(!attacked) {
+					int effectWidth = (int)(effect2.getWidth() * .7f);
+					int effectHeight = (int)(effect2.getHeight() * .7f);
+					hitRange.active(getCenterX() - effectWidth / 2 , getCenterZ()  - effectHeight/ 2, effectWidth,effectHeight);
+					hitRange.setting(damage, knockback);
+				}
 				
 				//System.out.println(posX );
 			}
@@ -117,6 +131,11 @@ public class SkillEffect extends GameObject{
 				if(effect2.getImageName().length() != 0) 
 					effect2.render(gc, r);
 			break;
+		case Crash:
+
+			if(effect2.getImageName().length() != 0) 
+				effect2.render(gc, r);
+			break;
 		
 		}
 		if(hitRange.isActive())
@@ -130,19 +149,29 @@ public class SkillEffect extends GameObject{
 		
 	}
 	
-	public void setting(Type type,
-			float centerX, float posY, float centerZ) {
+	public void setting(String parentTag,Type type,
+			float centerX, float posY, float centerZ,
+			float damage, int knockback) {
 		state = State.Reach;
+		this.damage = damage;
+		this.knockback = knockback;
+		attacked = false;
 		active = true;
+		cameraShaking = false;
 		time = 0;
-		setType(type,centerX, posY, centerZ);
+		hitRange.setAttackerTag(parentTag);
+		setType(type,centerX, posY, centerZ,damage, knockback);
 	}
 	
-	private void setType(Type type,float centerX, float posY ,float centerZ) {
+	private void setType(Type type,float centerX, float posY ,float centerZ,float damage, int knockback) {
 		this.type = type;
+		effect1.setting();
+		effect2.setting();
 		
 		switch(type){
 		case Meteor:
+			cameraShaking = true;
+			hitRange.setActive(false);
 			width = 128;
 			height = 192;
 			this.posX = centerX - width / 2;
@@ -160,16 +189,36 @@ public class SkillEffect extends GameObject{
 			
 			timeToReach = .7f;
 			velX = 0;
-			velY = distance / timeToReach;	
+			velY = distance / timeToReach;
 			
 			
-			hitRange.setActive(false);
 			effect1.setting("meteor", 
 					3, .1f, 0, 
 					posX, posY, posZ, 
 					128,192, 
 					0, false,false);
 			break;
+		case Crash:
+			width = 127;
+			height = 84;
+			this.posX = centerX - width / 2;
+			this.posY = posY;
+			this.posZ = centerZ - height / 2;
+
+			timeToReach = .7f;
+			velX = 0;
+			velY = 0;
+
+			effect2.setting("crash1", 
+					7, .7f, 0,
+					centerX , 0, centerZ , 
+					width,height, 
+					0,
+					false,false);
+			hitRange.active(posX, posZ, width, height);
+			hitRange.setting(damage, knockback);
+			
+			
 		}
 		
 	}

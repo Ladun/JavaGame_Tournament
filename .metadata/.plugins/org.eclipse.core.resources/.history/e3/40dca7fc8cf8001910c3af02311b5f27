@@ -1,0 +1,218 @@
+package com.ladun.game.objects.effect;
+
+import java.util.Random;
+
+import com.ladun.engine.GameContainer;
+import com.ladun.engine.Renderer;
+import com.ladun.engine.Time;
+import com.ladun.game.GameManager;
+import com.ladun.game.Scene.GameScene;
+import com.ladun.game.objects.GameObject;
+import com.ladun.game.objects.HitRange;
+import com.ladun.game.util.Util;
+
+public class SkillEffect extends GameObject{
+	
+	public enum Type {Meteor, Crash}
+	public enum State {Reach, Disappear}
+
+	private Effect effect1;
+	private Effect effect2;
+	private Type type;
+	private State state;
+	
+	private float velX;
+	private float velY;
+	
+	private float timeToReach;
+	private float time;
+
+	private float damage;
+	private int knockback;
+	private boolean attacked;
+	private HitRange hitRange;	
+
+	/**
+	 * 
+	 * @param centerX
+	 * 	[Type Meteor : targetX]
+	 * @param posY
+	 * 	[Type Meteor : targetY]
+	 * @param centerZ
+	 * 	[Type Meteor : targetZ]
+	 */
+	public SkillEffect(String parentTag,Type type,
+			float centerX, float posY, float centerZ, float damage, int knockback) {
+		this.tag = "skilleffect";
+		effect1 = new Effect();
+		effect2 = new Effect();
+		hitRange = new HitRange(this, HitRange.Type.RECT,parentTag);
+		setting(parentTag,type,centerX,posY,centerZ,damage, knockback);
+	}
+
+
+	@Override
+	public void update(GameContainer gc, GameManager gm) {
+
+		time += Time.DELTA_TIME;
+		switch(state){
+		case Reach:
+
+			if(hitRange.isActive() && time >= .15f) {
+				hitRange.setActive(false);
+				attacked = true;
+			}
+			
+			if(time < timeToReach) {
+			
+				posX += velX * Time.DELTA_TIME;
+				posY += velY * Time.DELTA_TIME;
+			}
+			else {
+				state = State.Disappear;
+				// TODO: 카메라 쉐이킹 필요할 때만
+				((GameScene)gm.getScene("InGame")).getCamera().cameraShake();
+				time = 0;
+				if(!attacked) {
+					int effectWidth = (int)(effect2.getWidth() * .7f);
+					int effectHeight = (int)(effect2.getHeight() * .7f);
+					hitRange.active(getCenterX() - effectWidth / 2 , getCenterZ()  - effectHeight/ 2, effectWidth,effectHeight);
+					hitRange.setting(damage, knockback);
+				}
+				
+				//System.out.println(posX );
+			}
+			
+			if(effect1.getImageName().length() != 0) {
+				effect1.update(gc, gm);
+				effect1.setPosX(posX);
+				effect1.setPosY(posY);
+				effect1.setPosZ(posZ);
+			}
+			break;
+		case Disappear:
+			if(hitRange.isActive() && time >= .15f) {
+				hitRange.setActive(false);
+			}
+			if(effect2.getImageName().length() != 0) {
+				effect2.update(gc, gm);
+			}
+
+			if(!effect2.isActive()) {
+				active = false;
+			}
+			
+			break;
+		}
+		
+		if(hitRange.isActive())
+			hitRange.update(gc, gm);
+	}
+
+	@Override
+	public void render(GameContainer gc, Renderer r) {
+		
+		r.setzDepth((int)(posZ + Math.abs(posY) + height));
+		
+		switch(type) {		
+		case Meteor:
+			if(state == State.Reach){
+				if(effect1.getImageName().length() != 0) {
+					effect1.render(gc, r);
+					float percent =  (Math.abs(posY)/ (10 * GameManager.TS));
+					r.drawFillElipse((int)(posX + width / 2), (int)(posZ + height / 2), (int)(80 * (1 + percent * 2)), (int)(50 * (1 + percent * 2)),( Util.lerp(125, 30,percent) << 24));
+				}
+			}
+			else
+				if(effect2.getImageName().length() != 0) 
+					effect2.render(gc, r);
+			break;
+		case Crash:
+
+			if(effect2.getImageName().length() != 0) 
+				effect2.render(gc, r);
+			break;
+		
+		}
+		if(hitRange.isActive())
+			hitRange.render(gc, r);
+		
+	}
+
+
+	@Override
+	public void collision(GameObject other) {
+		
+	}
+	
+	public void setting(String parentTag,Type type,
+			float centerX, float posY, float centerZ,
+			float damage, int kno) {
+		state = State.Reach;
+		attacked = false;
+		active = true;
+		time = 0;
+		hitRange.setAttackerTag(parentTag);
+		setType(type,centerX, posY, centerZ,damage, knockback);
+	}
+	
+	private void setType(Type type,float centerX, float posY ,float centerZ,float damage, int knockback) {
+		this.type = type;
+		effect1.setting();
+		effect2.setting();
+		
+		switch(type){
+		case Meteor:
+			hitRange.setActive(false);
+			width = 128;
+			height = 192;
+			this.posX = centerX - width / 2;
+			this.posY = posY;
+			this.posZ = centerZ - height / 2;
+			effect2.setting("meteor_after", 
+					6, .5f, 0,
+					centerX , 0, centerZ , 
+					450,240, 
+					0,
+					false,false);
+			
+			int distance=  10 * GameManager.TS;
+			this.posY -= distance;
+			
+			timeToReach = .7f;
+			velX = 0;
+			velY = distance / timeToReach;
+			
+			
+			effect1.setting("meteor", 
+					3, .1f, 0, 
+					posX, posY, posZ, 
+					128,192, 
+					0, false,false);
+			break;
+		case Crash:
+			width = 127;
+			height = 84;
+			this.posX = centerX - width / 2;
+			this.posY = posY;
+			this.posZ = centerZ - height / 2;
+
+			timeToReach = .7f;
+			velX = 0;
+			velY = 0;
+
+			effect2.setting("crash1", 
+					7, .7f, 0,
+					centerX , 0, centerZ , 
+					width,height, 
+					0,
+					false,false);
+			hitRange.active(posX, posZ, width, height);
+			hitRange.setting(damage, knockback);
+			
+			
+		}
+		
+	}
+
+}

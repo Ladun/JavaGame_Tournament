@@ -57,6 +57,8 @@ public class Client {
 	private GameManager gm;
 	
 	
+	//TODO: localhost:8192
+	
 	//-------------------------------------------------------------------	
 	/**
 	 * 

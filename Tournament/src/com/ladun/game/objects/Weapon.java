@@ -7,8 +7,10 @@ import com.ladun.engine.gfx.ImageTile;
 import com.ladun.game.GameManager;
 import com.ladun.game.Item.Item;
 import com.ladun.game.Scene.GameScene;
+import com.ladun.game.components.Rigidbody;
 import com.ladun.game.objects.effect.Effect;
 import com.ladun.game.objects.effect.SkillEffect;
+import com.ladun.game.objects.effect.SkillEffect.Type;
 import com.ladun.game.util.Util;
 
 public class Weapon extends GameObject{
@@ -41,6 +43,8 @@ public class Weapon extends GameObject{
 
 	private boolean mirror;
 	private boolean shieldBlock = false;
+	private int attackIndex = 0;
+	private boolean delayAttack = false;
 
 	private HitRange hitRange;
 	
@@ -131,7 +135,9 @@ public class Weapon extends GameObject{
 	}
 	public void attack(GameContainer gc,GameManager gm, GameScene gs,int posX, int posZ, float _angle,int attackIndex, String tag) {
 		// Player 에서 호출
-		
+		this.attackIndex = attackIndex;
+		delayAttack = false;
+		attackTime = 0;
 		
 		switch(type) {
 		case SWORD:
@@ -154,7 +160,9 @@ public class Weapon extends GameObject{
 				gc.getResourceLoader().getSound("spear_attack").play();
 				break;
 			case 1:
-				
+				hitRange.setting(getDamage(), knockback);
+				attacking = true;
+				delayAttack = true;
 				break;
 			case 2: 
 				parent.setBerserkerMode();
@@ -257,13 +265,7 @@ public class Weapon extends GameObject{
 						false, true);				
 				break;
 			case 2:{
-				SkillEffect skill = (SkillEffect)gs.getInactiveObject("skilleffect");		
-				if(skill == null) {
-					gs.addObject(new SkillEffect(parent.tag,SkillEffect.Type.Meteor,posX,0,posZ));
-				}
-				else {
-					skill.setting(SkillEffect.Type.Meteor,posX,0,posZ);
-				}
+				addSkillEffect(gs, SkillEffect.Type.Meteor,posX,0,posZ,getDamage() * 2, 1200);
 				break;
 			}
 			}
@@ -295,7 +297,7 @@ public class Weapon extends GameObject{
 			}
 			break;
 		}
-		attackTime = 0;
+		
 		
 	}
 	
@@ -329,22 +331,47 @@ public class Weapon extends GameObject{
 			}
 			break;
 		case SPEAR:
-			if(attackTime >= .2f) {
-				deltaX = 0;
-				deltaZ = 0;
-				attacking = false;
-				hitRange.setActive(false);
-			}
-			else {
-				float co = (float)Math.cos(Math.toRadians(angle));
-				float si = (float)Math.sin(Math.toRadians(angle));
+			if(attackIndex == 0) {
+				if(attackTime >= .2f) {
+					deltaX = 0;
+					deltaZ = 0;
+					attacking = false;
+					hitRange.setActive(false);
+				}
+				else {
+					float co = (float)Math.cos(Math.toRadians(angle));
+					float si = (float)Math.sin(Math.toRadians(angle));
+					
+					deltaX += Time.DELTA_TIME * 500 * co;
+					deltaZ += Time.DELTA_TIME * 500 * si;
+	
+					hitRange.active(posX +deltaX + width * xPivot - 18  +40* co, posZ + posY + deltaZ + height * yPivot  - 18 + 40 * si, 36, 36);
+				}
+			} else if (attackIndex == 1) {
+				if(attackTime >= .7f) {
+					attacking = false;
+					hitRange.setActive(false);
+					
+					float co = (float)Math.cos(Math.toRadians(angle));
+					float si = (float)Math.sin(Math.toRadians(angle));
+					addSkillEffect(parent.gs, SkillEffect.Type.Crash,
+							posX + width * xPivot  +40* co,0, posZ + posY + height * yPivot  + 40 * si,
+							getDamage() * 2, 1200);
+					parent.gs.getCamera().cameraShake();
+					
+				}
+				else if(attackTime >= .5f) {
+					if(delayAttack) {
+						delayAttack = true;
+						delayAttack = false;
+						((Rigidbody)parent.findComponent("rigidbody")).addPower(3000,angle, Rigidbody.DEFAULT_FRICTION * 4);
+					}
+					float co = (float)Math.cos(Math.toRadians(angle));
+					float si = (float)Math.sin(Math.toRadians(angle));
+					hitRange.active(posX + width * xPivot - 18  +40* co, posZ + posY + height * yPivot  - 18 + 40 * si, 36, 36);
+				}
 				
-				deltaX += Time.DELTA_TIME * 500 * co;
-				deltaZ += Time.DELTA_TIME * 500 * si;
-
-				hitRange.active(posX +deltaX + width * xPivot - 18  +40* co, posZ + posY + deltaZ + height * yPivot  - 18 + 40 * si, 36, 36);
 			}
-			
 			break;
 			
 		case DAGGER:
@@ -498,6 +525,17 @@ public class Weapon extends GameObject{
 		}
 		
 		
+	}
+	
+	public void addSkillEffect(GameScene gs, SkillEffect.Type type,float centerX, float posY ,float centerZ,float damage, int knockback) {
+
+		SkillEffect skill = (SkillEffect)gs.getInactiveObject("skilleffect");		
+		if(skill == null) {
+			gs.addObject(new SkillEffect(parent.tag,type,centerX,posY,centerZ,damage, knockback));
+		}
+		else {
+			skill.setting(parent.tag,type,centerX,posY,centerZ,damage, knockback);
+		}
 	}
 	
 	public int getDamage() {

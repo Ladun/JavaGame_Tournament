@@ -79,6 +79,9 @@ public class Effect extends GameObject{
 	}
 	
 	//------------------------------------------------------
+	public void setting() {
+		setting("",0,0,0,0,0,0,0,0,0,false,false);
+	}
 	public void setting(String imageName,
 			int animMax, float animTime , int animType,
 			float centerX,float posY, float centerZ,

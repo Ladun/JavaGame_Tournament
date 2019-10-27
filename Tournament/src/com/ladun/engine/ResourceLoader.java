@@ -52,7 +52,7 @@ public class ResourceLoader {
 		
 		// Effect 
 		addImage("hit_effect_32","/Effect/HitEffect32.png",32,32);
-		addImage("crash1","/Effect/Crash1.png");
+		addImage("crash1","/Effect/Crash1.png",127,84);
 		
 		//UI Image Load
 		addImage("hbar", "/UI/HBar.png",334,13);
