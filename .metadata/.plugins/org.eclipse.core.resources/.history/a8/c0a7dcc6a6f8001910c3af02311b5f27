@@ -63,6 +63,7 @@ public class GameManager extends AbstractGame {
 
 	@Override
 	public void update() {
+		money = 0;
 		for(int i = 0 ; i < scenes.length;i++) {
 			if(scenes[i].isActive())
 				scenes[i].update(gc);

@@ -36,7 +36,7 @@ public class ShopSlot {
 				int itemSlotIndex = sh.getGs().getLocalPlayer().emptyItemSlot();
 				if(itemSlotIndex == -1) {
 					// TODO: 아이템 창이 꽉참
-					gm.getAnnounce().addString("아이템을 더 이상 구매할 수 없습니다.",0xff000000);
+					gm.getAnnounce().addString(sb.toString(),0xff000000);
 					gm.getAnnounce().show(3);
 				}else {
 					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE, new Object[] {(char)0x20, item.getID(),itemSlotIndex,(char)0x00});
@@ -47,9 +47,7 @@ public class ShopSlot {
 					
 			}else {
 				// TODO: 돈이 부족함
-
-				gm.getAnnounce().addString("돈이 부족합니다.",0xff000000);
-				gm.getAnnounce().show(3);
+				
 			}
 		}
 		

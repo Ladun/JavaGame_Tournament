@@ -73,6 +73,7 @@ public class SkillEffect extends GameObject{
 			}
 			else {
 				state = State.Disappear;
+				// TODO: 카메라 쉐이킹 필요할 때만
 				if(cameraShaking)
 					((GameScene)gm.getScene("InGame")).getCamera().cameraShake();
 				time = 0;
