@@ -247,6 +247,8 @@ public class Weapon extends GameObject{
 					tPosZ = (int)( parent.getCenterZ() + Math.sin(Math.toRadians(_ag)) * 200);
 				}
 				
+				//TODO: 텔레포트 위치가 벽 속이면 텔포 X,마나 소모만
+				
 				gs.addEffect("teleport_effect", 
 						6, .4f, 0, 
 						parent.getCenterX(), parent.posY, parent.getCenterZ(), 

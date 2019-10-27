@@ -64,10 +64,12 @@ public class ResourceLoader {
 		addImage("window", "/UI/Window.png");
 		addImage("state","/UI/State.png");
 		addImage("skill_icon", "/UI/SlotContents/SkillIcon.png",64,64);
+		addImage("shopSlot", "/UI/Item/ShopSlot.png");
 
 		addImage("money", "/UI/Money.png");
 		addImage("mouse_lock", "/UI/MouseLock.png");
 		addImage("camera_lock", "/UI/CameraLock.png");
+		
 		// Buttons
 		addImage("store_button","/UI/StoreButton.png",96,96);
 		addImage("job_button","/UI/JobButton.png",96,96);
@@ -78,10 +80,11 @@ public class ResourceLoader {
 		
 		addImage("start_button","/UI/mainScene/StartButton.png",76,76);
 		addImage("option_button","/UI/mainScene/OptionButton.png",76,76);
-		addImage("exit_button","/UI/mainScene/ExitButton.png",76,76);
+		addImage("exit_button","/UI/mainScene/ExitButton.png",76,76);	
+		addImage("shopSlot_Button","/UI/Item/ShopSlot_Button.png",54,32);			
 		
-		addImage("items","/UI/Items.png",54,54);
-		
+
+		addImage("items","/UI/Item/Items.png",54,54);
 		addImage("count","/UI/count.png",128,128);
 		addImage("loading","/UI/loading.png",128,128);
 		addImage("map_icon","/UI/MapIcon.png",160,160);

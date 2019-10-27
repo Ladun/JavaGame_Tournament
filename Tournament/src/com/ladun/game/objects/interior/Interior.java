@@ -22,13 +22,13 @@ public class Interior extends GameObject{
 
 	public Interior(String imageName,
 			float posX,float posZ,
-			int width, int height,
+			int width, int height,int hY,
 			boolean collision) {
-		this(imageName,posX,posZ,width,height,collision,false);
+		this(imageName,posX,posZ,width,height,hY,collision,false);
 	}
 	public Interior(String imageName,
 			float posX,float posZ,
-			int width, int height,
+			int width, int height, int hY,
 			boolean collision,boolean mirror) {
 		
 		this.tag = "interior";
@@ -36,6 +36,7 @@ public class Interior extends GameObject{
 		this.collision = collision;
 		this.mirror = mirror;
 		this.width = width;
+		this.hY = hY;
 		this.height = height;
 
 		this.posX = posX;
@@ -62,6 +63,7 @@ public class Interior extends GameObject{
 		this.mirror = mirror;
 		this.width = radius;
 		this.height = radius;
+		this.hY = radius;
 
 		this.posX = posX;
 		this.posZ = posZ;
@@ -72,7 +74,7 @@ public class Interior extends GameObject{
 	}
 	
 	@Override
-	public void update(GameContainer gc, GameManager gm) {		
+	public void update(GameContainer gc, GameManager gm) {	
 		this.updateComponents(gc, gm);
 	}
 
@@ -88,7 +90,6 @@ public class Interior extends GameObject{
 
 	@Override
 	public void collision(GameObject other) {
-		
 	}
 	
 	public Interior setLight(Light light) {

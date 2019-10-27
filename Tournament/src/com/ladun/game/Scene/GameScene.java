@@ -623,16 +623,16 @@ public class GameScene extends AbstractScene{
 			case 1:
 				inteamWaitRoom = true;
 				currentMap = new Map(mapNames[currentMapIndex], false, new GameObject[] {
-						new AnimatedInterior("portal",249,187,80,72,1f,14,false),
-						(new AnimatedInterior("battle_stone",249,72,80,115,1f,8,true)).setpT(95).setpB(5),
-						(new Interior("stone_bush_1",128,188,64,41,true)).setpT(19).setpB(8),
-						(new Interior("stone_bush_1",398,379,64,41,true)).setpT(19).setpB(8)
+						new AnimatedInterior("portal",249,187,80,72,72,1f,14,false),
+						(new AnimatedInterior("battle_stone",249,72,80,115,115,1f,8,true)).setpT(95).setpB(5),
+						(new Interior("stone_bush_1",128,188,64,41,41,true)).setpT(19).setpB(8),
+						(new Interior("stone_bush_1",398,379,64,41,41,true)).setpT(19).setpB(8)
 				});
 				currentMap.setBackgroundColor(0xff45624e);
 				break; 
 			case 3:
 				currentMap = new Map(mapNames[currentMapIndex], false, new GameObject[] {
-						new AnimatedInterior("torch",64,336,26,40,.75f,4,false).setLight(new Light(300, 0xffffed5d))				
+						new AnimatedInterior("torch",64,336,26,40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d))				
 				});
 				currentMap.setBackgroundColor(0xff565252);
 				gc.getRenderer().setAmbientColor(0xff232323);
@@ -640,16 +640,16 @@ public class GameScene extends AbstractScene{
 			case 4:
 				
 				currentMap = new Map(mapNames[currentMapIndex], true, new GameObject[] {
-						(new Interior("wall1",384,128,64,204,true)).setpT(64),
-						(new Interior("wall1",384,320,64,204,true)).setpT(64),
-						(new Interior("wall1",832,128,64,204,true)).setpT(64),
-						(new Interior("wall1",832,320,64,204,true)).setpT(64),
-						(new Interior("bush1",100,180,140,71,true)).setpT(48).setpB(7),
-						(new Interior("bush1",200,400,140,71,true)).setpT(48).setpB(7),
-						(new Interior("bush1",1050,180,140,71,true)).setpT(48).setpB(7),
-						(new Interior("bush1",1150,400,140,71,true)).setpT(48).setpB(7),
-						(new Interior("bush1",575,90,140,71,true)).setpT(48).setpB(7),
-						(new Interior("bush1",575,500,140,71,true)).setpT(48).setpB(7)
+						(new Interior("wall1",384,128,64,204,64,true)).setpT(64),
+						(new Interior("wall1",384,320,64,204,64,true)).setpT(64),
+						(new Interior("wall1",832,128,64,204,64,true)).setpT(64),
+						(new Interior("wall1",832,320,64,204,64,true)).setpT(64),
+						(new Interior("bush1",100,180,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",200,400,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1050,180,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1150,400,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",575,90,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",575,500,140,71,64,true)).setpT(48).setpB(7)
 						
 				});
 				currentMap.setBackgroundColor(0xff586d3a);

@@ -7,6 +7,7 @@ import com.ladun.game.net.Client;
 import com.ladun.game.objects.UI.Button;
 
 public class ShopSlot {
+	public static final int TOP_GAP = 15;
 	public static final int GAP = 8;
 	public static final int BUTTON_HEIGHT = 32;
 	public static final int STRING_SIZE = 15;
@@ -21,7 +22,7 @@ public class ShopSlot {
 	
 	public ShopSlot(Shop sh,int id,Item item,int posX,int posY) {
 		this.sh = sh;
-		parchaseButton = new Button(0,0, Item.IMAGE_SIZE, BUTTON_HEIGHT, 0xffbbbbbb);
+		parchaseButton = new Button(0,0, Item.IMAGE_SIZE, BUTTON_HEIGHT, "shopSlot_Button");
 		setItem(id,item, posX, posY);
 		
 	}
@@ -49,7 +50,7 @@ public class ShopSlot {
 		}
 		
 		if(gc.getInput().getMouseX() >= posX  && gc.getInput().getMouseX() <= posX + GAP * 2 + Item.IMAGE_SIZE &&
-				gc.getInput().getMouseY() >= posY  && gc.getInput().getMouseY() <= posY + GAP * 2 + Item.IMAGE_SIZE) {
+				gc.getInput().getMouseY() >= posY  && gc.getInput().getMouseY() <= posY + GAP + TOP_GAP + Item.IMAGE_SIZE) {
 			sh.getGs().tooltipSetting(item,id,Tooltip.Type.Shop);
 		}
 		else {
@@ -61,12 +62,12 @@ public class ShopSlot {
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(Renderer.LAYER_UI);
 		// background Render
-		r.drawFillRect(posX , posY, getWidth(), getHeight(), 0,0xffffffff);
+		r.drawImage(gc.getResourceLoader().getImage("shopSlot"), posX , posY, 0);
 		// item image Render
-		item.render(gc, r, posX  + GAP, posY + GAP);
+		item.render(gc, r, posX  + GAP, posY + TOP_GAP);
 		// Price Render
 		String priceString = item.getPrice() +"";
-		r.drawText(priceString, posX + 35 - priceString.length() * 6 , posY + GAP+ GAP + Item.IMAGE_SIZE  , 0xff000000);
+		r.drawText(priceString, posX + 35 - priceString.length() * 6 , posY + TOP_GAP + GAP + Item.IMAGE_SIZE  , 0xff000000);
 		// Buy Button Render
 		parchaseButton.render(gc, r);
 	}
@@ -78,7 +79,7 @@ public class ShopSlot {
 		this.posX = posX;
 		this.posY = posY;
 		parchaseButton.setPosX(posX + GAP);
-		parchaseButton.setPosY(posY + GAP * 3 + STRING_SIZE + Item.IMAGE_SIZE);
+		parchaseButton.setPosY(posY + GAP * 2 + TOP_GAP + STRING_SIZE + Item.IMAGE_SIZE);
 		
 	}
 
@@ -93,7 +94,7 @@ public class ShopSlot {
 		return GAP * 2 + Item.IMAGE_SIZE;
 	}
 	public static int getHeight() {
-		return GAP * 4 + STRING_SIZE + BUTTON_HEIGHT + Item.IMAGE_SIZE;
+		return TOP_GAP + GAP * 3 + STRING_SIZE + BUTTON_HEIGHT + Item.IMAGE_SIZE;
 	}
 }
 

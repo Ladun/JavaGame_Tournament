@@ -16,16 +16,16 @@ public class AnimatedInterior extends Interior{
 	private float animTime;
 	private int animMaxIndex;
 
-	public AnimatedInterior(String imageName, float posX,float posZ,int width, int height,float animTime,int animMaxIndex,boolean collision) {
-		this(imageName,posX,posZ,width,height,animTime,animMaxIndex, collision,false);
+	public AnimatedInterior(String imageName, float posX,float posZ,int width, int height,int hY,float animTime,int animMaxIndex,boolean collision) {
+		this(imageName,posX,posZ,width,height,hY,animTime,animMaxIndex, collision,false);
 	}
 	public AnimatedInterior(String imageName,
 			float posX,float posZ,
-			int width, int height,
+			int width, int height,int hY,
 			float animTime,int animMaxIndex,
 			boolean collision,boolean mirror) {
 
-		super(imageName,posX,posZ,width,height,collision,mirror );
+		super(imageName,posX,posZ,width,height,hY,collision,mirror );
 		
 		this.animTime =  1f / animTime;
 		this.animMaxIndex = animMaxIndex;
