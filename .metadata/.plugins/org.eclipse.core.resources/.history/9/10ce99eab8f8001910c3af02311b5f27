@@ -632,15 +632,8 @@ public class GameScene extends AbstractScene{
 				break; 
 			case 3:
 				currentMap = new Map(mapNames[currentMapIndex], false, new GameObject[] {
-						new AnimatedInterior("torch",GameManager.TS * 1, GameManager.TS * 5 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 1, GameManager.TS * 14 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 22, GameManager.TS * 6 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 27, GameManager.TS * 4 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 37, GameManager.TS * 8 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 29, GameManager.TS * 14 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 25, GameManager.TS * 21 + 12, 26, 40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 14 + 38, GameManager.TS * 8 + 12, 26, 40,40,.75f,4,false,true).setLight(new Light(300, 0xffffed5d)),
-						new AnimatedInterior("torch",GameManager.TS * 14 + 38, GameManager.TS * 16 + 12, 26, 40,40,.75f,4,false, true).setLight(new Light(300, 0xffffed5d))
+						new AnimatedInterior("torch",GameManager.TS * 1 - 19,GameManager.TS * 5,26,40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d)),
+						new AnimatedInterior("torch",GameManager.TS * 1 - 19,GameManager.TS * 14,26,40,40,.75f,4,false).setLight(new Light(300, 0xffffed5d))
 				});
 				currentMap.setBackgroundColor(0xff565252);
 				gc.getRenderer().setAmbientColor(0xff232323);

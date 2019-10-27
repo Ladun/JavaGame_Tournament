@@ -999,27 +999,27 @@ public class Renderer {
 		int e2;
 		
 		while(true){
-			boolean canDraw = true;
+			flag canDraw = false;
 			int screenX = x0 - l.getRadius() + offX;
 			int screenY = y0 - l.getRadius() + offY;
 			
 			if(screenX < 0 || screenX >= pW || screenY < 0 || screenY >= pH) {
 				if(screenX < -l.getRadius() || screenX >= pW + l.getRadius() || screenY < -l.getRadius() || screenY >= pH + l.getRadius())
 					return;
-				canDraw = false;
+				return;
 			}
 			
-			if(canDraw) {
-				int lightColor = l.getLightValue(x0, y0);
-				if(lightColor == 0)
-					return;
-				
-				
-				if(lb[screenX + screenY * pW] == Light.FULL)
-					//return;
-				
-				setLightMap(screenX ,screenY,lightColor);
-			}
+			
+			int lightColor = l.getLightValue(x0, y0);
+			if(lightColor == 0)
+				return;
+			
+			
+			if(lb[screenX + screenY * pW] == Light.FULL)
+				return;
+			
+			setLightMap(screenX ,screenY,lightColor);
+			
 			if(x0 == x1 && y0 == y1)
 				break;
 			

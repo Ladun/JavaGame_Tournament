@@ -1016,7 +1016,7 @@ public class Renderer {
 				
 				
 				if(lb[screenX + screenY * pW] == Light.FULL)
-					//return;
+					return;
 				
 				setLightMap(screenX ,screenY,lightColor);
 			}
