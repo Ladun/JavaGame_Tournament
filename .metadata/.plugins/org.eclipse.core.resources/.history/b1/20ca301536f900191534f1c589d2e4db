@@ -573,7 +573,7 @@ public class Weapon extends GameObject{
 		case SWORD:
 			switch(attackType) {
 			case 1:
-				return 15;
+				return 0;
 			case 2:
 				return 0;
 			case 3:
@@ -583,9 +583,9 @@ public class Weapon extends GameObject{
 		case BOW:
 			switch(attackType) {
 			case 1:
-				return 15;
+				return 20;
 			case 2:
-				return 10;
+				return 0;
 			case 3:
 				return 50;
 			}
@@ -594,9 +594,9 @@ public class Weapon extends GameObject{
 		case SPEAR:
 			switch(attackType) {
 			case 1:
-				return 20;
+				return 0;
 			case 2:
-				return 30;
+				return 0;
 			case 3:
 				return 0;
 			}
@@ -604,9 +604,9 @@ public class Weapon extends GameObject{
 		case DAGGER:
 			switch(attackType) {
 			case 1:
-				return 17;
+				return 0;
 			case 2:
-				return 30;
+				return 0;
 			case 3:
 				return 20;
 			}
@@ -617,7 +617,7 @@ public class Weapon extends GameObject{
 			case 0:
 				return 5;
 			case 1:
-				return 25;
+				return 20;
 			case 2:
 				return 60;
 			case 3:
@@ -628,9 +628,9 @@ public class Weapon extends GameObject{
 		case BLUNT:
 			switch(attackType) {
 			case 1:
-				return 15;
+				return 0;
 			case 2:
-				return 40;
+				return 30;
 			case 3:
 				return 0;
 			}

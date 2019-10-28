@@ -4,7 +4,7 @@
     "Price": 700,
     "Types": [ "STAT_MOVESPEED", "STAT_DEFENCE" ],
     "Name": "µÎ²¨¿î °©¿Ê",
-    "Options": [ -30, 4 ]
+    "Options": [ -3, 4 ]
   },
   {
     "ID": 1,
@@ -46,55 +46,13 @@
     "Price": 1000,
     "Types": [ "STAT_HEALTH", "STAT_DAMAGE", "STAT_MOVESPEED"],
     "Name": "No Name",
-    "Options": [-40, 15 , 30]
+    "Options": [-40, 15 , 6]
   },
   {
     "ID": 7,
     "Price": 1000,
     "Types": [ "STAT_HEALTH", "STAT_MOVESPEED", "STAT_DEFENCE" ],
     "Name": "No Name",
-    "Options": [ 25, -40, 7 ]
-  },
-  {
-  	"ID": 16,
-  	"Price": 700,
-  	"Types": ["STAT_HEALTHRE"],
-  	"Name": "³ì»ö ÀÛÀº ±¸½½",
-  	"Options": [1]
-  }
-  {
-  	"ID": 32,
-  	"Price": 860,
-  	"Types": [ "STAT_HEALTH", "STAT_DAMAGE"],
-  	"Name": "ÇÇ¿¡ ¹°µç È°",
-  	"Options": [5, -20] 
-  },
-  {
-  	"ID": 48,
-  	"Price": 880,
-  	"Types": ["STAT_DAMAGE", "STAT_MOVESPEED"],
-  	"Name": "±×¾î´ëÇÑ Ã¢",
-  	"Options": [ 7, 22]
-  }
-  {
-  	"ID": 64,
-  	"Price": 900,
-  	"Types": [ "STAT_MOVESPEED" ],
-  	"Name": ÆíÇÑ ºÎÃ÷,
-  	"Options": [25]
-  },
-  {
-  	"ID":80,
-  	"Price": 1000",
-  	"Types": [ "STAT_MANAREGE"],
-  	"Name" : ÆÄ¶õ ±¸½½,
-  	"Options" : 1
-  },
-  {
-  	"ID": 96,
-  	"Price": 900,
-  	"Types": ["STAT_MOVEPSPEED", "STAT_DEFENCE"],
-  	"Name": "ÆÇ±Ý °©¿Ê",
-  	"Options": [ 30, 6 ]
+    "Options": [ 25, -7, 7 ]
   }
 ]

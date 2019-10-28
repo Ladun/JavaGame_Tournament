@@ -864,7 +864,7 @@ public class Player extends Entity{
 		return berserkerTime > 0;
 	}
 	public void setBerserkerMode() {
-		this.berserkerTime = 8;
+		this.berserkerTime = 15;
 	}
 	public boolean isMouseOver(float mouseX,float mouseY) {
 		if(mouseX >= posX && mouseX <= posX + width &&

@@ -12,7 +12,7 @@ public class Shop {
 
 	private static final int TYPE_INTERVAL = 16;	
 	public enum JobType {
-		Public(0) ,Warrior(1),Archer(2) ,Spear(3), Assasin(4),Magician(5),Crusader(6);
+		Public(0) ,Warrior(1),Archer(2) ,Spear(3), Assasin(4);
 		
 		private final int value;
 		private JobType(int value) {

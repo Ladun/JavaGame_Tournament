@@ -636,7 +636,7 @@ public class Player extends Entity{
 				manaRegeneration = .5f;
 				maxHealth = 190;
 				maxMana = 70;
-				moveSpeed = 180;
+				moveSpeed = 200;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
@@ -648,35 +648,35 @@ public class Player extends Entity{
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
-				healthRegeneration = 1.2f;
-				manaRegeneration = 0.8f;
-				maxHealth = 170;
-				maxMana = 100;
-				moveSpeed = 190;
+				healthRegeneration = 1;
+				manaRegeneration = 1;
+				maxHealth = 150;
+				maxMana = 80;
+				moveSpeed = 180;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
-				healthRegeneration = .7f;
-				manaRegeneration = .8f;
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
 				maxHealth = 120;
-				maxMana = 130;
-				moveSpeed = 210;
+				maxMana = 100;
+				moveSpeed = 220;
 				break;
 			case 4:
 				weapon.setType(Weapon.Type.CANE);
 				healthRegeneration = .5f;
-				manaRegeneration = 2;
-				maxHealth = 110;
-				maxMana = 180;
-				moveSpeed = 180;
+				manaRegeneration = 1;
+				maxHealth = 100;
+				maxMana = 150;
+				moveSpeed = 190;
 				break;
 
 			case 5:
 				weapon.setType(Weapon.Type.BLUNT);
-				healthRegeneration = 1.4f;
-				manaRegeneration = .7f;
-				maxHealth = 210;
-				maxMana = 80;
+				healthRegeneration = .5f;
+				manaRegeneration = 1;
+				maxHealth = 200;
+				maxMana = 100;
 				moveSpeed = 170;
 				break;
 		}
@@ -864,7 +864,7 @@ public class Player extends Entity{
 		return berserkerTime > 0;
 	}
 	public void setBerserkerMode() {
-		this.berserkerTime = 8;
+		this.berserkerTime = 15;
 	}
 	public boolean isMouseOver(float mouseX,float mouseY) {
 		if(mouseX >= posX && mouseX <= posX + width &&

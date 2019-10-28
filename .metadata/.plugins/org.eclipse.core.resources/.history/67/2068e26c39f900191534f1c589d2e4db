@@ -65,16 +65,16 @@
   {
   	"ID": 32,
   	"Price": 860,
-  	"Types": [ "STAT_HEALTH", "STAT_DAMAGE"],
+  	"Types": [ STAT_HEALTH", "STAT_DAMAGE"],
   	"Name": "피에 물든 활",
   	"Options": [5, -20] 
   },
   {
   	"ID": 48,
   	"Price": 880,
-  	"Types": ["STAT_DAMAGE", "STAT_MOVESPEED"],
-  	"Name": "그어대한 창",
-  	"Options": [ 7, 22]
+  	"Types": [],
+  	"Name": "",
+  	"Options": []
   }
   {
   	"ID": 64,
