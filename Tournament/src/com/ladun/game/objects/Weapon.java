@@ -405,7 +405,7 @@ public class Weapon extends GameObject{
 			break;
 
 		case BLUNT:
-			if(attackTime >= 0.35f) {
+			if(attackTime >= 0.2f) {
 				deltaAngle = 0;
 				attacking = false;
 				hitRange.setActive(false);
@@ -461,7 +461,7 @@ public class Weapon extends GameObject{
 		switch(type) {
 		case SWORD:
 			damage = 16;
-			knockback = 900;
+			knockback = 450;
 			imageName = "sword";
 			width = 64;
 			height = 64;
@@ -471,8 +471,8 @@ public class Weapon extends GameObject{
 			break;
 		case BOW:
 			damage = 18;
-			knockback = 700;
-			projectileSpeed = 750;
+			knockback = 350;
+			projectileSpeed = 600;
 			imageName = "bow";
 			width = 64;
 			height = 64;
@@ -483,7 +483,7 @@ public class Weapon extends GameObject{
 			
 		case SPEAR:
 			damage = 14;
-			knockback = 900;
+			knockback = 450;
 			imageName = "spear";
 			width = 128;
 			height = 64;
@@ -494,7 +494,7 @@ public class Weapon extends GameObject{
 			
 		case DAGGER:
 			damage = 18;
-			knockback = 600;
+			knockback = 300;
 			imageName = "dagger";
 			width = 48;
 			height = 32;
@@ -505,8 +505,9 @@ public class Weapon extends GameObject{
 
 		case CANE:
 			damage = 20;
-			knockback = 900;
+			knockback = 450;
 			imageName = "cane";
+			projectileSpeed = 600;
 			width = 64;
 			height = 64;
 			xPivot = .5f;
@@ -515,7 +516,7 @@ public class Weapon extends GameObject{
 			break;
 		case BLUNT:
 			damage = 15;
-			knockback = 900;
+			knockback = 450;
 			imageName = "blunt";
 			width = 64;
 			height = 64;
@@ -656,7 +657,7 @@ public class Weapon extends GameObject{
 		case BOW:
 			switch(attackType) {
 			case 0:
-				return 0.4f;
+				return 1f;
 			case 1:
 				return 6f;
 			case 2:
@@ -694,7 +695,7 @@ public class Weapon extends GameObject{
 		case CANE:
 			switch(attackType) {
 			case 0:
-				return 0.4f;
+				return 1f;
 			case 1:
 				return 3f;
 			case 2:
@@ -706,7 +707,7 @@ public class Weapon extends GameObject{
 		case BLUNT:
 			switch(attackType) {
 			case 0:
-				return 0.6f;
+				return 0.4f;
 			case 1:
 				return 2f;
 			case 2:

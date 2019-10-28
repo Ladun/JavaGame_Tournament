@@ -59,15 +59,17 @@ public class Shop {
 	public void settingSlot(GameContainer gc, GameManager gm) {
 		
 		active = true;
+		jobType = JobType.values()[((GameScene)gm.getScene("InGame")).getLocalPlayer().getWeapon().getType().ordinal() + 1];
 		
-		int horizontalMaxCount = (gc.getWidth() - SLOT_SIDE_GAP * 4) / (ShopSlot.getWidth() + SLOT_GAP);
+		int horizontalMaxCount = (gc.getWidth() - SLOT_SIDE_GAP * 4 + SLOT_GAP) / (ShopSlot.getWidth() + SLOT_GAP);
 		int horizontalCount = 0;
 		
 		int verticalCount= 0;
 				
 		int slotIndex = 0;
 		for(Item _item : gm.getItemDatabase().getItemList()) {
-			if(_item.getID() / TYPE_INTERVAL == jobType.getValue() / TYPE_INTERVAL) {
+			System.out.printf("%d %d\n", _item.getID(), jobType.getValue());
+			if(_item.getID() / TYPE_INTERVAL == jobType.getValue() / TYPE_INTERVAL ||_item.getID() / TYPE_INTERVAL == 0) {
 				if(slotIndex < slots.size()){
 					slots.get(slotIndex).setItem(slotIndex,_item,SLOT_SIDE_GAP * 2+ (ShopSlot.getWidth() + SLOT_GAP) * horizontalCount , 200 + (ShopSlot.getHeight() + SLOT_GAP) * verticalCount);
 					slotIndex++;
@@ -83,6 +85,9 @@ public class Shop {
 				}
 				
 			}
+		}
+		for(int i = slotIndex; i < slots.size();i++) {
+			slots.get(i).setActive(false);
 		}
 	}
 	

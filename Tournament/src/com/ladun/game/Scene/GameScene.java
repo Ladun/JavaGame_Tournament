@@ -409,6 +409,12 @@ public class GameScene extends AbstractScene{
 					case STAT_MOVESPEED:
 						sb.append("MoveSpeed");
 						break;
+					case STAT_HEALTHREGE:
+						sb.append("HR");
+						break;
+					case STAT_MANAREGE:
+						sb.append("MR");
+						break;
 					default:
 						break;
 					}

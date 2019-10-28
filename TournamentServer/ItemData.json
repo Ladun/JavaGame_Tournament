@@ -58,43 +58,43 @@
   {
   	"ID": 16,
   	"Price": 700,
-  	"Types": ["STAT_HEALTHRE"],
+    "Types": [ "STAT_HEALTHREGE" ],
   	"Name": "녹색 작은 구슬",
   	"Options": [1]
-  }
+  },
   {
   	"ID": 32,
   	"Price": 860,
   	"Types": [ "STAT_HEALTH", "STAT_DAMAGE"],
   	"Name": "피에 물든 활",
-  	"Options": [5, -20] 
+  	"Options": [-20, 5] 
   },
   {
   	"ID": 48,
   	"Price": 880,
   	"Types": ["STAT_DAMAGE", "STAT_MOVESPEED"],
   	"Name": "그어대한 창",
-  	"Options": [ 7, 22]
-  }
+  	"Options": [ 7, -22]
+  },
   {
   	"ID": 64,
   	"Price": 900,
   	"Types": [ "STAT_MOVESPEED" ],
-  	"Name": 편한 부츠,
+  	"Name": "편한 부츠",
   	"Options": [25]
   },
   {
   	"ID":80,
-  	"Price": 1000",
+  	"Price": 1000,
   	"Types": [ "STAT_MANAREGE"],
-  	"Name" : 파란 구슬,
-  	"Options" : 1
+  	"Name" : "파란 구슬",
+    "Options": [ 1 ]
   },
   {
   	"ID": 96,
   	"Price": 900,
-  	"Types": ["STAT_MOVEPSPEED", "STAT_DEFENCE"],
+  	"Types": ["STAT_MOVESPEED", "STAT_DEFENCE"],
   	"Name": "판금 갑옷",
-  	"Options": [ 30, 6 ]
+  	"Options": [ -30, 6 ]
   }
 ]

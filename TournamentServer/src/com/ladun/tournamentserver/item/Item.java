@@ -3,7 +3,7 @@ package com.ladun.tournamentserver.item;
 public class Item {
 	
 	public enum Type{
-		EMPTY( 1), CH_SKILL(2),STAT_HEALTH(4), STAT_MANA(8), STAT_DAMAGE(16), STAT_MOVESPEED(32), STAT_DEFENCE(64);
+		EMPTY( 1), CH_SKILL(2),STAT_HEALTH(4), STAT_MANA(8), STAT_DAMAGE(16), STAT_MOVESPEED(32), STAT_DEFENCE(64),STAT_HEALTHREGE(128), STAT_MANAREGE(256);
 		
 		
 		private final int value;

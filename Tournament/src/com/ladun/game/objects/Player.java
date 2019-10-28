@@ -462,7 +462,7 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		
 		super.collision(other);
-		clickPoints.clear();
+
 		if(other instanceof HitRange) {
 			HitRange hr = (HitRange)other;
 			if(!hr.getAttackerTag().equals(tag)) {
@@ -594,10 +594,10 @@ public class Player extends Entity{
 	private boolean isBackAttack(GameObject g) {
 		boolean crit = false;
 		if(g != null) {
-			float angleByOther = Util.angle360(Util.angle(getCenterX(),g.getCenterX(), getCenterZ(),g.getCenterZ()));
+			float angleByOther = Util.angle360(Util.angle(getCenterX(), getCenterZ(),g.getCenterX(),g.getCenterZ()));
 			float tempAngle = Util.angle360(angle);
 			angleByOther = ((angleByOther - tempAngle < 0) ? 360 + (angleByOther - tempAngle) : angleByOther - tempAngle) % 360;
-			
+			System.out.println(angleByOther);
 			if(angleByOther >= 180 - backAttackRange / 2 && angleByOther <= 180 + backAttackRange / 2) {
 				crit = true;
 			}
