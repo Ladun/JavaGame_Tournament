@@ -636,7 +636,7 @@ public class Player extends Entity{
 				manaRegeneration = .5f;
 				maxHealth = 190;
 				maxMana = 70;
-				moveSpeed = 180;
+				moveSpeed = 200;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
@@ -652,7 +652,7 @@ public class Player extends Entity{
 				manaRegeneration = 0.8f;
 				maxHealth = 170;
 				maxMana = 100;
-				moveSpeed = 190;
+				moveSpeed = 210;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
@@ -660,7 +660,7 @@ public class Player extends Entity{
 				manaRegeneration = .8f;
 				maxHealth = 120;
 				maxMana = 130;
-				moveSpeed = 210;
+				moveSpeed = 230;
 				break;
 			case 4:
 				weapon.setType(Weapon.Type.CANE);
@@ -677,7 +677,7 @@ public class Player extends Entity{
 				manaRegeneration = .7f;
 				maxHealth = 210;
 				maxMana = 80;
-				moveSpeed = 170;
+				moveSpeed = 190;
 				break;
 		}
 		

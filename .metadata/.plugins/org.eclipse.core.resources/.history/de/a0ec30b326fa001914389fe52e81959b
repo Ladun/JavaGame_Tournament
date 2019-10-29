@@ -67,7 +67,7 @@ public class GameScene extends AbstractScene{
 	private TextBox chatTextBox;
 	//-----------------------------------------
 	private boolean jobSelectButtonShow;
-	private float jSBMovePercent = 1; // JobSelectButtonMovePercent;
+	private float jSBMovePercent; // JobSelectButtonMovePercent;
 	
 	private TeamColor teamColor = TeamColor.TEAM1;
 	
@@ -512,10 +512,6 @@ public class GameScene extends AbstractScene{
 				shop.setActive(!shop.isActive());
 				if(shop.isActive())
 					shop.settingSlot(gc, gm);
-				if(jobSelectButtonShow) {
-					jobSelectButtonShow = false;
-					jSBMovePercent = 0;
-				}
 				
 				/*
 				gm.getAnnounce().addString("아직 구현되지 않았습니다", Announce.DEFAULT_COLOR);
@@ -526,7 +522,6 @@ public class GameScene extends AbstractScene{
 			if(jobButton.isReleased()) {
 				jobSelectButtonShow = !jobSelectButtonShow;
 				jSBMovePercent = 0;
-				shop.setActive(false);
 			}
 
 			if(jobSelectButtonShow) {
@@ -663,6 +658,10 @@ public class GameScene extends AbstractScene{
 						(new Interior("wall1",384,320,64,204,64,true)).setpT(64),
 						(new Interior("wall1",832,128,64,204,64,true)).setpT(64),
 						(new Interior("wall1",832,320,64,204,64,true)).setpT(64),
+						(new Interior("bush1",100,180,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",200,400,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1050,180,140,71,64,true)).setpT(48).setpB(7),
+						(new Interior("bush1",1150,400,140,71,64,true)).setpT(48).setpB(7),
 						(new Interior("bush1",575,90,140,71,64,true)).setpT(48).setpB(7),
 						(new Interior("bush1",575,500,140,71,64,true)).setpT(48).setpB(7)
 						

@@ -67,7 +67,7 @@ public class GameScene extends AbstractScene{
 	private TextBox chatTextBox;
 	//-----------------------------------------
 	private boolean jobSelectButtonShow;
-	private float jSBMovePercent = 1; // JobSelectButtonMovePercent;
+	private float jSBMovePercent; // JobSelectButtonMovePercent;
 	
 	private TeamColor teamColor = TeamColor.TEAM1;
 	

@@ -116,7 +116,8 @@ public class Player extends Entity{
 		if(gs.isGameisStart()) {
 
 			timePassAttackObject();
-			
+
+			buffTimer();
 			if(localPlayer){	
 				if(mana < getMaxMana()) {
 					int lastMana = (int)mana;
@@ -150,7 +151,6 @@ public class Player extends Entity{
 							actionCoolDownTime[i]  = 0;
 					}
 				}
-				buffTimer();
 				
 				// Moving ------------------------------------------------------
 				if(gc.getInput().isButtonDown(MouseEvent.BUTTON3)) {
@@ -263,13 +263,19 @@ public class Player extends Entity{
 								attackIndex = 1;
 								switch(weapon.getType()) {
 								case SWORD:
-									
+									// 위치가 중요하지 않음 (posX, posZ가 딱히 중요하지 않음)
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);									
 									break;
 								case BOW:
 									attackType = AttackType.DependOnAngle;
 									break;
 								case SPEAR:
-									
+									// 위치가 중요하지 않음 (posX, posZ가 딱히 중요하지 않음)
+									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);										
 									break;
 								case DAGGER:
 									attackType = AttackType.Targeting;									
@@ -278,6 +284,7 @@ public class Player extends Entity{
 									attackType = AttackType.DependOnMouse;
 									break;
 								case BLUNT:
+									// 위치가 중요하지 않음 (posX, posZ가 딱히 중요하지 않음)
 									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 									mana -= weapon.getUsingMana(attackIndex);
@@ -293,9 +300,12 @@ public class Player extends Entity{
 									
 									break;
 								case BOW:
-									attackType = AttackType.DependOnAngle;
+									attack(gc, gm,(int) posX, (int)posZ, angle, attackIndex, null);
+									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
+									mana -= weapon.getUsingMana(attackIndex);
 									break;
 								case SPEAR:
+									// 위치가 중요하지 않음 (posX, posZ가 딱히 중요하지 않음)
 									attack(gc, gm,(int) posX, (int)posZ, 0, attackIndex, null);
 									actionCoolDownTime[attackIndex] = weapon.getCoolDown(attackIndex);
 									mana -= weapon.getUsingMana(attackIndex);									
@@ -413,8 +423,7 @@ public class Player extends Entity{
 		// Shadow Draw
 		r.drawFillElipse((int)posX + pL +( width - (pL + pR)) /2,   (int)(posZ + groundHeight) + pT + (height - (pT + pB)) / 2, ( width - (pL + pR)) /2, (height - (pT + pB)) / 2, 0x55000000);
 		if(berserkerTime > 0) {
-			r.drawImage(gc.getResourceLoader().getImage("berserker_effect1"), (int)(posX + 15), (int)(posZ + 9), 0);
-			r.drawImage(gc.getResourceLoader().getImage("berserker_effect2"), (int)(posX + 15), (int)(posZ + 9), 0);
+			r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("berserker_effect2"), (int)(posX + 3), (int)(posZ + 42), ((int)(berserkerTime * 5 * 3.3)) % 5,0, 0);
 		}
 		
 		/*
@@ -434,10 +443,7 @@ public class Player extends Entity{
 			r.drawImage(gc.getResourceLoader().getImage("point"), (int)_p.getX() - 16, (int)_p.getY() - 16 , 0);
 		}
 		r.drawImageTile((ImageTile)gc.getResourceLoader().getImage("player"),(int)posX,(int)(posZ + posY), (int)anim, animType ,.5f,.5f,false,false,0,!hiding? 1f:0.3f);
-		if(berserkerTime > 0) {
-			r.drawImage(gc.getResourceLoader().getImage("berserker_effect1"), (int)(posX + 15), (int)(posZ + 9), 0);
-			r.drawImage(gc.getResourceLoader().getImage("berserker_effect2"), (int)(posX + 15), (int)(posZ + 9), 0);
-		}
+		
 		// HP Bar
 		r.drawFillRect((int)posX-10,  (int)(posZ + posY) - 13, 10, 13, 0, TeamColor.values()[teamNumber].getValue());
 		r.drawFillRect((int)posX + 6, (int)(posZ + posY) - 13 , (int)(64 * (health/getMaxHealth())), 13, 0, 0xff63c564);
@@ -456,12 +462,12 @@ public class Player extends Entity{
 	public void collision(GameObject other) {
 		
 		super.collision(other);
-		clickPoints.clear();
+
 		if(other instanceof HitRange) {
 			HitRange hr = (HitRange)other;
 			if(!hr.getAttackerTag().equals(tag)) {
 				if(localPlayer)
-					hit(hr.getDamage(),isBackAttack(gm.getObject(hr.getAttackerTag())),hr.getAttackerTag(),other.hashCode());
+					hit(hr.getDamage(),hr.getKnockback(),isBackAttack(gm.getObject(hr.getAttackerTag())),hr.getAttackerTag(),other.hashCode());
 				
 
 				addHitEffect(other, hr.getParent().angle);
@@ -469,7 +475,7 @@ public class Player extends Entity{
 		}
 		else if(other instanceof Projectile) {
 			if(localPlayer) 
-				hit(((Projectile)other).getDamage(),isBackAttack(other),((Projectile)other).getAttackerTag(),other.hashCode());
+				hit(((Projectile)other).getDamage(), ((Projectile)other).getKnockback(),isBackAttack(other),((Projectile)other).getAttackerTag(),other.hashCode());
 			addHitEffect(other, other.angle);
 		}
 		
@@ -492,15 +498,15 @@ public class Player extends Entity{
 				angle + 180,
 				false,false);
 	}
-	public void hit(float damage, boolean crit,String attackerTag) {
+	public void hit(float damage,int knockback, boolean crit,String attackerTag) {
 		if(damage == 0) {
 			return;
 		}
-		hitMain(damage,crit,attackerTag);
+		hitMain(damage,knockback,crit,attackerTag);
 	}
 	
 	@Override
-	public void hit(float damage,boolean crit,String attackerTag,int hashcode) {
+	public void hit(float damage,int knockback,boolean crit,String attackerTag,int hashcode) {
 		if(damage == 0) {
 			return;
 		}
@@ -525,24 +531,27 @@ public class Player extends Entity{
 				damage = 1;
 			
 			
-			hitMain(damage,crit,attackerTag);
+			hitMain(damage,knockback,crit,attackerTag);
 		}
+		
 	}
 	
 	
-	private void hitMain(float damage,boolean crit,String attackerTag) {
+	private void hitMain(float damage,int knockback,boolean crit,String attackerTag) {
 
 		damage = (int)damage;
 		health -= damage;
 
 		if(localPlayer)
-			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)damage,(char)(crit? 0x02 : 0x01),attackerTag});
+			gs.getGm().getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x15,(int)damage,knockback,(char)(crit? 0x02 : 0x01),attackerTag});
 		
 		Player _p = (Player)gm.getObject(attackerTag);
+
 		if(_p != null) {
 			float _angle = (float)Math.toDegrees(Math.atan2(posZ - _p.getPosZ(), posX - _p.getPosX()));
-			((Rigidbody)findComponent("rigidbody")).addPower(_p.getWeapon().getKnockback(), _angle);
+			((Rigidbody)findComponent("rigidbody")).addPower(knockback, _angle);
 		}
+		
 		//----------------------------------------------------------------------------------------
 		DisplayTextInGame displayDamage = (DisplayTextInGame)gs.getInactiveObject("displayDamage");		
 		if(displayDamage == null) {
@@ -585,10 +594,10 @@ public class Player extends Entity{
 	private boolean isBackAttack(GameObject g) {
 		boolean crit = false;
 		if(g != null) {
-			float angleByOther = Util.angle360(Util.angle(getCenterX(),g.getCenterX(), getCenterZ(),g.getCenterZ()));
+			float angleByOther = Util.angle360(Util.angle(getCenterX(), getCenterZ(),g.getCenterX(),g.getCenterZ()));
 			float tempAngle = Util.angle360(angle);
 			angleByOther = ((angleByOther - tempAngle < 0) ? 360 + (angleByOther - tempAngle) : angleByOther - tempAngle) % 360;
-			
+			System.out.println(angleByOther);
 			if(angleByOther >= 180 - backAttackRange / 2 && angleByOther <= 180 + backAttackRange / 2) {
 				crit = true;
 			}
@@ -598,72 +607,76 @@ public class Player extends Entity{
 	private void buffTimer() {
 
 		if(berserkerTime > 0) {
+
 			berserkerTime -= Time.DELTA_TIME;
 			if(berserkerTime <= 0) {
 				berserkerTime = 0;						
 			}
 		}
 		
-		if(skill_hideTime > 0) {
-			skill_hideTime -= Time.DELTA_TIME;
-			if(skill_hideTime <= 0) {
-				hiding = false;
-				gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
-				skill_hideTime = 0;						
+		if(localPlayer) {
+			if(skill_hideTime > 0) {
+				skill_hideTime -= Time.DELTA_TIME;
+				if(skill_hideTime <= 0) {
+					hiding = false;
+					gm.getClient().send(Client.PACKET_TYPE_VALUECHANGE,new Object[] {(char)0x18,0});
+					skill_hideTime = 0;						
+				}
 			}
 		}
 		
 	}
 
 	public void setWeaponType(int t) {
+		
 		switch(t){
 			case 0 :
 				weapon.setType(Weapon.Type.SWORD);
-				healthRegeneration = 1;
-				manaRegeneration = 1;
-				maxHealth = 180;
-				maxMana = 80;
-				moveSpeed = 190;
+				healthRegeneration = 2f;
+				manaRegeneration = .5f;
+				maxHealth = 190;
+				maxMana = 70;
+				moveSpeed = 180;
 				break;
 			case 1 :
 				weapon.setType(Weapon.Type.BOW);
-				healthRegeneration = .3f;
-				manaRegeneration = 1;
-				maxHealth = 120;
+				healthRegeneration = 1f;
+				manaRegeneration = .9f;
+				maxHealth = 130;
 				maxMana = 100;
 				moveSpeed = 200;
 				break;
 			case 2 :
 				weapon.setType(Weapon.Type.SPEAR);
-				healthRegeneration = 1;
-				manaRegeneration = 1;
-				maxHealth = 150;
-				maxMana = 80;
-				moveSpeed = 180;
+				healthRegeneration = 1.2f;
+				manaRegeneration = 0.8f;
+				maxHealth = 170;
+				maxMana = 100;
+				moveSpeed = 190;
 				break;
 			case 3:
 				weapon.setType(Weapon.Type.DAGGER);
-				healthRegeneration = .5f;
-				manaRegeneration = 1;
+				healthRegeneration = .7f;
+				manaRegeneration = .8f;
 				maxHealth = 120;
-				maxMana = 100;
-				moveSpeed = 220;
+				maxMana = 130;
+				moveSpeed = 210;
 				break;
 			case 4:
 				weapon.setType(Weapon.Type.CANE);
 				healthRegeneration = .5f;
-				manaRegeneration = 1;
-				maxHealth = 100;
-				maxMana = 150;
-				moveSpeed = 190;
+				manaRegeneration = 2;
+				maxHealth = 110;
+				maxMana = 180;
+				moveSpeed = 180;
 				break;
 
 			case 5:
 				weapon.setType(Weapon.Type.BLUNT);
-				healthRegeneration = .5f;
-				manaRegeneration = 1;
-				maxHealth = 200;
-				maxMana = 100;
+				healthRegeneration = 1.4f;
+				manaRegeneration = .7f;
+				maxHealth = 210;
+				maxMana = 80;
 				moveSpeed = 170;
 				break;
 		}
@@ -678,6 +691,8 @@ public class Player extends Entity{
 
 		if(tag != null && tag.length() < 6)
 			tag = null;
+		if(weapon.isAttacking())
+			return;
 		//System.out.println(posX + ":" + posZ);
 		weapon.attack(gc, gm, gs, posX, posZ, _angle, attackIndex,tag);			
 
@@ -757,6 +772,15 @@ public class Player extends Entity{
 			}
 		}
 		return -1;
+	}
+
+	public boolean isInItemSlot(int itemIndex) {
+		for(int i =0; i < 6; i++) {
+			if(items[i].getID() == itemIndex) {
+				return true;
+			}
+		}
+		return false;
 	}
 	//---------------------------------------------------------------------------------------
 	
@@ -840,7 +864,7 @@ public class Player extends Entity{
 		return berserkerTime > 0;
 	}
 	public void setBerserkerMode() {
-		this.berserkerTime = 15;
+		this.berserkerTime = 8;
 	}
 	public boolean isMouseOver(float mouseX,float mouseY) {
 		if(mouseX >= posX && mouseX <= posX + width &&
